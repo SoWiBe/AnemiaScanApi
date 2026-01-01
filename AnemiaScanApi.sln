@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnemiaScanApi", "AnemiaScanApi\AnemiaScanApi.csproj", "{A80A0CFA-6FA8-4729-A5B3-189CC300208E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A80A0CFA-6FA8-4729-A5B3-189CC300208E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80A0CFA-6FA8-4729-A5B3-189CC300208E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80A0CFA-6FA8-4729-A5B3-189CC300208E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80A0CFA-6FA8-4729-A5B3-189CC300208E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
