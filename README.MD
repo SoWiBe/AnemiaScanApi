@@ -168,8 +168,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📧 Contact
 
 **Anemia Scan Team**
-- Email: support@anemiascan.com
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: aleksey.dantist@gmail.com
+- GitHub: [@SoWiBe](https://github.com/SoWiBe)
 
 ---
 
