@@ -15,8 +15,8 @@
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
-        <PackageReference Include="MongoDB.Driver" Version="3.2.0" />
-        <PackageReference Include="MongoDB.Driver.GridFS" Version="3.2.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
+        <PackageReference Include="MongoDB.Driver.GridFS" Version="2.30.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -24,7 +24,6 @@
       <Folder Include="Data\" />
       <Folder Include="Infrastructure\" />
       <Folder Include="ML\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>

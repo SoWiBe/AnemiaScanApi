@@ -1,4 +1,6 @@
 using AnemiaScanApi.Filters;
+using AnemiaScanApi.Services;
+using AnemiaScanApi.Settings;
 using Microsoft.OpenApi;
 
 namespace AnemiaScanApi.Extensions;
@@ -58,6 +60,23 @@ public static class ServicesExtensions
         public void AddValidationFilters()
         {
             services.AddScoped<ValidateImageAttribute>();
+        }
+
+        /// <summary>
+        /// Adds MongoDB configuration
+        /// </summary>
+        /// <param name="configuration"></param>
+        public void AddMongoDb(IConfiguration configuration)
+        {
+            services.Configure<MongoDbSettings>(configuration.GetSection("MongoDB"));
+        }
+        
+        /// <summary>
+        /// Adds service implementations
+        /// </summary>
+        public void AddServices()
+        {
+            services.AddScoped<IUserService, UserService>();
         }
     }
 

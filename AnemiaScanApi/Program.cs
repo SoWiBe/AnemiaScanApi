@@ -2,6 +2,12 @@ using AnemiaScanApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add MongoDB configuration
+builder.Services.AddMongoDb(builder.Configuration);
+
+// Add service implementations
+builder.Services.AddServices();
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddValidationFilters();
