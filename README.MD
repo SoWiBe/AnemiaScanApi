@@ -1,4 +1,4 @@
-# 🩸 AnemiaScan API
+# 🩸 SmartAnemiaScan API
 
 ASP.NET Core Web API for automated anemia detection using Machine Learning image analysis.
 
