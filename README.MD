@@ -40,9 +40,9 @@ This API enables:
 ## 🚀 How?
 
 ### Prerequisites
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
 - [MongoDB](https://www.mongodb.com/) (optional, for data persistence)
-- IDE: Visual Studio 2022 / Rider / VS Code
+- IDE: Rider
 
 ### Quick Start
 
