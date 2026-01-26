@@ -1,4 +1,5 @@
 using AnemiaScanApi.Models;
+using AnemiaScanApi.Services.Core;
 
 namespace AnemiaScanApi.Services;
 
@@ -22,4 +23,12 @@ public interface IUserService : IMongoService<SasUserModel>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The created user.</returns>
     public Task<SasUserModel> CreateUserAsync(SasUserModel user, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks if a username is unique.
+    /// </summary>
+    /// <param name="username">The username to check.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>True if the username is unique, false otherwise.</returns>
+    public Task<bool> IsUsernameUniqueAsync(string username, CancellationToken cancellationToken = default);
 }

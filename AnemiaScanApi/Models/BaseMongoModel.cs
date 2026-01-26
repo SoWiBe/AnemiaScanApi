@@ -6,7 +6,7 @@ namespace AnemiaScanApi.Models;
 public class BaseMongoModel
 {
     /// <summary>
-    /// MongoDB ObjectId.
+    /// MongoDB Guid.
     /// </summary>
-    [BsonId] public ObjectId Id { get; set; }    
+    [BsonId] public Guid Id { get; set; }    
 }

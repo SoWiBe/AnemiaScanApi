@@ -1,3 +1,4 @@
+using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
 using AnemiaScanApi.Services;
 using AnemiaScanApi.Settings;
@@ -57,9 +58,10 @@ public static class ServicesExtensions
         /// <summary>
         /// Adds validation filters
         /// </summary>
-        public void AddValidationFilters()
+        public void AddValidationFilters() 
         {
             services.AddScoped<ValidateImageAttribute>();
+            services.AddScoped<UniqueUsernameAttribute>();
         }
 
         /// <summary>

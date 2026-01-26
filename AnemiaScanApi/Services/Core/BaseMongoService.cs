@@ -30,12 +30,12 @@ public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongo
         => await Collection.Find(_ => true).ToListAsync();
 
     /// <summary>
-    /// Retrieves an entity by its ObjectId.
+    /// Retrieves an entity by its Guid.
     /// </summary>
-    /// <param name="id">The ObjectId of the entity.</param>
-    /// <returns>The entity with the specified ObjectId.</returns>
+    /// <param name="id">The Guid of the entity.</param>
+    /// <returns>The entity with the specified Guid.</returns>
  
-    public virtual async Task<T> GetByIdAsync(ObjectId id)
+    public virtual async Task<T> GetByIdAsync(Guid id)
         => await Collection.Find(x => x.Id == id).FirstOrDefaultAsync();
     
     /// <summary>
@@ -49,18 +49,18 @@ public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongo
     /// <summary>
     /// Updates an existing entity in the collection.
     /// </summary>
-    /// <param name="id">The ObjectId of the entity to update.</param>
+    /// <param name="id">The Guid of the entity to update.</param>
     /// <param name="entity">The updated entity.</param>
     /// <returns>The updated entity.</returns>    
-    public virtual Task<T> UpdateAsync(ObjectId id, T entity)
+    public virtual Task<T> UpdateAsync(Guid id, T entity)
         => Collection.ReplaceOneAsync(x => x.Id == id, entity).ContinueWith(_ => entity);
 
     
     /// <summary>
     /// Deletes an entity from the collection.
     /// </summary>
-    /// <param name="id">The ObjectId of the entity to delete.</param>
+    /// <param name="id">The Guid of the entity to delete.</param>
     /// <returns>True if the entity was deleted, false otherwise.</returns>
-    public virtual Task<bool> DeleteAsync(ObjectId id)
+    public virtual Task<bool> DeleteAsync(Guid id)
         => Collection.DeleteOneAsync(x => x.Id == id).ContinueWith(_ => true);
 }

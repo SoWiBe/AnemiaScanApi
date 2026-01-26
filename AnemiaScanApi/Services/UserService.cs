@@ -37,4 +37,14 @@ public class UserService(IOptions<MongoDbSettings> mongoDbSettings)
          => Collection
              .InsertOneAsync(user, cancellationToken: cancellationToken)
              .ContinueWith(_ => user, cancellationToken);
+
+    /// <summary>
+    /// Checks if a username is unique.
+    /// </summary>
+    /// <param name="username">The username to check.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>True if the username is unique, false otherwise.</returns>
+    public Task<bool> IsUsernameUniqueAsync(string username, CancellationToken cancellationToken = default)
+        => Collection.CountDocumentsAsync(x => x.Username == username, cancellationToken: cancellationToken)
+            .ContinueWith(count => count.Result == 0, cancellationToken);
 }

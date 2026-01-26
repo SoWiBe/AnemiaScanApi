@@ -6,7 +6,7 @@ namespace AnemiaScanApi.Filters;
 /// <summary>
 /// Validates image file uploads (size, format, MIME type)
 /// </summary>
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Method)]
 public class ValidateImageAttribute : ActionFilterAttribute
 {
     private readonly long _maxFileSizeInBytes;

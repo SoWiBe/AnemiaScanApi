@@ -1,6 +1,4 @@
-using MongoDB.Bson;
-
-namespace AnemiaScanApi.Services;
+namespace AnemiaScanApi.Services.Core;
 
 /// <summary>
 /// Interface for MongoDB service operations.
@@ -9,8 +7,8 @@ namespace AnemiaScanApi.Services;
 public interface IMongoService<T>
 {
     public Task<IEnumerable<T>> GetAllAsync();
-    public Task<T> GetByIdAsync(ObjectId id);
+    public Task<T> GetByIdAsync(Guid id);
     public Task<T> CreateAsync(T entity);
-    public Task<T> UpdateAsync(ObjectId id, T entity);
-    public Task<bool> DeleteAsync(ObjectId id);
+    public Task<T> UpdateAsync(Guid id, T entity);
+    public Task<bool> DeleteAsync(Guid id);
 }
