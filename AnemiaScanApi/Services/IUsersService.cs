@@ -6,7 +6,7 @@ namespace AnemiaScanApi.Services;
 /// <summary>
 /// Interface for user-related MongoDB service operations.
 /// </summary>
-public interface IUserService : IMongoService<SasUserModel>
+public interface IUserService : IMongoService<SasUser>
 {
     /// <summary>
     /// Retrieves a user by their username.
@@ -14,7 +14,7 @@ public interface IUserService : IMongoService<SasUserModel>
     /// <param name="username">The username of the user.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The user with the specified username.</returns>
-    public Task<SasUserModel> GetUserByUsernameAsync(string username, CancellationToken cancellationToken = default);
+    public Task<SasUser> GetUserByUsernameAsync(string username, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Creates a new user.
@@ -22,7 +22,15 @@ public interface IUserService : IMongoService<SasUserModel>
     /// <param name="user">The user to create.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The created user.</returns>
-    public Task<SasUserModel> CreateUserAsync(SasUserModel user, CancellationToken cancellationToken = default);
+    public Task<SasUser> CreateUserAsync(SasUser user, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Updates an existing user.
+    /// </summary>
+    /// <param name="user">The user to update.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The updated user.</returns>
+    public Task<SasUser> UpdateUserAsync(SasUser user, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Checks if a username is unique.

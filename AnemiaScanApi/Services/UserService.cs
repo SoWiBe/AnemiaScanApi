@@ -12,7 +12,7 @@ namespace AnemiaScanApi.Services;
 /// </summary>
 /// <param name="mongoDbSettings"></param>
 public class UserService(IOptions<MongoDbSettings> mongoDbSettings)
-    : BaseMongoService<SasUserModel>(mongoDbSettings, "users"), IUserService
+    : BaseMongoService<SasUser>(mongoDbSettings, "users"), IUserService
 {
     /// <summary>
     /// Retrieves a user by their username.
@@ -20,7 +20,7 @@ public class UserService(IOptions<MongoDbSettings> mongoDbSettings)
     /// <param name="username">The username of the user.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The user with the specified username.</returns>
-    public async Task<SasUserModel> GetUserByUsernameAsync(string username, CancellationToken cancellationToken = default)
+    public async Task<SasUser> GetUserByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
         return await Collection
             .Find(x => x.Username == username)
@@ -33,10 +33,21 @@ public class UserService(IOptions<MongoDbSettings> mongoDbSettings)
     /// <param name="user">The user to create.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The created user.</returns>
-    public Task<SasUserModel> CreateUserAsync(SasUserModel user, CancellationToken cancellationToken = default)
+    public Task<SasUser> CreateUserAsync(SasUser user, CancellationToken cancellationToken = default)
          => Collection
              .InsertOneAsync(user, cancellationToken: cancellationToken)
              .ContinueWith(_ => user, cancellationToken);
+    
+    /// <summary>
+    /// Updates an existing user.
+    /// </summary>
+    /// <param name="user">The user to update.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The updated user.</returns>
+    public Task<SasUser> UpdateUserAsync(SasUser user, CancellationToken cancellationToken = default)
+        => Collection
+            .ReplaceOneAsync(x => x.Id == user.Id, user, cancellationToken: cancellationToken)
+            .ContinueWith(_ => user, cancellationToken);
 
     /// <summary>
     /// Checks if a username is unique.

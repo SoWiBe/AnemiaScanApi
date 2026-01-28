@@ -22,7 +22,7 @@ public class UserController(IUserService userService, ILogger<UserController> lo
     /// <param name="username"></param>
     /// <returns></returns>
     [HttpGet("{username}")]
-    [ProducesResponseType(typeof(SasUserModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SasUser), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserByUsername(string username) => Ok(await userService.GetUserByUsernameAsync(username));
 
@@ -62,9 +62,9 @@ public class UserController(IUserService userService, ILogger<UserController> lo
     /// <param name="request"></param>
     /// <param name="model"></param>
     /// <returns></returns>
-    private void MapCreateUserRequestToModel(CreateUserRequest request, out SasUserModel model)
+    private void MapCreateUserRequestToModel(CreateUserRequest request, out SasUser model)
     {
-        model = new SasUserModel
+        model = new SasUser
         {
             Username = request.Username,
             HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password)

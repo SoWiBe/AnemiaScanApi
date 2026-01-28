@@ -26,8 +26,10 @@ public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongo
     /// Retrieves all entities from the collection.
     /// </summary>
     /// <returns>All entities in the collection.</returns>
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
-        => await Collection.Find(_ => true).ToListAsync();
+    public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+        => await Collection
+            .Find(_ => true)
+            .ToListAsync(cancellationToken);
 
     /// <summary>
     /// Retrieves an entity by its Guid.
@@ -35,16 +37,20 @@ public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongo
     /// <param name="id">The Guid of the entity.</param>
     /// <returns>The entity with the specified Guid.</returns>
  
-    public virtual async Task<T> GetByIdAsync(Guid id)
-        => await Collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+    public virtual async Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await Collection
+            .Find(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
     
     /// <summary>
     /// Creates a new entity in the collection.
     /// </summary>
     /// <param name="entity">The entity to create.</param>
     /// <returns>The created entity.</returns>
-    public virtual Task<T> CreateAsync(T entity)
-        => Collection.InsertOneAsync(entity).ContinueWith(_ => entity);
+    public virtual Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default)
+        => Collection
+            .InsertOneAsync(entity, cancellationToken: cancellationToken)
+            .ContinueWith(_ => entity, cancellationToken);
     
     /// <summary>
     /// Updates an existing entity in the collection.
@@ -52,8 +58,10 @@ public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongo
     /// <param name="id">The Guid of the entity to update.</param>
     /// <param name="entity">The updated entity.</param>
     /// <returns>The updated entity.</returns>    
-    public virtual Task<T> UpdateAsync(Guid id, T entity)
-        => Collection.ReplaceOneAsync(x => x.Id == id, entity).ContinueWith(_ => entity);
+    public virtual Task<T> UpdateAsync(Guid id, T entity, CancellationToken cancellationToken = default)
+        => Collection
+            .ReplaceOneAsync(x => x.Id == id, entity, cancellationToken: cancellationToken)
+            .ContinueWith(_ => entity, cancellationToken);
 
     
     /// <summary>
@@ -61,6 +69,8 @@ public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongo
     /// </summary>
     /// <param name="id">The Guid of the entity to delete.</param>
     /// <returns>True if the entity was deleted, false otherwise.</returns>
-    public virtual Task<bool> DeleteAsync(Guid id)
-        => Collection.DeleteOneAsync(x => x.Id == id).ContinueWith(_ => true);
+    public virtual Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        => Collection
+            .DeleteOneAsync(x => x.Id == id, cancellationToken: cancellationToken)
+            .ContinueWith(_ => true, cancellationToken);
 }
