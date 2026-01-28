@@ -8,5 +8,5 @@ public class BaseMongoModel
     /// <summary>
     /// MongoDB Guid.
     /// </summary>
-    [BsonId] public Guid Id { get; set; }    
+    [BsonId] public Guid Id { get; set; }
 }

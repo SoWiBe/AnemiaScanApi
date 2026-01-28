@@ -1,7 +1,7 @@
-using AnemiaScanApi.Attributes;
-using AnemiaScanApi.Controllers.Core;
 using Microsoft.AspNetCore.Mvc;
 
+using AnemiaScanApi.Attributes;
+using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Models;
 using AnemiaScanApi.Models.Requests;
 using AnemiaScanApi.Models.Responses;
@@ -21,6 +21,11 @@ public class UserController(IUserService userService, ILogger<UserController> lo
     /// </summary>
     /// <param name="username"></param>
     /// <returns></returns>
+    /// <remarks>
+    ///     GET /api/user/{username}
+    /// </remarks>
+    /// <response code="200">User found</response>
+    /// <response code="404">User not found</response>
     [HttpGet("{username}")]
     [ProducesResponseType(typeof(SasUser), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -32,6 +37,18 @@ public class UserController(IUserService userService, ILogger<UserController> lo
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    /// <remarks>
+    ///     POST /api/user/create
+    ///     Content-Type: application/json
+    ///     
+    ///     {
+    ///         "username": "newuser",
+    ///         "password": "password123"
+    ///     }
+    /// </remarks>
+    /// <response code="200">User created successfully</response>
+    /// <response code="400">Invalid username or password</response>
+    /// <response code="500">Internal server error during user creation</response>
     [HttpPost("create")]
     [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

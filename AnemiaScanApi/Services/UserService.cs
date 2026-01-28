@@ -12,7 +12,7 @@ namespace AnemiaScanApi.Services;
 /// </summary>
 /// <param name="mongoDbSettings"></param>
 public class UserService(IOptions<MongoDbSettings> mongoDbSettings)
-    : BaseMongoService<SasUser>(mongoDbSettings, "users"), IUserService
+    : BaseMongoService<SasUser>(mongoDbSettings, "Users"), IUserService
 {
     /// <summary>
     /// Retrieves a user by their username.
