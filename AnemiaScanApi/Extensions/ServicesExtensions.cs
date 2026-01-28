@@ -1,6 +1,7 @@
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
 using AnemiaScanApi.Services;
+using AnemiaScanApi.Services.Core;
 using AnemiaScanApi.Settings;
 using Microsoft.OpenApi;
 
@@ -78,6 +79,7 @@ public static class ServicesExtensions
         /// </summary>
         public void AddServices()
         {
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IUserService, UserService>();
         }
     }

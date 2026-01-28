@@ -8,6 +8,11 @@ builder.AddLogging();
 // Add MongoDB configuration
 builder.Services.AddMongoDb(builder.Configuration);
 
+// Add JWT authentication configuration
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
 // Add service implementations
 builder.Services.AddServices();
 
@@ -30,6 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllers();
 
 app.Run();
