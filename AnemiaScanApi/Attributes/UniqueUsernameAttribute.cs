@@ -1,5 +1,5 @@
+using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Models.Requests;
-using AnemiaScanApi.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -9,10 +9,10 @@ namespace AnemiaScanApi.Attributes;
 /// <summary>
 /// Validates that the username is unique.
 /// </summary>
-/// <param name="userService"></param>
+/// <param name="usersRepository"></param>
 /// <param name="logger"></param>
 [AttributeUsage(AttributeTargets.Method)]
-public class UniqueUsernameAttribute(IUserService userService, ILogger<UniqueUsernameAttribute> logger) : ActionFilterAttribute
+public class UniqueUsernameAttribute(IUsersRepository usersRepository, ILogger<UniqueUsernameAttribute> logger) : ActionFilterAttribute
 {
     /// <summary>
     /// Validates that the username is unique.
@@ -28,7 +28,7 @@ public class UniqueUsernameAttribute(IUserService userService, ILogger<UniqueUse
             return;
         }
         
-        if (!await userService.IsUsernameUniqueAsync(request.Username)) 
+        if (!await usersRepository.IsUsernameUniqueAsync(request.Username)) 
         {
             logger.LogError($"Username is not unique: {request.Username}");
             context.Result = new BadRequestObjectResult("Username is not unique");

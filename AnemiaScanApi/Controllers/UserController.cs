@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Controllers.Core;
+using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Models;
 using AnemiaScanApi.Models.Requests;
 using AnemiaScanApi.Models.Responses;
@@ -14,7 +15,7 @@ namespace AnemiaScanApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class UserController(IUserService userService, ILogger<UserController> logger) : BaseSasController(logger)
+public class UserController(IUsersRepository usersRepository, ILogger<UserController> logger) : BaseSasController(logger)
 {
     /// <summary>
     /// Retrieves a user by their username.
@@ -29,7 +30,7 @@ public class UserController(IUserService userService, ILogger<UserController> lo
     [HttpGet("{username}")]
     [ProducesResponseType(typeof(SasUser), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetUserByUsername(string username) => Ok(await userService.GetUserByUsernameAsync(username));
+    public async Task<IActionResult> GetUserByUsername(string username) => Ok(await usersRepository.GetUserByUsernameAsync(username));
 
     /// <summary>
     /// Creates a new user.
@@ -62,7 +63,7 @@ public class UserController(IUserService userService, ILogger<UserController> lo
             MapCreateUserRequestToModel(request, out var model);
             
             // Create user
-            var response = await userService.CreateUserAsync(model, cancellationToken);
+            var response = await usersRepository.CreateUserAsync(model, cancellationToken);
             
             return Ok(new CreateUserResponse { UserId = response.Id });
         }

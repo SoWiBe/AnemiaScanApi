@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Models;
 using AnemiaScanApi.Models.Auth;
 using AnemiaScanApi.Services.Core;
@@ -16,7 +17,7 @@ namespace AnemiaScanApi.Services;
 /// </summary>
 public class AuthorizationService(
     ILogger<AuthorizationService> logger, 
-    IUserService userService,
+    IUsersRepository usersRepository,
     IOptions<JwtSettings> jwtSettings) 
     : BaseService<AuthorizationService>(logger), IAuthorizationService
 {
@@ -31,7 +32,7 @@ public class AuthorizationService(
     {
         Logger.LogInformation("Authenticating user {Username}", username);
         
-        var user = await userService.GetUserByUsernameAsync(username, cancellationToken);
+        var user = await usersRepository.GetUserByUsernameAsync(username, cancellationToken);
         if (user is null)
         {
             Logger.LogError("User {Username} not found", username);
@@ -51,7 +52,7 @@ public class AuthorizationService(
         
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpires = DateTime.UtcNow.AddMinutes(jwtSettings.Value.RefreshTokenExpirationDays);
-        await userService.UpdateUserAsync(user, cancellationToken);
+        await usersRepository.UpdateUserAsync(user, cancellationToken);
         
         Logger.LogInformation("TokenRecord generated for user {Username}", username);
 
@@ -69,7 +70,7 @@ public class AuthorizationService(
     {
         Logger.LogInformation("Refreshing token");
         
-        var users = await userService.GetAllAsync(cancellationToken);
+        var users = await usersRepository.GetAllAsync(cancellationToken);
         var user = users.FirstOrDefault(u => u.RefreshToken == refreshToken);
 
         if (user == null || user.RefreshTokenExpires < DateTime.UtcNow)
@@ -85,7 +86,7 @@ public class AuthorizationService(
         // Update refresh token in database
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpires = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpirationDays);
-        await userService.UpdateAsync(user.Id!, user, cancellationToken);
+        await usersRepository.UpdateAsync(user.Id!, user, cancellationToken);
 
         Logger.LogInformation("Token refreshed successfully for user: {Username}", user.Username);
         return new TokenRecord(accessToken, newRefreshToken);
@@ -103,7 +104,7 @@ public class AuthorizationService(
         Logger.LogInformation("Registering new user: {Username}", username);
         
         // Check if user already exists
-        var users = await userService.GetAllAsync(cancellationToken);
+        var users = await usersRepository.GetAllAsync(cancellationToken);
         if (users.Any(u => u.Username == username))
         {
             Logger.LogWarning("Registration failed: Username already exists - {Username}", username);
@@ -118,7 +119,7 @@ public class AuthorizationService(
             HashPassword = hashedPassword
         };
 
-        var createdUser = await userService.CreateUserAsync(newUser, cancellationToken);
+        var createdUser = await usersRepository.CreateUserAsync(newUser, cancellationToken);
 
         // Generate tokens
         var accessToken = GenerateAccessToken(createdUser);
@@ -127,7 +128,7 @@ public class AuthorizationService(
         // Store refresh token
         createdUser.RefreshToken = refreshToken;
         createdUser.RefreshTokenExpires = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpirationDays);
-        await userService.UpdateUserAsync(createdUser, cancellationToken);
+        await usersRepository.UpdateUserAsync(createdUser, cancellationToken);
 
         Logger.LogInformation("User registered successfully: {Username}", username);
         return new TokenRecord(accessToken, refreshToken);

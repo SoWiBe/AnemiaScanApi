@@ -30,7 +30,6 @@
     <ItemGroup>
       <Folder Include="Common\" />
       <Folder Include="Data\" />
-      <Folder Include="Infrastructure\" />
       <Folder Include="ML\" />
     </ItemGroup>
 
