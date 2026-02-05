@@ -1,18 +1,18 @@
+using AnemiaScanApi.Infrastructure.Core;
 using AnemiaScanApi.Models;
-using AnemiaScanApi.Services.Core;
+using AnemiaScanApi.Models.Constants;
 using AnemiaScanApi.Settings;
-
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace AnemiaScanApi.Services;
+namespace AnemiaScanApi.Infrastructure.Repositories;
 
 /// <summary>
 /// Service for user-related MongoDB operations.
 /// </summary>
 /// <param name="mongoDbSettings"></param>
-public class UserService(IOptions<MongoDbSettings> mongoDbSettings)
-    : BaseMongoService<SasUser>(mongoDbSettings, "Users"), IUserService
+public class UsersRepository(IOptions<MongoDbSettings> mongoDbSettings, ILogger<UsersRepository> logger)
+    : BaseMongoRepository<SasUser>(mongoDbSettings, MongoCollection.Users, logger), IUsersRepository
 {
     /// <summary>
     /// Retrieves a user by their username.

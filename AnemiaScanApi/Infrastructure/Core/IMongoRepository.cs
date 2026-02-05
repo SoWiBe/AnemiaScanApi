@@ -1,10 +1,10 @@
-namespace AnemiaScanApi.Services.Core;
+namespace AnemiaScanApi.Infrastructure.Core;
 
 /// <summary>
 /// Interface for MongoDB service operations.
 /// </summary>
 /// <typeparam name="T">The type of entity to work with.</typeparam>
-public interface IMongoService<T>
+public interface IMongoRepository<T>
 {
     public Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
     public Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);

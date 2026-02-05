@@ -1,12 +1,13 @@
+using AnemiaScanApi.Infrastructure.Core;
 using AnemiaScanApi.Models;
 using AnemiaScanApi.Services.Core;
 
-namespace AnemiaScanApi.Services;
+namespace AnemiaScanApi.Infrastructure.Repositories;
 
 /// <summary>
 /// Interface for user-related MongoDB service operations.
 /// </summary>
-public interface IUserService : IMongoService<SasUser>
+public interface IUsersRepository : IMongoRepository<SasUser>
 {
     /// <summary>
     /// Retrieves a user by their username.

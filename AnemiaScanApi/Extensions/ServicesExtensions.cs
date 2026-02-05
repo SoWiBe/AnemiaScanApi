@@ -1,5 +1,6 @@
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
+using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Services;
 using AnemiaScanApi.Services.Core;
 using AnemiaScanApi.Settings;
@@ -80,7 +81,9 @@ public static class ServicesExtensions
         public void AddServices()
         {
             services.AddScoped<IAuthorizationService, AuthorizationService>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IAnemiaScansRepository, AnemiaScansRepository>();
+            services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
         }
     }
 

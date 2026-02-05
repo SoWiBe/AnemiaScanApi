@@ -1,25 +1,26 @@
 using AnemiaScanApi.Models;
 using AnemiaScanApi.Settings;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace AnemiaScanApi.Services.Core;
+namespace AnemiaScanApi.Infrastructure.Core;
 
 /// <summary>
 /// Base implementation of IMongoService.
 /// </summary>
 /// <typeparam name="T">The type of entity to work with.</typeparam>
-public abstract class BaseMongoService<T> : IMongoService<T> where T : BaseMongoModel
+public abstract class BaseMongoRepository<T> : IMongoRepository<T> where T : BaseMongoModel
 {
     protected readonly IMongoCollection<T> Collection;
+    protected readonly ILogger Logger;
 
-    protected BaseMongoService(IOptions<MongoDbSettings> mongoDbSettings, string collectionName)
+    protected BaseMongoRepository(IOptions<MongoDbSettings> mongoDbSettings, string collectionName, ILogger logger)
     {
         var client = new MongoClient(mongoDbSettings.Value.ConnectionString);
         var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
         
         Collection = database.GetCollection<T>(collectionName);        
+        Logger = logger;
     }
 
     /// <summary>
