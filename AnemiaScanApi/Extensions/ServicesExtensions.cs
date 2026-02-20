@@ -13,78 +13,76 @@ namespace AnemiaScanApi.Extensions;
 /// </summary>
 public static class ServicesExtensions
 {
-    /// <param name="services"></param>
-    extension(IServiceCollection services)
+    public static IServiceCollection AddSwagger(this IServiceCollection services)
     {
-        /// <summary>
-        /// Adds Swagger/OpenAPI support to the service collection.
-        /// </summary>
-        public void AddSwagger()
+        services.AddSwaggerGen(options =>
         {
-            services.AddSwaggerGen(options =>
+            // API Information
+            options.SwaggerDoc("v1", new OpenApiInfo
             {
-                // API Information
-                options.SwaggerDoc("v1", new OpenApiInfo
+                Version = "v1.0.0",
+                Title = "Anemia Scan API",
+                Description = "ASP.NET Core Web API for Anemia Analysis using Machine Learning. " +
+                                "This API provides endpoints for user authentication, ML-based anemia detection, " +
+                                "and analysis management.",
+                Contact = new OpenApiContact
                 {
-                    Version = "v1.0.0",
-                    Title = "Anemia Scan API",
-                    Description = "ASP.NET Core Web API for Anemia Analysis using Machine Learning. " +
-                                  "This API provides endpoints for user authentication, ML-based anemia detection, " +
-                                  "and analysis management.",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Anemia Scan Team",
-                        Email = "support@anemiascan.com",
-                        Url = new Uri("https://github.com/yourusername/anemiascan")
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "MIT License",
-                        Url = new Uri("https://opensource.org/licenses/MIT")
-                    }
-                });
-    
-                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
+                    Name = "Anemia Scan Team",
+                    Email = "support@anemiascan.com",
+                    Url = new Uri("https://github.com/yourusername/anemiascan")
+                },
+                License = new OpenApiLicense
                 {
-                    options.IncludeXmlComments(xmlPath);
+                    Name = "MIT License",
+                    Url = new Uri("https://opensource.org/licenses/MIT")
                 }
-
-                // Group endpoints by tags
-                options.TagActionsBy(api => [api.GroupName ?? api.ActionDescriptor.RouteValues["controller"] ?? "Default"]);
-                options.DocInclusionPredicate((_, _) => true);
             });
-        }
 
-        /// <summary>
-        /// Adds validation filters
-        /// </summary>
-        public void AddValidationFilters() 
-        {
-            services.AddScoped<ValidateImageAttribute>();
-            services.AddScoped<UniqueUsernameAttribute>();
-        }
+            var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            if (File.Exists(xmlPath))
+            {
+                options.IncludeXmlComments(xmlPath);
+            }
 
-        /// <summary>
-        /// Adds MongoDB configuration
-        /// </summary>
-        /// <param name="configuration"></param>
-        public void AddMongoDb(IConfiguration configuration)
-        {
-            services.Configure<MongoDbSettings>(configuration.GetSection("MongoDB"));
-        }
-        
-        /// <summary>
-        /// Adds service implementations
-        /// </summary>
-        public void AddServices()
-        {
-            services.AddScoped<IAuthorizationService, AuthorizationService>();
-            services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IAnemiaScansRepository, AnemiaScansRepository>();
-            services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
-        }
+            // Group endpoints by tags
+            options.TagActionsBy(api => [api.GroupName ?? api.ActionDescriptor.RouteValues["controller"] ?? "Default"]);
+            options.DocInclusionPredicate((_, _) => true);
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds validation filters
+    /// </summary>
+    public static IServiceCollection AddValidationFilters(this IServiceCollection services) 
+    {
+        services.AddScoped<ValidateImageAttribute>();
+        services.AddScoped<UniqueUsernameAttribute>();
+        return services;
+    }
+
+    /// <summary>
+    /// Adds MongoDB configuration
+    /// </summary>
+    /// <param name="configuration"></param>
+    public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<MongoDbSettings>(configuration.GetSection("MongoDB"));
+        return services;
+    }
+    
+    /// <summary>
+    /// Adds service implementations
+    /// </summary>
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<IAnemiaScansRepository, AnemiaScansRepository>();
+        services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
+        return services;
     }
 
     /// <summary>

@@ -17,7 +17,7 @@ public static class JwtExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configuration"></param>
-    public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
         services.AddAuthentication(options =>
@@ -39,5 +39,7 @@ public static class JwtExtensions
                 ClockSkew = TimeSpan.Zero
             };
         });
+
+        return services;
     }
 }                    
