@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
 using AnemiaScanApi.Controllers.Core;
-using AnemiaScanApi.Models.Auth;
 using AnemiaScanApi.Models.Requests;
 using AnemiaScanApi.Models.Responses;
 using AnemiaScanApi.Infrastructure.Services.Core;
@@ -40,7 +39,13 @@ public class AuthorizationController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        var tokenRecord = await authorizationService.RegisterAsync(request.Username, request.Password, cancellationToken);
+        var tokenRecord = await authorizationService.RegisterAsync(request.Email, request.Password, cancellationToken);
         return Ok(new RegisterResponse { TokenRecord = tokenRecord });
+    }
+
+    [HttpPost("send-code")]
+    public async Task<IActionResult> SendCodeAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return Ok();
     }
 }

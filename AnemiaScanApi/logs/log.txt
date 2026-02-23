@@ -390,3 +390,127 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 2026-02-23 18:48:23.655 +06:00 [INF] Anemia analysis completed for analysis ID "b06ecf71-73cf-4ce4-ba85-81f17b852754" and user ID "727b7c69-e1d0-454c-b849-c22f5a058150"
 2026-02-23 18:48:23.656 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c4c95af0a7964151b3f1a
 2026-02-23 18:48:23.664 +06:00 [INF] Anemia analysis completed for image ID 699c4c95af0a7964151b3f1a
+2026-02-23 20:35:44.620 +06:00 [INF] Authenticating user string
+2026-02-23 20:35:46.372 +06:00 [ERR] User string not found
+2026-02-23 20:35:52.066 +06:00 [ERR] An unhandled exception has occurred while executing the request.
+System.UnauthorizedAccessException: Invalid email or password
+   at AnemiaScanApi.Services.AuthorizationService.AuthenticateAsync(String email, String password, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Services\AuthorizationService.cs:line 30
+   at AnemiaScanApi.Controllers.AuthorizationController.LoginAsync(LoginRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 25
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-02-23 20:38:19.679 +06:00 [INF] Registering new user: aleksey.dantist@gmail.com
+2026-02-23 20:38:34.357 +06:00 [ERR] An unhandled exception has occurred while executing the request.
+System.FormatException: Element 'username' does not match any field or property of class AnemiaScanApi.Models.SasUser.
+   at MongoDB.Bson.Serialization.BsonClassMapSerializer`1.DeserializeClass(BsonDeserializationContext context)
+   at MongoDB.Bson.Serialization.BsonClassMapSerializer`1.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Driver.Core.Operations.CursorBatchDeserializationHelper.DeserializeBatch[TDocument](RawBsonArray batch, IBsonSerializer`1 documentSerializer, MessageEncoderSettings messageEncoderSettings)
+   at MongoDB.Driver.Core.Operations.FindOperation`1.CreateFirstCursorBatch(BsonDocument cursorDocument)
+   at MongoDB.Driver.Core.Operations.FindOperation`1.CreateCursor(IChannelSourceHandle channelSource, IChannelHandle channel, BsonDocument commandResult)
+   at MongoDB.Driver.Core.Operations.FindOperation`1.ExecuteAsync(RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.FindOperation`1.ExecuteAsync(IReadBinding binding, CancellationToken cancellationToken)
+   at MongoDB.Driver.OperationExecutor.ExecuteReadOperationAsync[TResult](IReadBinding binding, IReadOperation`1 operation, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.ExecuteReadOperationAsync[TResult](IClientSessionHandle session, IReadOperation`1 operation, ReadPreference readPreference, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.UsingImplicitSessionAsync[TResult](Func`2 funcAsync, CancellationToken cancellationToken)
+   at MongoDB.Driver.IAsyncCursorSourceExtensions.ToListAsync[TDocument](IAsyncCursorSource`1 source, CancellationToken cancellationToken)
+   at AnemiaScanApi.Infrastructure.Core.BaseMongoRepository`1.GetAllAsync(CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Core\BaseMongoRepository.cs:line 27
+   at AnemiaScanApi.Services.AuthorizationService.RegisterAsync(String email, String password, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Services\AuthorizationService.cs:line 84
+   at AnemiaScanApi.Controllers.AuthorizationController.RegisterAsync(RegisterRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 43
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-02-23 20:39:19.721 +06:00 [INF] Registering new user: aleksey.dantist@gmail.com
+2026-02-23 20:39:21.458 +06:00 [INF] User registered successfully: aleksey.dantist@gmail.com
+2026-02-23 20:39:57.958 +06:00 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-23 20:39:58.252 +06:00 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-23 20:39:58.339 +06:00 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-23 20:47:26.197 +06:00 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-23 20:47:26.449 +06:00 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-23 20:47:26.543 +06:00 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-23 20:50:33.995 +06:00 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-23 20:50:35.883 +06:00 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-23 20:50:36.028 +06:00 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-23 20:57:42.315 +06:00 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-23 20:57:43.863 +06:00 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-23 20:57:44.005 +06:00 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-23 20:58:20.127 +06:00 [ERR] An unhandled exception has occurred while executing the request.
+AnemiaScanApi.Exceptions.SASException: The process cannot access the file 'C:\Users\aleks\AppData\Local\Temp\tmpakji33.tmp' because it is being used by another process.
+   at AnemiaScanApi.Services.PredictionService.PredictAnemiaAsync(PredictionRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Services\PredictionService.cs:line 33
+   at AnemiaScanApi.Services.PredictionService.PredictAnemiaAsync(PredictionRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Services\PredictionService.cs:line 38
+   at AnemiaScanApi.Controllers.AnalysisController.PredictAnemia(PredictionRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AnalysisController.cs:line 25
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-02-23 21:00:17.302 +06:00 [INF] Analyzing anemia for analysis ID "88fe876f-4eaa-4bd5-9b6b-b7a2acb59510" and user ID "2bec7760-e954-40ab-a239-dd24161ddbbb"
+2026-02-23 21:00:18.411 +06:00 [INF] Anemia analysis completed for analysis ID "88fe876f-4eaa-4bd5-9b6b-b7a2acb59510" and user ID "2bec7760-e954-40ab-a239-dd24161ddbbb"
+2026-02-23 21:00:18.412 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c6b810608ba72d5d605c8
+2026-02-23 21:01:29.911 +06:00 [INF] Analyzing anemia for analysis ID "04a2ad8a-f46b-49ae-938d-4267db60c1d6" and user ID "2bec7760-e954-40ab-a239-dd24161ddbbb"
+2026-02-23 21:01:30.896 +06:00 [INF] Anemia analysis completed for analysis ID "04a2ad8a-f46b-49ae-938d-4267db60c1d6" and user ID "2bec7760-e954-40ab-a239-dd24161ddbbb"
+2026-02-23 21:01:30.897 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c6bc97d0cf93c9178e8a3
+2026-02-23 21:02:59.091 +06:00 [INF] Analyzing anemia for analysis ID "1ba1d15f-eac2-4151-82e5-8e9f99766224" and user ID "2bec7760-e954-40ab-a239-dd24161ddbbb"
+2026-02-23 21:03:00.091 +06:00 [INF] Anemia analysis completed for analysis ID "1ba1d15f-eac2-4151-82e5-8e9f99766224" and user ID "2bec7760-e954-40ab-a239-dd24161ddbbb"
+2026-02-23 21:03:00.094 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c6c23ae537d2c9593c488
+2026-02-23 21:03:58.917 +06:00 [INF] Registering new user: karim.djan@gmail.com
+2026-02-23 21:03:59.457 +06:00 [INF] User registered successfully: karim.djan@gmail.com
+2026-02-23 21:04:29.359 +06:00 [INF] Authenticating user karim.djan@gmail.com
+2026-02-23 21:04:29.582 +06:00 [INF] Generated access token for user karim.djan@gmail.com
+2026-02-23 21:04:29.670 +06:00 [INF] TokenRecord generated for user karim.djan@gmail.com
+2026-02-23 21:04:36.070 +06:00 [INF] Authenticating user karim.djan@gmail.com
+2026-02-23 21:04:36.287 +06:00 [ERR] Invalid password for user karim.djan@gmail.com
+2026-02-23 21:04:39.319 +06:00 [ERR] An unhandled exception has occurred while executing the request.
+System.UnauthorizedAccessException: Invalid email or password
+   at AnemiaScanApi.Services.AuthorizationService.AuthenticateAsync(String email, String password, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Services\AuthorizationService.cs:line 36
+   at AnemiaScanApi.Controllers.AuthorizationController.LoginAsync(LoginRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 25
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-02-23 21:04:45.830 +06:00 [INF] Authenticating user karim.djan@gmail.com
+2026-02-23 21:04:46.043 +06:00 [INF] Generated access token for user karim.djan@gmail.com
+2026-02-23 21:04:46.133 +06:00 [INF] TokenRecord generated for user karim.djan@gmail.com
+2026-02-23 21:05:06.620 +06:00 [INF] Analyzing anemia for analysis ID "3151e215-3825-4a1e-ac76-286ebc8c8a2b" and user ID "fc8bf87a-1b5c-4f71-88d2-6ffdccc2057d"
+2026-02-23 21:05:07.073 +06:00 [INF] Anemia analysis completed for analysis ID "3151e215-3825-4a1e-ac76-286ebc8c8a2b" and user ID "fc8bf87a-1b5c-4f71-88d2-6ffdccc2057d"
+2026-02-23 21:05:07.073 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c6ca2ae537d2c9593c48a

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AnemiaScanApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,8 +8,6 @@ var configuration = builder.Configuration;
 builder.AddLogging();
 
 builder.Services.AddJwtAuthentication(configuration);
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
 
 builder.Services
     .AddMongoDb(configuration)
@@ -18,7 +17,11 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwagger();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
 var app = builder.Build();
 
@@ -30,8 +33,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthorization();
-app.UseAuthentication();
+
 app.MapControllers();
 
 app.Run();

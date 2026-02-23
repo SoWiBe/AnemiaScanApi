@@ -26,13 +26,13 @@ public class AnalysisController(
         var imageBytes = await request.ImageData.UseAsBytesAsync();
         
         // записываем результаты
-        var analyseResults = await anemiaAnalysisService.WriteAnalyseAsync(
+        var response = await anemiaAnalysisService.WriteAnalyseAsync(
             userId, 
             prediction.Score!.Max(), 
             prediction.PredictedLabel!, 
             imageBytes, 
             cancellationToken);
 
-        return Ok(new PredictionResponse(prediction.PredictedLabel!, prediction.Score!.Max(), prediction.Score!.Max()));
+        return Ok(response);
     }
 }

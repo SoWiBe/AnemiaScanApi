@@ -78,10 +78,12 @@ public static class ServicesExtensions
     /// </summary>
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<IAnemiaScansRepository, AnemiaScansRepository>();
+
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
+        services.AddScoped<IPredictionService, PredictionService>();
         return services;
     }
 

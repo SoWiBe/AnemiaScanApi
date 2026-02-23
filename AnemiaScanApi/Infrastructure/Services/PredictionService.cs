@@ -18,8 +18,10 @@ public class PredictionService(
 
         try
         {
-            await using var stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write);
-            await request.ImageData.CopyToAsync(stream, cancellationToken);
+            await using (var stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
+            {
+                await request.ImageData.CopyToAsync(stream, cancellationToken);
+            }
             
             await Task.Delay(50, cancellationToken);
 
