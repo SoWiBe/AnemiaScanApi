@@ -1,0 +1,32 @@
+2026-01-26 21:55:58.007 [INF] Now listening on: https://localhost:7166
+2026-01-26 21:55:58.032 [INF] Now listening on: http://localhost:5034
+2026-01-26 21:55:58.036 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-26 21:55:58.038 [INF] Hosting environment: Development
+2026-01-26 21:55:58.042 [INF] Content root path: C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi
+2026-01-26 21:56:23.940 [INF] Application is shutting down...
+2026-01-26 21:56:29.048 [INF] Now listening on: https://localhost:7166
+2026-01-26 21:56:29.072 [INF] Now listening on: http://localhost:5034
+2026-01-26 21:56:29.076 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-26 21:56:29.078 [INF] Hosting environment: Development
+2026-01-26 21:56:29.080 [INF] Content root path: C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi
+2026-01-26 21:56:33.087 [INF] Application is shutting down...
+2026-01-26 21:56:36.501 [INF] Now listening on: https://localhost:7166
+2026-01-26 21:56:36.529 [INF] Now listening on: http://localhost:5034
+2026-01-26 21:56:36.532 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-26 21:56:36.535 [INF] Hosting environment: Development
+2026-01-26 21:56:36.537 [INF] Content root path: C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi
+2026-01-26 21:56:41.752 [INF] Application is shutting down...
+2026-01-26 21:56:45.128 [INF] Now listening on: https://localhost:7166
+2026-01-26 21:56:45.154 [INF] Now listening on: http://localhost:5034
+2026-01-26 21:56:45.157 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-26 21:56:45.159 [INF] Hosting environment: Development
+2026-01-26 21:56:45.161 [INF] Content root path: C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi
+2026-01-26 21:57:08.666 [INF] Request starting HTTP/2 POST https://localhost:7166/User/create - application/json 127
+2026-01-26 21:57:08.719 [INF] Executing endpoint 'AnemiaScanApi.Controllers.UserController.CreateUser (AnemiaScanApi)'
+2026-01-26 21:57:09.226 [INF] Route matched with {action = "CreateUser", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateUser(AnemiaScanApi.Models.Requests.CreateUserRequest, System.Threading.CancellationToken) on controller AnemiaScanApi.Controllers.UserController (AnemiaScanApi).
+2026-01-26 21:57:10.795 [INF] Executing BadRequestObjectResult, writing value of type 'System.String'.
+2026-01-26 21:57:10.806 [INF] Executed action AnemiaScanApi.Controllers.UserController.CreateUser (AnemiaScanApi) in 1570.1486ms
+2026-01-26 21:57:10.812 [INF] Executed endpoint 'AnemiaScanApi.Controllers.UserController.CreateUser (AnemiaScanApi)'
+2026-01-26 21:57:10.821 [INF] Request finished HTTP/2 POST https://localhost:7166/User/create - 400 null text/plain; charset=utf-8 2159.5319ms
+2026-01-26 21:58:17.372 [INF] Application is shutting down...
+2026-01-26 22:07:03.251 [ERR] Username is not unique: G1_X99Y_MIdlLSSc8yhavZmtFEcWwAbE8B3lZhNgHA4JIDwAB

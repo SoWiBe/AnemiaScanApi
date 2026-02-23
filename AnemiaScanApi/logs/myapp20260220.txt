@@ -1,0 +1,48 @@
+2026-02-20 22:22:52.173 [INF] Analyzing anemia for analysis ID "74581066-d50b-406b-a79b-fc7c010fe42b" and user ID "b6f3d594-9b78-4e46-a835-731245b3cc68"
+2026-02-20 22:22:54.250 [INF] Anemia analysis completed for analysis ID "74581066-d50b-406b-a79b-fc7c010fe42b" and user ID "b6f3d594-9b78-4e46-a835-731245b3cc68"
+2026-02-20 22:22:54.252 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69988a5cd65e70d88c0935b7
+2026-02-20 22:22:54.264 [INF] Anemia analysis completed for image ID 69988a5cd65e70d88c0935b7
+2026-02-20 22:23:11.856 [INF] Retrieving AnemiaScan for analysis ID 3fa85f64-5717-4562-b3fc-2c963f66afa6
+2026-02-20 22:23:11.993 [INF] AnemiaScan for analysis ID 3fa85f64-5717-4562-b3fc-2c963f66afa6 retrieved successfully
+2026-02-20 22:23:39.879 [ERR] An unhandled exception has occurred while executing the request.
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at AnemiaScanApi.Services.AnemiaAnalysisService.GetImageAsync(String analysisId, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Services\AnemiaAnalysisService.cs:line 50
+   at AnemiaScanApi.Controllers.AnalysisController.DownloadImage(String analyseId, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AnalysisController.cs:line 91
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-02-20 22:24:07.721 [INF] Analyzing anemia for analysis ID "d210ee8e-71ff-4d6d-b562-9dc828a6e6db" and user ID "8c5f70e7-1714-424a-a961-4c53be96f890"
+2026-02-20 22:24:09.736 [INF] Anemia analysis completed for analysis ID "d210ee8e-71ff-4d6d-b562-9dc828a6e6db" and user ID "8c5f70e7-1714-424a-a961-4c53be96f890"
+2026-02-20 22:24:09.736 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69988aa7d65e70d88c0935b9
+2026-02-20 22:24:09.737 [INF] Anemia analysis completed for image ID 69988aa7d65e70d88c0935b9
+2026-02-20 22:29:27.686 [INF] Analyzing anemia for analysis ID "b19b05bb-8dc3-4ea6-9110-2b9b744fedd9" and user ID "c73ed2de-39f3-4b87-8e7e-d66402f53a05"
+2026-02-20 22:29:29.479 [INF] Anemia analysis completed for analysis ID "b19b05bb-8dc3-4ea6-9110-2b9b744fedd9" and user ID "c73ed2de-39f3-4b87-8e7e-d66402f53a05"
+2026-02-20 22:29:29.488 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69988be74773a41b93198a14
+2026-02-20 22:29:29.498 [INF] Anemia analysis completed for image ID 69988be74773a41b93198a14
+2026-02-20 22:30:03.616 [INF] Analyzing anemia for analysis ID "68fcc88e-f56d-4d51-96e2-1ec1f8c16615" and user ID "9f11f26d-1249-401d-b81c-c35cbf985e19"
+2026-02-20 22:30:06.382 [INF] Anemia analysis completed for analysis ID "68fcc88e-f56d-4d51-96e2-1ec1f8c16615" and user ID "9f11f26d-1249-401d-b81c-c35cbf985e19"
+2026-02-20 22:30:06.396 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69988c0bc80020a7b6f97daa
+2026-02-20 22:30:06.409 [INF] Anemia analysis completed for image ID 69988c0bc80020a7b6f97daa
+2026-02-20 22:30:14.987 [INF] Retrieving AnemiaScan for analysis ID f385a76f-ae26-4fc7-88a7-83c550cb5d71
+2026-02-20 22:30:15.154 [INF] AnemiaScan for analysis ID f385a76f-ae26-4fc7-88a7-83c550cb5d71 retrieved successfully
+2026-02-20 22:30:15.161 [INF] Downloading image for image ID dd8d1057-c922-45b4-a74c-6adc39d64b30
+2026-02-20 22:30:15.651 [INF] Image for image ID dd8d1057-c922-45b4-a74c-6adc39d64b30 downloaded successfully
+2026-02-20 22:32:37.038 [INF] Analyzing anemia for analysis ID "4b6f4ff7-64e4-43ec-ae7f-bc91c1a75a5f" and user ID "37cf516f-d7c5-46ce-aa17-03c719fb62e7"
+2026-02-20 22:32:37.417 [INF] Anemia analysis completed for analysis ID "4b6f4ff7-64e4-43ec-ae7f-bc91c1a75a5f" and user ID "37cf516f-d7c5-46ce-aa17-03c719fb62e7"
+2026-02-20 22:32:37.422 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69988ca5c80020a7b6f97dac
+2026-02-20 22:32:37.429 [INF] Anemia analysis completed for image ID 69988ca5c80020a7b6f97dac
+2026-02-20 22:33:39.435 [INF] Retrieving AnemiaScan for analysis ID f385a76f-ae26-4fc7-88a7-83c550cb5d71
+2026-02-20 22:33:39.529 [INF] AnemiaScan for analysis ID f385a76f-ae26-4fc7-88a7-83c550cb5d71 retrieved successfully
+2026-02-20 22:33:39.534 [INF] Downloading image for image ID dd8d1057-c922-45b4-a74c-6adc39d64b30
+2026-02-20 22:33:39.977 [INF] Image for image ID dd8d1057-c922-45b4-a74c-6adc39d64b30 downloaded successfully
