@@ -1,5 +1,4 @@
-namespace AnemiaScanApi.Services.Core;
-using Microsoft.Extensions.Logging;
+namespace AnemiaScanApi.Infrastructure.Services.Core;
 
 /// <summary>
 /// Base service for SAS services.

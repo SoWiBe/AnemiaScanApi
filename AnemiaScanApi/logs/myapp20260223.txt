@@ -1,0 +1,4 @@
+2026-02-23 18:48:21.519 [INF] Analyzing anemia for analysis ID "b06ecf71-73cf-4ce4-ba85-81f17b852754" and user ID "727b7c69-e1d0-454c-b849-c22f5a058150"
+2026-02-23 18:48:23.655 [INF] Anemia analysis completed for analysis ID "b06ecf71-73cf-4ce4-ba85-81f17b852754" and user ID "727b7c69-e1d0-454c-b849-c22f5a058150"
+2026-02-23 18:48:23.656 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c4c95af0a7964151b3f1a
+2026-02-23 18:48:23.664 [INF] Anemia analysis completed for image ID 699c4c95af0a7964151b3f1a

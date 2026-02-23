@@ -12,7 +12,7 @@ namespace AnemiaScanApi.Attributes;
 /// <param name="usersRepository"></param>
 /// <param name="logger"></param>
 [AttributeUsage(AttributeTargets.Method)]
-public class UniqueUsernameAttribute(IUsersRepository usersRepository, ILogger<UniqueUsernameAttribute> logger) : ActionFilterAttribute
+public class UniqueEmailAttribute(IUsersRepository usersRepository, ILogger<UniqueEmailAttribute> logger) : ActionFilterAttribute
 {
     /// <summary>
     /// Validates that the username is unique.
@@ -28,9 +28,9 @@ public class UniqueUsernameAttribute(IUsersRepository usersRepository, ILogger<U
             return;
         }
         
-        if (!await usersRepository.IsUsernameUniqueAsync(request.Username)) 
+        if (!await usersRepository.IsEmailUnique(request.Email)) 
         {
-            logger.LogError($"Username is not unique: {request.Username}");
+            logger.LogError($"Username is not unique: {request.Email}");
             context.Result = new BadRequestObjectResult("Username is not unique");
             return;
         }

@@ -22,7 +22,7 @@ public class AnemiaScan : BaseMongoModel
     /// <summary>
     /// The hemoglobin level measured during the scan.
     /// </summary>
-    [BsonElement("hemoglobin_level")] public double HemoglobinLevel { get; set; }
+    [BsonElement("hemoglobin_level")] public double? HemoglobinLevel { get; set; }
     /// <summary>
     /// Indicates whether the user is anemic based on the scan results.
     /// </summary>

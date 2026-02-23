@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using AnemiaScanApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnemiaScanApi.Controllers.Core;
@@ -16,4 +18,9 @@ public abstract class BaseSasController : ControllerBase
     }
 
     protected ILogger<BaseSasController> Logger { get; private set; }
+
+    protected Guid GetUserId()
+    {
+        return Guid.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value);
+    }
 }

@@ -386,3 +386,7 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 2026-02-20 22:33:39.529 +06:00 [INF] AnemiaScan for analysis ID f385a76f-ae26-4fc7-88a7-83c550cb5d71 retrieved successfully
 2026-02-20 22:33:39.534 +06:00 [INF] Downloading image for image ID dd8d1057-c922-45b4-a74c-6adc39d64b30
 2026-02-20 22:33:39.977 +06:00 [INF] Image for image ID dd8d1057-c922-45b4-a74c-6adc39d64b30 downloaded successfully
+2026-02-23 18:48:21.519 +06:00 [INF] Analyzing anemia for analysis ID "b06ecf71-73cf-4ce4-ba85-81f17b852754" and user ID "727b7c69-e1d0-454c-b849-c22f5a058150"
+2026-02-23 18:48:23.655 +06:00 [INF] Anemia analysis completed for analysis ID "b06ecf71-73cf-4ce4-ba85-81f17b852754" and user ID "727b7c69-e1d0-454c-b849-c22f5a058150"
+2026-02-23 18:48:23.656 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c4c95af0a7964151b3f1a
+2026-02-23 18:48:23.664 +06:00 [INF] Anemia analysis completed for image ID 699c4c95af0a7964151b3f1a
