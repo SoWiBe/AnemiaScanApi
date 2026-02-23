@@ -5,8 +5,5 @@ namespace AnemiaScanApi.Models.Enums;
 /// </summary>
 public enum Sick
 {
-    /// <summary>
-    /// Anemia
-    /// </summary>
-    Anemia
+    Anemia, Healthy
 }

@@ -10,10 +10,8 @@ public class RegisterRequest
     /// <summary>
     /// Username.
     /// </summary>
-    [Required]
-    [StringLength(20, MinimumLength = 3)]
-    [MaxLength(50, ErrorMessage = "Username must be at most 50 characters long")]
-    public string Username { get; init; } = null!;
+    [Required(ErrorMessage = "Email is required")]
+    public string Email { get; init; } = null!;
     /// <summary>
     /// Password.
     /// </summary>

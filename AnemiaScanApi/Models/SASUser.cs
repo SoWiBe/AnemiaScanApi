@@ -8,9 +8,10 @@ namespace AnemiaScanApi.Models;
 public class SasUser : BaseMongoModel
 {
     /// <summary>
-    /// Username.
+    /// Email.
     /// </summary>
-    [BsonElement("username")] public string Username { get; set; } = null!;
+    /// <value></value>
+    [BsonElement("email")] public string Email { get; set; } = null!;
     /// <summary>
     /// Hashed password. 
     /// </summary>

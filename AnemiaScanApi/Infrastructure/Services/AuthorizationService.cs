@@ -3,69 +3,53 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AnemiaScanApi.Infrastructure.Repositories;
+using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Models;
 using AnemiaScanApi.Models.Auth;
-using AnemiaScanApi.Services.Core;
+using AnemiaScanApi.Models.Constants;
 using AnemiaScanApi.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AnemiaScanApi.Services;
 
-/// <summary>
-/// Service for authorization-related operations.
-/// </summary>
 public class AuthorizationService(
     ILogger<AuthorizationService> logger, 
     IUsersRepository usersRepository,
     IOptions<JwtSettings> jwtSettings) 
     : BaseService<AuthorizationService>(logger), IAuthorizationService
 {
-    /// <summary>
-    /// Authenticates a user.
-    /// </summary>
-    /// <param name="username">The username of the user.</param>
-    /// <param name="password">The password of the user.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>The JWT token for the authenticated user.</returns>
-    public async Task<TokenRecord> AuthenticateAsync(string username, string password, CancellationToken cancellationToken = default)
+    public async Task<TokenRecord> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default)
     {
-        Logger.LogInformation("Authenticating user {Username}", username);
+        Logger.LogInformation("Authenticating user {Email}", email);
         
-        var user = await usersRepository.GetUserByUsernameAsync(username, cancellationToken);
+        var user = await usersRepository.GetByEmailAsync(email, cancellationToken);
         if (user is null)
         {
-            Logger.LogError("User {Username} not found", username);
-            throw new UnauthorizedAccessException("Invalid username or password");
+            Logger.LogError("User {Email} not found", email);
+            throw new UnauthorizedAccessException(ExceptionMessage.InvalidEmailOrPassword);
         }
         
         if (!BCrypt.Net.BCrypt.Verify(password, user.HashPassword))
         {
-            Logger.LogError("Invalid password for user {Username}", username);
-            throw new UnauthorizedAccessException("Invalid username or password");
+            Logger.LogError("Invalid password for user {Email}", email);
+            throw new UnauthorizedAccessException(ExceptionMessage.InvalidEmailOrPassword);
         }
         
         var accessToken = GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();
 
-        Logger.LogInformation("Generated access token for user {Username}", username);
+        Logger.LogInformation("Generated access token for user {Email}", email);
         
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpires = DateTime.UtcNow.AddMinutes(jwtSettings.Value.RefreshTokenExpirationDays);
         await usersRepository.UpdateUserAsync(user, cancellationToken);
         
-        Logger.LogInformation("TokenRecord generated for user {Username}", username);
+        Logger.LogInformation("TokenRecord generated for user {Email}", email);
 
         return new TokenRecord(accessToken, refreshToken);
     }
 
-    /// <summary>
-    /// Refreshes a JWT token.
-    /// </summary>
-    /// <param name="refreshToken">The refresh token.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>The refreshed JWT token.</returns>
-    /// <exception cref="UnauthorizedAccessException"></exception>
     public async Task<TokenRecord> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Refreshing token");
@@ -88,34 +72,27 @@ public class AuthorizationService(
         user.RefreshTokenExpires = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpirationDays);
         await usersRepository.UpdateAsync(user.Id!, user, cancellationToken);
 
-        Logger.LogInformation("Token refreshed successfully for user: {Username}", user.Username);
+        Logger.LogInformation("Token refreshed successfully for user: {Email}", user.Email);
         return new TokenRecord(accessToken, newRefreshToken);
     }
 
-    /// <summary>
-    /// Registers a new user.
-    /// </summary>
-    /// <param name="username">The username</param>
-    /// <param name="password">The plain text password</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Token containing access and refresh tokens</returns>
-    public async Task<TokenRecord> RegisterAsync(string username, string password, CancellationToken cancellationToken = default)
+    public async Task<TokenRecord> RegisterAsync(string email, string password, CancellationToken cancellationToken = default)
     {
-        Logger.LogInformation("Registering new user: {Username}", username);
+        Logger.LogInformation("Registering new user: {Email}", email);
         
         // Check if user already exists
         var users = await usersRepository.GetAllAsync(cancellationToken);
-        if (users.Any(u => u.Username == username))
+        if (users.Any(u => u.Email == email))
         {
-            Logger.LogWarning("Registration failed: Username already exists - {Username}", username);
-            throw new InvalidOperationException("Username already exists");
+            Logger.LogWarning("Registration failed: Email already exists - {Email}", email);
+            throw new InvalidOperationException("Email already exists");
         }
 
         // Create new user
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
         var newUser = new SasUser
         {
-            Username = username,
+            Email = email,
             HashPassword = hashedPassword
         };
 
@@ -130,13 +107,10 @@ public class AuthorizationService(
         createdUser.RefreshTokenExpires = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpirationDays);
         await usersRepository.UpdateUserAsync(createdUser, cancellationToken);
 
-        Logger.LogInformation("User registered successfully: {Username}", username);
+        Logger.LogInformation("User registered successfully: {Email}", email);
         return new TokenRecord(accessToken, refreshToken);
     }
     
-    /// <summary>
-    /// Generates a JWT access token for a user.
-    /// </summary>
     private string GenerateAccessToken(SasUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -145,7 +119,7 @@ public class AuthorizationService(
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Email, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

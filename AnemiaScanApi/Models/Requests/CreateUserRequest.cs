@@ -8,13 +8,10 @@ namespace AnemiaScanApi.Models.Requests;
 public class CreateUserRequest
 {
     /// <summary>
-    /// Username.
+    /// Email
     /// </summary>
-    [Required(ErrorMessage = "Username is required")]
-    [MaxLength(50, ErrorMessage = "Username must be at most 50 characters long")]
-    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Username can only contain letters, numbers, and underscores")]
-    
-    public string Username { get; set; } = null!;
+    [Required(ErrorMessage = "Email is required")]
+    public string Email { get; set; } = null!;
 
     /// <summary>
     /// Password.

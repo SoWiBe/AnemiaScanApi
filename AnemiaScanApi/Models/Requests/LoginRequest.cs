@@ -8,7 +8,7 @@ public class LoginRequest
     /// <summary>
     /// Username.
     /// </summary>
-    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
     /// <summary>
     /// Password.
     /// </summary>

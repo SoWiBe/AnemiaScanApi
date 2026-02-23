@@ -1,10 +1,10 @@
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
 using AnemiaScanApi.Infrastructure.Repositories;
-using AnemiaScanApi.Services;
-using AnemiaScanApi.Services.Core;
+using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Settings;
 using Microsoft.OpenApi;
+using AnemiaScanApi.Services;
 
 namespace AnemiaScanApi.Extensions;
 
@@ -59,7 +59,7 @@ public static class ServicesExtensions
     public static IServiceCollection AddValidationFilters(this IServiceCollection services) 
     {
         services.AddScoped<ValidateImageAttribute>();
-        services.AddScoped<UniqueUsernameAttribute>();
+        services.AddScoped<UniqueEmailAttribute>();
         return services;
     }
 
@@ -78,10 +78,12 @@ public static class ServicesExtensions
     /// </summary>
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<IAnemiaScansRepository, AnemiaScansRepository>();
+
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
+        services.AddScoped<IPredictionService, PredictionService>();
         return services;
     }
 
