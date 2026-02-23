@@ -90,18 +90,18 @@ public class AnalysisController(
     [HttpGet("download-image/{analyseId}")]
     [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DownloadImage([FromRoute, Required] string analyseId,
+    public async Task<IActionResult> DownloadImage(
+        [FromRoute, Required] string analyseId,
         CancellationToken cancellationToken = default)
     {
         var imageBytes = await anemiaAnalysisService.GetImageAsync(analyseId, cancellationToken);
         return File(imageBytes, "image/jpeg");
     }
 
-    [HttpPost("/predict")]
-    public async Task<IActionResult> Predict([FromForm] AnemiaInput request, CancellationToken cancellationToken)
+    [HttpPost("anemia/prediction")]
+    public async Task<IActionResult> PredictAnemia([FromForm] PredictionRequest request, CancellationToken cancellationToken)
     {
-        if (request.ImageData is null) return BadRequest("Пожалуйста, приложение изображение");
-
+        if (request.ImageData is null) return BadRequest("Пожалуйста, приложите изображение");
         var tempPath = Path.GetTempFileName();
 
         try
@@ -112,16 +112,11 @@ public class AnalysisController(
             }
             
             await Task.Delay(50, cancellationToken);
+
+            var input = new AnemiaInput { ImagePath = tempPath };
+            var prediction = predictionEnginePool.Predict(ModelName.SasModel, input);
             
-            request.ImagePath = tempPath;
-            var prediction = predictionEnginePool.Predict("SASModel", request);
-            
-            return Ok(new
-            {
-                Prediction = prediction.PredictedLabel,
-                Score = prediction.Score.Max(),
-                Confidence = prediction.Score.Max()
-            });
+            return Ok(new PredictionResponse(prediction.PredictedLabel!, prediction.Score!.Max(), prediction.Score!.Max()));
         }
         catch (Exception ex)
         {
@@ -129,7 +124,6 @@ public class AnalysisController(
         }
         finally 
         {
-            // 4. Агрессивный cleanup с повторными попытками
             await SafeDeleteFileAsync(tempPath);
         }
     }

@@ -1,0 +1,8 @@
+2026-02-09 21:40:16.315 [INF] Analyzing anemia for analysis ID "30dde4ab-f387-42b1-bd52-167e564b7cb8" and user ID "54c6fa71-4390-4e2f-a96e-4a2f6546331a"
+2026-02-09 21:40:20.497 [INF] Anemia analysis completed for analysis ID "30dde4ab-f387-42b1-bd52-167e564b7cb8" and user ID "54c6fa71-4390-4e2f-a96e-4a2f6546331a"
+2026-02-09 21:40:20.505 [INF] Anemia analysis result: Confidence 0.85, ObjectId 6989ffe025634ed42cceba56
+2026-02-09 21:40:20.514 [INF] Anemia analysis completed for image ID 6989ffe025634ed42cceba56
+2026-02-09 21:40:47.875 [INF] Retrieving AnemiaScan for analysis ID 105a78e8-4f9c-4922-af46-196c645664f3
+2026-02-09 21:40:48.039 [INF] AnemiaScan for analysis ID 105a78e8-4f9c-4922-af46-196c645664f3 retrieved successfully
+2026-02-09 21:40:48.045 [INF] Downloading image for image ID ddb1e83d-6bb9-4e53-9ff2-9ee376a64778
+2026-02-09 21:40:51.135 [INF] Image for image ID ddb1e83d-6bb9-4e53-9ff2-9ee376a64778 downloaded successfully
