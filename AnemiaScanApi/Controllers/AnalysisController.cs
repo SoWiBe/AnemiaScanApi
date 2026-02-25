@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Extensions;
 using AnemiaScanApi.Infrastructure.Services.Core;
-using AnemiaScanApi.Models.Requests;
-using AnemiaScanApi.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace AnemiaScanApi.Controllers;

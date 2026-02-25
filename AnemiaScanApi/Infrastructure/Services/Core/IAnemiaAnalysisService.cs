@@ -1,4 +1,4 @@
-using AnemiaScanApi.Models.Responses;
+using AnemiaScanApi.Common.Responses;
 using MongoDB.Bson;
 
 namespace AnemiaScanApi.Infrastructure.Services.Core;

@@ -1,4 +1,4 @@
-using AnemiaScanApi.Models;
+using AnemiaScanApi.Common;
 using AnemiaScanApi.Settings;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;

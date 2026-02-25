@@ -514,3 +514,164 @@ System.UnauthorizedAccessException: Invalid email or password
 2026-02-23 21:05:06.620 +06:00 [INF] Analyzing anemia for analysis ID "3151e215-3825-4a1e-ac76-286ebc8c8a2b" and user ID "fc8bf87a-1b5c-4f71-88d2-6ffdccc2057d"
 2026-02-23 21:05:07.073 +06:00 [INF] Anemia analysis completed for analysis ID "3151e215-3825-4a1e-ac76-286ebc8c8a2b" and user ID "fc8bf87a-1b5c-4f71-88d2-6ffdccc2057d"
 2026-02-23 21:05:07.073 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 699c6ca2ae537d2c9593c48a
+2026-02-25 22:37:58.083 +06:00 [ERR] Unexpected error while sending email
+System.ArgumentNullException: Value cannot be null. (Parameter 'host')
+   at MailKit.Net.Smtp.SmtpClient.ValidateArguments(String host, Int32 port)
+   at MailKit.Net.Smtp.SmtpClient.ConnectAsync(String host, Int32 port, SecureSocketOptions options, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 25
+2026-02-25 22:37:58.139 +06:00 [ERR] Email sending failed
+AnemiaScanApi.Exceptions.SASException: Email sending failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 53
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-25 22:44:19.630 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 534: 5.7.9 Application-specific password required. For more information, go to
+5.7.9  https://support.google.com/mail/?p=InvalidSecondFactor 5b1f17b1804b1-483bd75dfaasm70428605e9.12 - gsmtp
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.9 Application-specific password required. For more information, go to
+5.7.9  https://support.google.com/mail/?p=InvalidSecondFactor 5b1f17b1804b1-483bd75dfaasm70428605e9.12 - gsmtp
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 22:44:19.777 +06:00 [ERR] SMTP authentication failed
+AnemiaScanApi.Exceptions.SASException: SMTP authentication failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 43
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-25 22:45:22.456 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772037927-QjkJeV0G60U0
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772037927-QjkJeV0G60U0
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 22:45:22.567 +06:00 [ERR] SMTP authentication failed
+AnemiaScanApi.Exceptions.SASException: SMTP authentication failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 43
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-25 22:57:52.943 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772038677-vvkv6j0GL8c0
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772038677-vvkv6j0GL8c0
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 22:57:53.189 +06:00 [ERR] SMTP authentication failed
+AnemiaScanApi.Exceptions.SASException: SMTP authentication failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 43
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-25 22:58:22.651 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772038707-Qwk9kW0GxCg0
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772038707-Qwk9kW0GxCg0
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 22:58:22.775 +06:00 [ERR] SMTP authentication failed
+AnemiaScanApi.Exceptions.SASException: SMTP authentication failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 43
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-25 23:01:02.251 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772038862-01lm5f0GM0U0
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772038862-01lm5f0GM0U0
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 23:02:21.543 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772038942-K2lWlW0GrW20
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772038942-K2lWlW0GrW20
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 23:04:29.685 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772039074-X4l8UZ0GDGk0
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772039074-X4l8UZ0GDGk0
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 23:04:29.812 +06:00 [ERR] SMTP authentication failed
+AnemiaScanApi.Exceptions.SASException: SMTP authentication failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 43
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-25 23:05:39.803 +06:00 [ERR] SMTP authentication failed
+MailKit.Security.AuthenticationException: 535: 5.7.8 Error: authentication failed: Invalid user or password! 1772039144-i5l4eo0GkmI0
+ ---> MailKit.Net.Smtp.SmtpCommandException: 5.7.8 Error: authentication failed: Invalid user or password! 1772039144-i5l4eo0GkmI0
+   --- End of inner exception stack trace ---
+   at MailKit.Net.Smtp.SmtpClient.AuthenticateAsync(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 26
+2026-02-25 23:05:39.914 +06:00 [ERR] SMTP authentication failed
+AnemiaScanApi.Exceptions.SASException: SMTP authentication failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 43
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 61
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15

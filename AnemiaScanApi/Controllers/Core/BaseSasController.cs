@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using AnemiaScanApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnemiaScanApi.Controllers.Core;

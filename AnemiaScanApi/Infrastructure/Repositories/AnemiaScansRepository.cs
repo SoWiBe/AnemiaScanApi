@@ -1,10 +1,10 @@
+using AnemiaScanApi.Common;
+using AnemiaScanApi.Common.Constants;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
  
 using AnemiaScanApi.Infrastructure.Core;
-using AnemiaScanApi.Models;
-using AnemiaScanApi.Models.Constants;
 using AnemiaScanApi.Settings;
 using MongoDB.Bson;
 
