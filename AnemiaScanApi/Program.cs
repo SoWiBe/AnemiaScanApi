@@ -1,13 +1,15 @@
 using System.Text.Json.Serialization;
+
 using AnemiaScanApi.Extensions;
+using AnemiaScanApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// Add logging
 builder.AddLogging();
 
 builder.Services.AddJwtAuthentication(configuration);
+builder.Services.AddSenderOptions(configuration);
 
 builder.Services
     .AddMongoDb(configuration)
@@ -17,15 +19,12 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwagger();
 
-builder.Services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                });
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -35,6 +34,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
+
+app.UseMiddleware<SASMiddleware>();
 
 app.MapControllers();
 

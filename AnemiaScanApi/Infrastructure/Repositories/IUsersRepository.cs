@@ -1,5 +1,5 @@
+using AnemiaScanApi.Common;
 using AnemiaScanApi.Infrastructure.Core;
-using AnemiaScanApi.Models;
 
 namespace AnemiaScanApi.Infrastructure.Repositories;
 

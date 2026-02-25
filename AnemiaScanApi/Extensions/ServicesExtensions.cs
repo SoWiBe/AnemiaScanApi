@@ -1,10 +1,16 @@
+using Microsoft.OpenApi;
+
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
 using AnemiaScanApi.Infrastructure.Repositories;
+using AnemiaScanApi.Infrastructure.Services;
 using AnemiaScanApi.Infrastructure.Services.Core;
+using AnemiaScanApi.Infrastructure.Utils;
+using AnemiaScanApi.Infrastructure.Utils.Core;
 using AnemiaScanApi.Settings;
-using Microsoft.OpenApi;
 using AnemiaScanApi.Services;
+using AnemiaScanApi.Utils;
+using AnemiaScanApi.Utils.Core;
 
 namespace AnemiaScanApi.Extensions;
 
@@ -13,6 +19,11 @@ namespace AnemiaScanApi.Extensions;
 /// </summary>
 public static class ServicesExtensions
 {
+    /// <summary>
+    /// Включаем свагу
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>
@@ -54,7 +65,7 @@ public static class ServicesExtensions
     }
 
     /// <summary>
-    /// Adds validation filters
+    /// Фильтры
     /// </summary>
     public static IServiceCollection AddValidationFilters(this IServiceCollection services) 
     {
@@ -64,7 +75,7 @@ public static class ServicesExtensions
     }
 
     /// <summary>
-    /// Adds MongoDB configuration
+    /// Добавляем монгу
     /// </summary>
     /// <param name="configuration"></param>
     public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
@@ -74,7 +85,7 @@ public static class ServicesExtensions
     }
     
     /// <summary>
-    /// Adds service implementations
+    /// Регистрируем все внутренние сервисы и репозитории
     /// </summary>
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
@@ -84,11 +95,17 @@ public static class ServicesExtensions
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
         services.AddScoped<IPredictionService, PredictionService>();
+        
+        services.AddScoped<IEmailSender, EmailSender>();
+        services.AddScoped<ICodeGenerator, CodeGenerator>();
+        
+        services.AddMemoryCache();
+        
         return services;
     }
 
     /// <summary>
-    /// Configures and uses custom Swagger UI
+    /// SWAG UI
     /// </summary>
     /// <param name="app"></param>
     public static void UseCustomSwaggerUi(this WebApplication app)

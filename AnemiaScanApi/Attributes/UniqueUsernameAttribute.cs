@@ -1,6 +1,5 @@
+using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Infrastructure.Repositories;
-using AnemiaScanApi.Models.Requests;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

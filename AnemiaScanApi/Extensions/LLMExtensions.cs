@@ -1,4 +1,4 @@
-using AnemiaScanApi.Models.LLM;
+using AnemiaScanApi.Common.LLM;
 using Microsoft.Extensions.ML;
 
 namespace AnemiaScanApi.Extensions;

@@ -1,5 +1,5 @@
-using AnemiaScanApi.Models.LLM;
-using AnemiaScanApi.Models.Requests;
+using AnemiaScanApi.Common.LLM;
+using AnemiaScanApi.Common.Requests;
 
 namespace AnemiaScanApi.Infrastructure.Services.Core;
 

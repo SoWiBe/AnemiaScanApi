@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "CUqq10nXSew=",
+  "dgSpecHash": "D/rDtM+hShY=",
   "success": true,
   "projectFilePath": "C:\\Users\\aleks\\Documents\\Anemia Scan Project\\AnemiaScanApi\\AnemiaScanApi\\AnemiaScanApi.csproj",
   "expectedPackageFiles": [
@@ -8,10 +8,12 @@
     "C:\\Users\\aleks\\.nuget\\packages\\awssdk.securitytoken\\3.7.100.14\\awssdk.securitytoken.3.7.100.14.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\bcrypt\\1.0.0\\bcrypt.1.0.0.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
+    "C:\\Users\\aleks\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\fody\\6.0.5\\fody.6.0.5.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\google.protobuf\\3.30.2\\google.protobuf.3.30.2.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\aleks\\.nuget\\packages\\mailkit\\4.13.0\\mailkit.4.13.0.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\methodboundaryaspect.fody\\2.0.148\\methodboundaryaspect.fody.2.0.148.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.2\\microsoft.aspnetcore.authentication.jwtbearer.10.0.2.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.0\\microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
@@ -47,6 +49,7 @@
     "C:\\Users\\aleks\\.nuget\\packages\\microsoft.ml.tensorflow\\5.0.0\\microsoft.ml.tensorflow.5.0.0.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\microsoft.net.stringtools\\17.14.28\\microsoft.net.stringtools.17.14.28.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\microsoft.openapi\\2.3.0\\microsoft.openapi.2.3.0.nupkg.sha512",
+    "C:\\Users\\aleks\\.nuget\\packages\\mimekit\\4.13.0\\mimekit.4.13.0.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\mongodb.bson\\2.30.0\\mongodb.bson.2.30.0.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\mongodb.driver\\2.30.0\\mongodb.driver.2.30.0.nupkg.sha512",
     "C:\\Users\\aleks\\.nuget\\packages\\mongodb.driver.core\\2.30.0\\mongodb.driver.core.2.30.0.nupkg.sha512",
@@ -99,7 +102,7 @@
     {
       "code": "NU1701",
       "level": "Warning",
-      "message": "Пакет \"BCrypt 1.0.0\" был восстановлен с помощью \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\", а не целевой платформы проекта \"net10.0\". Этот пакет может быть не полностью совместим с вашим проектом.",
+      "message": "Package 'BCrypt 1.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net10.0'. This package may not be fully compatible with your project.",
       "projectPath": "C:\\Users\\aleks\\Documents\\Anemia Scan Project\\AnemiaScanApi\\AnemiaScanApi\\AnemiaScanApi.csproj",
       "warningLevel": 1,
       "filePath": "C:\\Users\\aleks\\Documents\\Anemia Scan Project\\AnemiaScanApi\\AnemiaScanApi\\AnemiaScanApi.csproj",

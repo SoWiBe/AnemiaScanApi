@@ -1,9 +1,10 @@
-using AnemiaScanApi.Models.LLM;
+using System.Net;
+using AnemiaScanApi.Common.Constants;
+using AnemiaScanApi.Common.LLM;
+using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Infrastructure.Services.Core;
-using AnemiaScanApi.Models.Requests;
 using AnemiaScanApi.Exceptions;
 using Microsoft.Extensions.ML;
-using AnemiaScanApi.Models.Constants;
 
 namespace AnemiaScanApi.Services;
 
@@ -13,7 +14,7 @@ public class PredictionService(
 {
     public async Task<AnemiaPredictionOutput> PredictAnemiaAsync(PredictionRequest request, CancellationToken cancellationToken)
     {
-        if (request.ImageData is null) throw new SASException();
+        if (request.ImageData is null) throw new SASException("Image data is null", (int)HttpStatusCode.BadRequest);
         var tempPath = Path.GetTempFileName();
 
         try

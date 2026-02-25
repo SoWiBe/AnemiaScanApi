@@ -1,17 +1,19 @@
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+
+using AnemiaScanApi.Common;
+using AnemiaScanApi.Common.Auth;
+using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
-using AnemiaScanApi.Models;
-using AnemiaScanApi.Models.Auth;
-using AnemiaScanApi.Models.Constants;
 using AnemiaScanApi.Settings;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
-namespace AnemiaScanApi.Services;
+namespace AnemiaScanApi.Infrastructure.Services;
 
 public class AuthorizationService(
     ILogger<AuthorizationService> logger, 

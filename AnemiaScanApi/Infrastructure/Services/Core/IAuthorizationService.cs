@@ -1,4 +1,4 @@
-using AnemiaScanApi.Models.Auth;
+using AnemiaScanApi.Common.Auth;
 
 namespace AnemiaScanApi.Infrastructure.Services.Core;
 

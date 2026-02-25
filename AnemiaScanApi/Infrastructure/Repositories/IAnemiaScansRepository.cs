@@ -1,7 +1,7 @@
+using AnemiaScanApi.Common;
 using MongoDB.Bson;
 
 using AnemiaScanApi.Infrastructure.Core;
-using AnemiaScanApi.Models;
 
 namespace AnemiaScanApi.Infrastructure.Repositories;
 

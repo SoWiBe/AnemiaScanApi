@@ -1,10 +1,12 @@
-using AnemiaScanApi.Infrastructure.Repositories;
-using AnemiaScanApi.Models;
-using AnemiaScanApi.Models.Responses;
-using AnemiaScanApi.Infrastructure.Services.Core;
 using MongoDB.Bson;
 
-namespace AnemiaScanApi.Services;
+using AnemiaScanApi.Common;
+using AnemiaScanApi.Common.Enums;
+using AnemiaScanApi.Common.Responses;
+using AnemiaScanApi.Infrastructure.Repositories;
+using AnemiaScanApi.Infrastructure.Services.Core;
+
+namespace AnemiaScanApi.Infrastructure.Services;
 
 public class AnemiaAnalysisService(
     IAnemiaScansRepository anemiaScansRepository, 
@@ -60,7 +62,7 @@ public class AnemiaAnalysisService(
         (
             createdAnemiaScan.Id,
             createdAnemiaScan.Confidence,
-            createdAnemiaScan.IsAnemic ? Models.Enums.Sick.Anemia : Models.Enums.Sick.Healthy,
+            createdAnemiaScan.IsAnemic ? Sick.Anemia : Sick.Healthy,
             imageId,
             scanDate
         );
