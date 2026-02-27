@@ -1,4 +1,5 @@
 using AnemiaScanApi.Common;
+using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Common.Requests.Profile;
 using AnemiaScanApi.Exceptions;
 using AnemiaScanApi.Infrastructure.Repositories;
@@ -33,7 +34,24 @@ public class ProfileService(
         
         _ = await repository.UpdateAsync(userId, user, cancellationToken);
     }
-    
+
+    public async Task WriteAnalysisAsync(Guid userId, AnemiaScan scan, CancellationToken cancellationToken)
+    {
+        var user = await repository.GetByIdAsync(userId, cancellationToken);
+        if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound);
+        
+        user.AnemiaScans.Add(scan);
+        await repository.UpdateAsync(userId, user, cancellationToken);
+    }
+
+    public async Task DeleteProfileAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await repository.GetByIdAsync(userId, cancellationToken);
+        if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound);
+        
+        await repository.DeleteAsync(userId, cancellationToken);
+    }
+
     private static Dictionary<string, Action<SasUser, string>> GetUpdateActions() => new()
     {
         ["Email"] = (user, value) => user.Email = value,
