@@ -16,7 +16,7 @@ public class AnalysisController(
     IPredictionService predictionService)
     : BaseSasController(logger)
 {
-    [HttpPost("anemia/prediction")]
+    [HttpPost("anemia/prediction/")]
     public async Task<IActionResult> PredictAnemia([FromForm, Required] PredictionRequest request, CancellationToken cancellationToken)
     {
         var userId = GetUserId();

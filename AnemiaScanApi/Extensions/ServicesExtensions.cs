@@ -71,6 +71,7 @@ public static class ServicesExtensions
     {
         services.AddScoped<ValidateImageAttribute>();
         services.AddScoped<UniqueEmailAttribute>();
+        services.AddScoped<ValidationCodeFilter>();
         return services;
     }
 
@@ -95,6 +96,7 @@ public static class ServicesExtensions
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
         services.AddScoped<IPredictionService, PredictionService>();
+        services.AddScoped<IProfileService, ProfileService>();
         
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<ICodeGenerator, CodeGenerator>();

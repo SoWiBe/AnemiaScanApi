@@ -6,9 +6,8 @@ using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Filters;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Infrastructure.Utils.Core;
-using AnemiaScanApi.Utils;
-using AnemiaScanApi.Utils.Core;
 using Microsoft.Extensions.Caching.Memory;
+
 using IEmailSender = AnemiaScanApi.Utils.Core.IEmailSender;
 
 namespace AnemiaScanApi.Controllers;
@@ -25,17 +24,44 @@ public class AuthorizationController(
     ICodeGenerator codeGenerator,
     IMemoryCache memoryCache) : BaseSasController(logger)
 {
-    [HttpPost("sign-in")]
+    /// <summary>
+    /// Авторизация по логину и паролю.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("sign-in/")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ServiceFilter(typeof(ValidationCodeFilter))]
     public async Task<IActionResult> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
         var tokenRecord = await authorizationService.AuthenticateAsync(request.Email!, request.Password, cancellationToken);
         return Ok(new LoginResponse { TokenRecord = tokenRecord });
     }
     
-    [HttpPost("refresh")]
+    /// <summary>
+    /// Авторизация по логину и паролю с подтверждением по почте.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("sign-in-by-code/")]
+    [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ServiceFilter(typeof(ValidationCodeFilter))]
+    public async Task<IActionResult> LoginByCodeAsync(LoginByCodeRequest request, CancellationToken cancellationToken = default)
+    {
+        var tokenRecord = await authorizationService.AuthenticateAsync(request.Email!, request.Password, cancellationToken);
+        return Ok(new LoginResponse { TokenRecord = tokenRecord });
+    }
+    
+    /// <summary>
+    /// Обновление токена.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("refresh/")]
     [ProducesResponseType(typeof(RefreshTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RefreshAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
@@ -44,17 +70,29 @@ public class AuthorizationController(
         return Ok(new RefreshTokenResponse { TokenRecord = tokenRecord });
     }
 
-    [HttpPost("sign-up")]
-    [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status200OK)]
+    /// <summary>
+    /// Регистрация нового пользователя.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("sign-up/")]
+    [ProducesResponseType(typeof(SignUpResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ServiceFilter(typeof(ValidationCodeFilter))]
-    public async Task<IActionResult> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> SignUpAsync(SignUpRequest request, CancellationToken cancellationToken = default)
     {
-        var tokenRecord = await authorizationService.RegisterAsync(request.Email!, request.Password, cancellationToken);
-        return Ok(new RegisterResponse { TokenRecord = tokenRecord });
+        var tokenRecord = await authorizationService.RegisterAsync(request, cancellationToken);
+        return Ok(new SignUpResponse { TokenRecord = tokenRecord });
     }
 
-    [HttpPost("email/send-code")]
+    /// <summary>
+    /// Отправка кода подтверждения на почту.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("email/send-code/")]
     public async Task<IActionResult> SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken = default)
     {
         var (cachingKey, code) = codeGenerator.GenerateAlphanumericCode(request.Email!);
@@ -68,7 +106,6 @@ public class AuthorizationController(
             SlidingExpiration = TimeSpan.FromMinutes(5)
         });
         
-        
-        return Ok();
+        return Ok(new { code });
     }
 }

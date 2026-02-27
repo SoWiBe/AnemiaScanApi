@@ -9,6 +9,7 @@ using System.Text;
 using AnemiaScanApi.Common;
 using AnemiaScanApi.Common.Auth;
 using AnemiaScanApi.Common.Constants;
+using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Settings;
@@ -78,24 +79,28 @@ public class AuthorizationService(
         return new TokenRecord(accessToken, newRefreshToken);
     }
 
-    public async Task<TokenRecord> RegisterAsync(string email, string password, CancellationToken cancellationToken = default)
+    public async Task<TokenRecord> RegisterAsync(SignUpRequest request, CancellationToken cancellationToken = default)
     {
-        Logger.LogInformation("Registering new user: {Email}", email);
+        Logger.LogInformation("Registering new user: {Email}", request.Email);
         
         // Check if user already exists
         var users = await usersRepository.GetAllAsync(cancellationToken);
-        if (users.Any(u => u.Email == email))
+        if (users.Any(u => u.Email == request.Email))
         {
-            Logger.LogWarning("Registration failed: Email already exists - {Email}", email);
+            Logger.LogWarning("Registration failed: Email already exists - {Email}", request.Email);
             throw new InvalidOperationException("Email already exists");
         }
 
         // Create new user
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var newUser = new SasUser
         {
-            Email = email,
-            HashPassword = hashedPassword
+            Email = request.Email,
+            FullName = request.FullName,
+            BirthDate = request.BirthDate,
+            HashPassword = hashedPassword,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
         };
 
         var createdUser = await usersRepository.CreateUserAsync(newUser, cancellationToken);
@@ -109,7 +114,7 @@ public class AuthorizationService(
         createdUser.RefreshTokenExpires = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpirationDays);
         await usersRepository.UpdateUserAsync(createdUser, cancellationToken);
 
-        Logger.LogInformation("User registered successfully: {Email}", email);
+        Logger.LogInformation("User registered successfully: {Email}", createdUser.Email);
         return new TokenRecord(accessToken, refreshToken);
     }
     

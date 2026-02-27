@@ -1,12 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using AnemiaScanApi.Common.Constants;
 
 namespace AnemiaScanApi.Common.Requests;
 
 public class BaseAuthRequest
 {
-    [Required(ErrorMessage = "Пожалуйста, укажите вашу почту")]
+    [Required(ErrorMessage = ValidationConstants.RequiredEmailErrorMessage)]
+    [MaxLength(256, ErrorMessage = ValidationConstants.EmailShouldBeLessThan256CharactersErrorMessage)]
+    [MinLength(1, ErrorMessage = ValidationConstants.RequiredEmailErrorMessage)]
     public string? Email { get; init; }
     
-    [Required(ErrorMessage = "Пожалуйста, укажите код из письма на вашей почте")] 
+    [Required(ErrorMessage = ValidationConstants.RequiredEmailCodeErrorMessage)]
     public string? EmailCode { get; init; }
 }

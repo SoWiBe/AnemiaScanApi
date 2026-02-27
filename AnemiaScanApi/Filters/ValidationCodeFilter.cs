@@ -1,6 +1,5 @@
 using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Infrastructure.Settings;
-using AnemiaScanApi.Settings;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -22,7 +21,7 @@ public class ValidationCodeFilter(
             return;
         }
         
-        var cachedCode = memoryCache.Get<string>($"{codeGeneratorSettings.Value.CacheKey}:{authRequest.Email}");
+        var cachedCode = memoryCache.Get<string>($"{codeGeneratorSettings.Value.CacheKey}:{authRequest.Email!.ToLower()}");
 
         if (string.IsNullOrWhiteSpace(cachedCode))
         {
