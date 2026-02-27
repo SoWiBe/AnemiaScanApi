@@ -3,12 +3,12 @@ using AnemiaScanApi.Common.Auth;
 namespace AnemiaScanApi.Common.Responses;
 
 /// <summary>
-/// Response for registering a new user.
+/// Ответ на регистрацию пользователя
 /// </summary>
-public class RegisterResponse
+public class SignUpResponse
 {
     /// <summary>
-    /// Token record.
+    /// Токен для авторизации.
     /// </summary>
     public TokenRecord TokenRecord { get; init; } = null!;    
 }
