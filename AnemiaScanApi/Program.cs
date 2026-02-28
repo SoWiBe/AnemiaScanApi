@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 using AnemiaScanApi.Extensions;
 using AnemiaScanApi.Middleware;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -27,8 +28,8 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseCustomSwaggerUi();
+    app.MapSwagger("/openapi/{documentName}.json");
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();

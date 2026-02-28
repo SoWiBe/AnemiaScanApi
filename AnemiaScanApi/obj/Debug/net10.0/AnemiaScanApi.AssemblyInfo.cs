@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AnemiaScanApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ebb898b7cd552e12329d6f9f0b8d4003b804aba7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17b6751e7d7fa838f210cf796997f0b2bfc9d8d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("AnemiaScanApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AnemiaScanApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

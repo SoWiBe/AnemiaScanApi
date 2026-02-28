@@ -21,6 +21,7 @@
           "Microsoft.ML.TensorFlow": "5.0.0",
           "MongoDB.Driver": "2.30.0",
           "MongoDB.Driver.GridFS": "2.30.0",
+          "Scalar.AspNetCore": "2.12.50",
           "Serilog.AspNetCore": "10.0.0",
           "Serilog.Settings.Configuration": "10.0.0",
           "Serilog.Sinks.Console": "6.1.1",
@@ -909,6 +910,14 @@
           }
         }
       },
+      "Scalar.AspNetCore/2.12.50": {
+        "runtime": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "assemblyVersion": "2.12.50.0",
+            "fileVersion": "2.12.50.0"
+          }
+        }
+      },
       "Serilog/4.3.0": {
         "runtime": {
           "lib/net9.0/Serilog.dll": {
@@ -1673,6 +1682,13 @@
       "sha512": "sha512-iudZZRcWRfgrVON36kSy8ZHVcu9Ov0kDd398/KwKoziq77Y5YY/XNHOW+xvNtMBULent9MQ5GZxuTMjQGx2u+w==",
       "path": "protobuf.text/0.6.0",
       "hashPath": "protobuf.text.0.6.0.nupkg.sha512"
+    },
+    "Scalar.AspNetCore/2.12.50": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VjP0hDqICp70OuDtasziehQfs3t2TuhlXfWoOgc5H06iiYLAajclEjfrNDqqD2CTxBPMoU243BXmEphCRF/QTQ==",
+      "path": "scalar.aspnetcore/2.12.50",
+      "hashPath": "scalar.aspnetcore.2.12.50.nupkg.sha512"
     },
     "Serilog/4.3.0": {
       "type": "package",

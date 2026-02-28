@@ -1500,6 +1500,22 @@
           "lib/net6.0/Protobuf.Text.dll": {}
         }
       },
+      "Scalar.AspNetCore/2.12.50": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Serilog/4.3.0": {
         "type": "package",
         "compile": {
@@ -4577,6 +4593,25 @@
         "protobuf.text.nuspec"
       ]
     },
+    "Scalar.AspNetCore/2.12.50": {
+      "sha512": "VjP0hDqICp70OuDtasziehQfs3t2TuhlXfWoOgc5H06iiYLAajclEjfrNDqqD2CTxBPMoU243BXmEphCRF/QTQ==",
+      "type": "package",
+      "path": "scalar.aspnetcore/2.12.50",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net10.0/Scalar.AspNetCore.dll",
+        "lib/net10.0/Scalar.AspNetCore.xml",
+        "lib/net8.0/Scalar.AspNetCore.dll",
+        "lib/net8.0/Scalar.AspNetCore.xml",
+        "lib/net9.0/Scalar.AspNetCore.dll",
+        "lib/net9.0/Scalar.AspNetCore.xml",
+        "scalar.aspnetcore.2.12.50.nupkg.sha512",
+        "scalar.aspnetcore.nuspec"
+      ]
+    },
     "Serilog/4.3.0": {
       "sha512": "+cDryFR0GRhsGOnZSKwaDzRRl4MupvJ42FhCE4zhQRVanX0Jpg6WuCBk59OVhVDPmab1bB+nRykAnykYELA9qQ==",
       "type": "package",
@@ -5621,6 +5656,7 @@
       "Microsoft.ML.TensorFlow >= 5.0.0",
       "MongoDB.Driver >= 2.30.0",
       "MongoDB.Driver.GridFS >= 2.30.0",
+      "Scalar.AspNetCore >= 2.12.50",
       "Serilog.AspNetCore >= 10.0.0",
       "Serilog.Settings.Configuration >= 10.0.0",
       "Serilog.Sinks.Console >= 6.1.1",
@@ -5725,6 +5761,10 @@
           "MongoDB.Driver.GridFS": {
             "target": "Package",
             "version": "[2.30.0, )"
+          },
+          "Scalar.AspNetCore": {
+            "target": "Package",
+            "version": "[2.12.50, )"
           },
           "Serilog.AspNetCore": {
             "target": "Package",
