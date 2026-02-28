@@ -253,3 +253,4 @@ C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\bin\Deb
 C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
 C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\bin\Debug\net10.0\MailKit.dll
 C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\bin\Debug\net10.0\MimeKit.dll
+C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\bin\Debug\net10.0\Scalar.AspNetCore.dll

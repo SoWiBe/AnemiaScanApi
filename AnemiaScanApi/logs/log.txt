@@ -887,3 +887,33 @@ AnemiaScanApi.Exceptions.SASException: Email sending failed
 2026-02-27 20:36:30.428 +06:00 [INF] Authenticating user aleksey.dantist@gmail.com
 2026-02-27 20:36:32.408 +06:00 [INF] Generated access token for user aleksey.dantist@gmail.com
 2026-02-27 20:36:32.651 +06:00 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-27 21:01:18.531 +06:00 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-27 21:01:18.888 +06:00 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-27 21:01:19.082 +06:00 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-27 21:01:47.995 +06:00 [INF] Analyzing anemia for analysis ID "ec1fa010-dae1-408f-b9d6-9eac27be1c19" and user ID "7f993d94-2383-47e4-9740-b97e9939024f"
+2026-02-27 21:01:48.437 +06:00 [INF] Anemia analysis completed for analysis ID "ec1fa010-dae1-408f-b9d6-9eac27be1c19" and user ID "7f993d94-2383-47e4-9740-b97e9939024f"
+2026-02-27 21:01:48.447 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b1dcc84f07f82890552e
+2026-02-27 21:03:28.870 +06:00 [INF] Registering new user: Bostoncel899@gmail.com
+2026-02-27 21:03:29.394 +06:00 [INF] User registered successfully: Bostoncel899@gmail.com
+2026-02-27 21:03:53.553 +06:00 [INF] Authenticating user Bostoncel899@gmail.com
+2026-02-27 21:03:53.777 +06:00 [INF] Generated access token for user Bostoncel899@gmail.com
+2026-02-27 21:03:53.873 +06:00 [INF] TokenRecord generated for user Bostoncel899@gmail.com
+2026-02-27 21:04:00.410 +06:00 [INF] Authenticating user Bostoncel899@gmail.com
+2026-02-27 21:04:00.633 +06:00 [ERR] Invalid password for user Bostoncel899@gmail.com
+2026-02-27 21:04:07.178 +06:00 [INF] Authenticating user dfdfd
+2026-02-27 21:04:07.264 +06:00 [ERR] User dfdfd not found
+2026-02-27 21:04:17.725 +06:00 [INF] Authenticating user Bostoncel899@gmail.com
+2026-02-27 21:04:17.966 +06:00 [INF] Generated access token for user Bostoncel899@gmail.com
+2026-02-27 21:04:18.058 +06:00 [INF] TokenRecord generated for user Bostoncel899@gmail.com
+2026-02-27 21:05:46.786 +06:00 [INF] Analyzing anemia for analysis ID "1d95ca1b-26c2-4984-86ae-170605e93a08" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:05:47.209 +06:00 [INF] Anemia analysis completed for analysis ID "1d95ca1b-26c2-4984-86ae-170605e93a08" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:05:47.215 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b2cac84f07f828905530
+2026-02-27 21:06:38.620 +06:00 [INF] Analyzing anemia for analysis ID "c41a6734-9a8e-4e08-8c2d-fd9e9a2705ef" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:39.054 +06:00 [INF] Anemia analysis completed for analysis ID "c41a6734-9a8e-4e08-8c2d-fd9e9a2705ef" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:39.062 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b2fec84f07f828905532
+2026-02-27 21:06:40.191 +06:00 [INF] Analyzing anemia for analysis ID "6a9d9e38-9747-49db-937e-8dd47e08047a" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:40.616 +06:00 [INF] Anemia analysis completed for analysis ID "6a9d9e38-9747-49db-937e-8dd47e08047a" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:40.628 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b300c84f07f828905534
+2026-02-27 21:06:41.746 +06:00 [INF] Analyzing anemia for analysis ID "51a5d1a2-d153-4c15-9204-3a4cf9489382" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:42.179 +06:00 [INF] Anemia analysis completed for analysis ID "51a5d1a2-d153-4c15-9204-3a4cf9489382" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:42.191 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b301c84f07f828905536
