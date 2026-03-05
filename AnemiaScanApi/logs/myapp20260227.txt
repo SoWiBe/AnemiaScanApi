@@ -1,0 +1,73 @@
+2026-02-27 20:07:27.184 [ERR] Unexpected error while sending email
+System.Net.Sockets.SocketException (10060): Попытка установить соединение была безуспешной, т.к. от другого компьютера за требуемое время не получен нужный отклик, или было разорвано уже установленное соединение из-за неверного отклика уже подключенного компьютера.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Threading.Tasks.ValueTask.ValueTaskSourceAsTask.<>c.<.cctor>b__4_0(Object state)
+--- End of stack trace from previous location ---
+   at MailKit.Net.SocketUtils.SocketConnectState.OnEndConnect(IAsyncResult ar)
+--- End of stack trace from previous location ---
+   at MailKit.Net.SocketUtils.ConnectAsync(String host, Int32 port, IPEndPoint localEndPoint, CancellationToken cancellationToken)
+   at MailKit.Net.SocketUtils.ConnectAsync(String host, Int32 port, IPEndPoint localEndPoint, Int32 timeout, CancellationToken cancellationToken)
+   at MailKit.MailService.ConnectNetworkAsync(String host, Int32 port, CancellationToken cancellationToken)
+   at MailKit.Net.Smtp.SmtpClient.ConnectAsync(String host, Int32 port, SecureSocketOptions options, CancellationToken cancellationToken)
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 25
+2026-02-27 20:07:27.393 [ERR] Email sending failed
+AnemiaScanApi.Exceptions.SASException: Email sending failed
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 53
+   at AnemiaScanApi.Utils.EmailSender.SendEmailAsync(String toAddress, String subject, String body, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Infrastructure\Utils\EmailSender.cs:line 58
+   at AnemiaScanApi.Controllers.AuthorizationController.SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Controllers\AuthorizationController.cs:line 99
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at AnemiaScanApi.Middleware.SASMiddleware.InvokeAsync(HttpContext context) in C:\Users\aleks\Documents\Anemia Scan Project\AnemiaScanApi\AnemiaScanApi\Middleware\SASMiddleware.cs:line 15
+2026-02-27 20:09:02.064 [INF] Registering new user: aleksey.dantist@gmail.com
+2026-02-27 20:09:03.453 [INF] User registered successfully: aleksey.dantist@gmail.com
+2026-02-27 20:09:17.571 [INF] Registering new user: aleksey.dantist@gmail.com
+2026-02-27 20:09:17.664 [WRN] Registration failed: Email already exists - aleksey.dantist@gmail.com
+2026-02-27 20:09:44.034 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-27 20:09:44.331 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-27 20:09:44.427 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-27 20:17:16.247 [INF] Registering new user: Bostoncel899@gmail.com
+2026-02-27 20:17:17.597 [INF] User registered successfully: Bostoncel899@gmail.com
+2026-02-27 20:20:03.680 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-27 20:20:04.001 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-27 20:20:04.099 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-27 20:36:30.428 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-27 20:36:32.408 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-27 20:36:32.651 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-27 21:01:18.531 [INF] Authenticating user aleksey.dantist@gmail.com
+2026-02-27 21:01:18.888 [INF] Generated access token for user aleksey.dantist@gmail.com
+2026-02-27 21:01:19.082 [INF] TokenRecord generated for user aleksey.dantist@gmail.com
+2026-02-27 21:01:47.995 [INF] Analyzing anemia for analysis ID "ec1fa010-dae1-408f-b9d6-9eac27be1c19" and user ID "7f993d94-2383-47e4-9740-b97e9939024f"
+2026-02-27 21:01:48.437 [INF] Anemia analysis completed for analysis ID "ec1fa010-dae1-408f-b9d6-9eac27be1c19" and user ID "7f993d94-2383-47e4-9740-b97e9939024f"
+2026-02-27 21:01:48.447 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b1dcc84f07f82890552e
+2026-02-27 21:03:28.870 [INF] Registering new user: Bostoncel899@gmail.com
+2026-02-27 21:03:29.394 [INF] User registered successfully: Bostoncel899@gmail.com
+2026-02-27 21:03:53.553 [INF] Authenticating user Bostoncel899@gmail.com
+2026-02-27 21:03:53.777 [INF] Generated access token for user Bostoncel899@gmail.com
+2026-02-27 21:03:53.873 [INF] TokenRecord generated for user Bostoncel899@gmail.com
+2026-02-27 21:04:00.410 [INF] Authenticating user Bostoncel899@gmail.com
+2026-02-27 21:04:00.633 [ERR] Invalid password for user Bostoncel899@gmail.com
+2026-02-27 21:04:07.178 [INF] Authenticating user dfdfd
+2026-02-27 21:04:07.264 [ERR] User dfdfd not found
+2026-02-27 21:04:17.725 [INF] Authenticating user Bostoncel899@gmail.com
+2026-02-27 21:04:17.966 [INF] Generated access token for user Bostoncel899@gmail.com
+2026-02-27 21:04:18.058 [INF] TokenRecord generated for user Bostoncel899@gmail.com
+2026-02-27 21:05:46.786 [INF] Analyzing anemia for analysis ID "1d95ca1b-26c2-4984-86ae-170605e93a08" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:05:47.209 [INF] Anemia analysis completed for analysis ID "1d95ca1b-26c2-4984-86ae-170605e93a08" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:05:47.215 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b2cac84f07f828905530
+2026-02-27 21:06:38.620 [INF] Analyzing anemia for analysis ID "c41a6734-9a8e-4e08-8c2d-fd9e9a2705ef" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:39.054 [INF] Anemia analysis completed for analysis ID "c41a6734-9a8e-4e08-8c2d-fd9e9a2705ef" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:39.062 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b2fec84f07f828905532
+2026-02-27 21:06:40.191 [INF] Analyzing anemia for analysis ID "6a9d9e38-9747-49db-937e-8dd47e08047a" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:40.616 [INF] Anemia analysis completed for analysis ID "6a9d9e38-9747-49db-937e-8dd47e08047a" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:40.628 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b300c84f07f828905534
+2026-02-27 21:06:41.746 [INF] Analyzing anemia for analysis ID "51a5d1a2-d153-4c15-9204-3a4cf9489382" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:42.179 [INF] Anemia analysis completed for analysis ID "51a5d1a2-d153-4c15-9204-3a4cf9489382" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
+2026-02-27 21:06:42.191 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b301c84f07f828905536

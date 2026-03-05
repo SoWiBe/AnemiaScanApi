@@ -1,0 +1,3 @@
+2026-03-03 21:59:58.991 [INF] Authenticating user Bostoncel899@gmail.com
+2026-03-03 22:00:00.940 [INF] Generated access token for user Bostoncel899@gmail.com
+2026-03-03 22:00:01.221 [INF] TokenRecord generated for user Bostoncel899@gmail.com

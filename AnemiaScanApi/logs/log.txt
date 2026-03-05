@@ -917,3 +917,6 @@ AnemiaScanApi.Exceptions.SASException: Email sending failed
 2026-02-27 21:06:41.746 +06:00 [INF] Analyzing anemia for analysis ID "51a5d1a2-d153-4c15-9204-3a4cf9489382" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
 2026-02-27 21:06:42.179 +06:00 [INF] Anemia analysis completed for analysis ID "51a5d1a2-d153-4c15-9204-3a4cf9489382" and user ID "94e99f28-0236-466c-9773-8d361d500ced"
 2026-02-27 21:06:42.191 +06:00 [INF] Anemia analysis result: Confidence 0.85, ObjectId 69a1b301c84f07f828905536
+2026-03-03 21:59:58.991 +06:00 [INF] Authenticating user Bostoncel899@gmail.com
+2026-03-03 22:00:00.940 +06:00 [INF] Generated access token for user Bostoncel899@gmail.com
+2026-03-03 22:00:01.221 +06:00 [INF] TokenRecord generated for user Bostoncel899@gmail.com
