@@ -67,10 +67,18 @@ jobs:
             JwtSettings__Key=${{ secrets.JWT_KEY }}
             JwtSettings__Issuer=${{ secrets.JWT_ISSUER }}
             JwtSettings__Audience=${{ secrets.JWT_AUDIENCE }}
+            JwtSettings__RefreshTokenExpirationDays=${{ secrets.JWT_REFRESH_DAYS }}
             EmailSender__Email=${{ secrets.EMAIL_SENDER }}
             EmailSender__Password=${{ secrets.EMAIL_PASSWORD }}
             Smtp__Server=${{ secrets.SMTP_SERVER }}
             Smtp__Port=${{ secrets.SMTP_PORT }}
+            MongoDB__DatabaseName=${{ secrets.MONGODB_DB_NAME }}
+            MongoDB__ConnectionString=${{ secrets.MONGODB_CONNECTION }}
+            MongoDB__Collections__Users=${{ secrets.MONGODB_COL_USERS }}
+            MongoDB__Collections__Analyses=${{ secrets.MONGODB_COL_ANALYSES }}
+            CodeGenerator__Length=${{ secrets.CODE_GEN_LENGTH }}
+            CodeGenerator__Chars=${{ secrets.CODE_GEN_CHARS }}
+            CodeGenerator__CacheKey=${{ secrets.CODE_GEN_CACHE_KEY }}
             EOF
             
             echo "5. Настройка Systemd сервиса..."
