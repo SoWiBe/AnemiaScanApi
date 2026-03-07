@@ -94,7 +94,7 @@ jobs:
             Restart=always
             RestartSec=10
             EnvironmentFile=${{ env.VPS_DEPLOY_PATH }}/.env
-            User=www-data
+            User=root
             # Ограничение памяти, чтобы 1ГБ сервер не завис
             MemoryMax=700M
             MemoryAccounting=true

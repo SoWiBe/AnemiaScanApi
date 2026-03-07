@@ -2,6 +2,7 @@ using AnemiaScanApi.Common.Requests.Profile;
 using AnemiaScanApi.Common.Responses;
 using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Infrastructure.Services.Core;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
