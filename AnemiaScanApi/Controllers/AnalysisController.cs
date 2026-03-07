@@ -6,7 +6,9 @@ using AnemiaScanApi.Extensions;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace AnemiaScanApi.Controllers;
+
 [Authorize]
 [ApiController]
 [Route("[controller]")]
