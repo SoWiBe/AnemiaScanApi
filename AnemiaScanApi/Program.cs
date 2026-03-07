@@ -26,11 +26,8 @@ builder.Services
 
 var app = builder.Build();
 
+app.MapSwagger("/openapi/{documentName}.json");
 app.MapScalarApiReference();
-if (app.Environment.IsDevelopment())
-{
-    app.MapSwagger("/openapi/{documentName}.json");
-}
 
 app.UseHttpsRedirection();
 app.UseRouting();
