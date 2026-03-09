@@ -68,6 +68,7 @@ jobs:
             JwtSettings__Secret=${{ secrets.JWT_SECRET }}
             JwtSettings__Issuer=${{ secrets.JWT_ISSUER }}
             JwtSettings__Audience=${{ secrets.JWT_AUDIENCE }}
+            JwtSettings__AccessTokenExpirationMinutes=${{ secrets.JWT_ACCESS_MIN }}
             JwtSettings__RefreshTokenExpirationDays=${{ secrets.JWT_REFRESH_DAYS }}
             EmailSender__Email=${{ secrets.EMAIL_SENDER }}
             EmailSender__Password=${{ secrets.EMAIL_PASSWORD }}
