@@ -9,6 +9,17 @@ var configuration = builder.Configuration;
 
 builder.AddLogging();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCorsPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:8081")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddJwtAuthentication(configuration);
 builder.Services.AddSenderOptions(configuration);
 
@@ -31,6 +42,7 @@ app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("DevCorsPolicy");
 app.UseAuthorization();
 
 app.UseMiddleware<SASMiddleware>();
