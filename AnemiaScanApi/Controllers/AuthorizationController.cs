@@ -8,6 +8,8 @@ using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Infrastructure.Utils.Core;
 using Microsoft.Extensions.Caching.Memory;
 
+using Microsoft.AspNetCore.Authorization;
+using IAuthorizationService = AnemiaScanApi.Infrastructure.Services.Core.IAuthorizationService;
 using IEmailSender = AnemiaScanApi.Utils.Core.IEmailSender;
 
 namespace AnemiaScanApi.Controllers;
@@ -95,6 +97,9 @@ public class AuthorizationController(
     [HttpPost("email/send-code/")]
     public async Task<IActionResult> SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken = default)
     {
+        if (!await authorizationService.IsUserExistAsync(request.Email!, cancellationToken))
+            return NotFound(new { message = "пользователь не найден в системе, пройдите этап регистрации для этого" });
+        
         var (cachingKey, code) = codeGenerator.GenerateAlphanumericCode(request.Email!);
         await emailSender.SendEmailAsync(request.Email!, "Smart Anemia Scan Verification Code",
             $"Your verification code is: {code}", cancellationToken);
@@ -106,6 +111,60 @@ public class AuthorizationController(
             SlidingExpiration = TimeSpan.FromMinutes(5)
         });
         
-        return Ok(new { code });
+        return Ok();
+    }
+
+    /// <summary>
+    /// Проверка кода верификации.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("verification-code/")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> VerifyCodeAsync(VerificationCodeRequest request, CancellationToken cancellationToken = default)
+    {
+        if (!await authorizationService.IsUserExistAsync(request.Email, cancellationToken))
+            return NotFound(new { message = "пользователь не найден в системе, пройдите этап регистрации для этого" });
+
+        var cachingKey = codeGenerator.GetCacheKey(request.Email);
+        var cachedCode = memoryCache.Get<string>(cachingKey);
+
+        if (string.IsNullOrWhiteSpace(cachedCode) || !cachedCode.Equals(request.Code))
+            return BadRequest(new { message = "Указан неправильный код подтверждения или код истек" });
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Обновление пароля (забытый пароль).
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("update-password/")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePasswordAsync(UpdatePasswordRequest request, CancellationToken cancellationToken = default)
+    {
+        if (!await authorizationService.IsUserExistAsync(request.Email, cancellationToken))
+            return NotFound(new { message = "пользователь не найден в системе, пройдите этап регистрации для этого" });
+
+        var cachingKey = codeGenerator.GetCacheKey(request.Email);
+        var cachedCode = memoryCache.Get<string>(cachingKey);
+
+        if (string.IsNullOrWhiteSpace(cachedCode) || !cachedCode.Equals(request.Code))
+            return BadRequest(new { message = "Указан неправильный код подтверждения или код истек" });
+
+        await authorizationService.UpdatePasswordAsync(request.Email, request.NewPassword, cancellationToken);
+        
+        // удаляем код после успешного обновления
+        memoryCache.Remove(cachingKey);
+
+        return Ok();
     }
 }

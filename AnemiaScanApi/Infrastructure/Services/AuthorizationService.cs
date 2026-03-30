@@ -117,6 +117,31 @@ public class AuthorizationService(
         Logger.LogInformation("User registered successfully: {Email}", createdUser.Email);
         return new TokenRecord(accessToken, refreshToken);
     }
+
+    public async Task<bool> IsUserExistAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var user = await usersRepository.GetByEmailAsync(email, cancellationToken);
+        return user is not null;
+    }
+
+    public async Task UpdatePasswordAsync(string email, string newPassword, CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Updating password for user: {Email}", email);
+        
+        var user = await usersRepository.GetByEmailAsync(email, cancellationToken);
+        if (user is null)
+        {
+            Logger.LogWarning("Update password failed: User not found - {Email}", email);
+            throw new InvalidOperationException("Пользователь не найден в системе");
+        }
+
+        var hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.HashPassword = hashedNewPassword;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await usersRepository.UpdateUserAsync(user, cancellationToken);
+        Logger.LogInformation("Password updated successfully for user: {Email}", email);
+    }
     
     private string GenerateAccessToken(SasUser user)
     {
