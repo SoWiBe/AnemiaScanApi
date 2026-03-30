@@ -27,4 +27,12 @@ public class CodeGenerator(IOptions<CodeGeneratorSettings> codeGeneratorSettings
         
         return ($"{codeGeneratorSettings.Value.CacheKey}:{email.ToLower()}", code);
     }
+
+    /// <summary>
+    /// Получение ключа из кэша
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    public string GetCacheKey(string email)
+        => $"{codeGeneratorSettings.Value.CacheKey}:{email.ToLower()}";
 }
