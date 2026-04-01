@@ -21,6 +21,14 @@ public class SasUser : BaseMongoModel
     /// </summary>
     [BsonElement("birth_date")] public DateTime? BirthDate { get; set; }
     /// <summary>
+    /// Sex.
+    /// </summary>
+    [BsonElement("sex")] public Enums.Sex? Sex { get; set; }
+    /// <summary>
+    /// Gender.
+    /// </summary>
+    [BsonElement("gender")] public Enums.Gender? Gender { get; set; }
+    /// <summary>
     /// Hashed password. 
     /// </summary>
     [BsonElement("hash_password")] public string HashPassword { get; set; } = null!;
