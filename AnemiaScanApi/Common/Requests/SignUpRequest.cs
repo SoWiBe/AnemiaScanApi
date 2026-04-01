@@ -20,6 +20,14 @@ public class SignUpRequest : BaseAuthRequest
     [Required(ErrorMessage = ValidationConstants.RequiredBirthDateErrorMessage)]
     public DateTime? BirthDate { get; init; }
     /// <summary>
+    /// Биологический пол.
+    /// </summary>
+    public Enums.Sex? Sex { get; init; }
+    /// <summary>
+    /// Возраст.
+    /// </summary>
+    public int? Age { get; init; }
+    /// <summary>
     /// Пароль.
     /// </summary>
     [Required(ErrorMessage = ValidationConstants.RequiredPasswordErrorMessage)]
