@@ -25,9 +25,9 @@ public class SasUser : BaseMongoModel
     /// </summary>
     [BsonElement("sex")] public Enums.Sex? Sex { get; set; }
     /// <summary>
-    /// Gender.
+    /// Age.
     /// </summary>
-    [BsonElement("gender")] public Enums.Gender? Gender { get; set; }
+    [BsonElement("age")] public int? Age { get; set; }
     /// <summary>
     /// Hashed password. 
     /// </summary>
