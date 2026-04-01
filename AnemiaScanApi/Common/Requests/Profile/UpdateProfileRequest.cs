@@ -8,6 +8,8 @@ public class UpdateProfileRequest
     public string? Email { get; set; }
     public string? FullName { get; set; }
     public DateTime? BirthDate { get; set; }
+    public Enums.Sex? Sex { get; set; }
+    public Enums.Gender? Gender { get; set; }
     [MinLength(8, ErrorMessage = ValidationConstants.PasswordShouldBeAtLeast8CharactersErrorMessage)]
     public string? Password { get; set; }
     public string? ConfirmPassword { get; set; }

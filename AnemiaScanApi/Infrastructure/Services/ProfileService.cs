@@ -31,6 +31,9 @@ public class ProfileService(
             
             updateActions["Password"](user, request.Password);
         }
+
+        if (request.Sex is not null) user.Sex = request.Sex;
+        if (request.Gender is not null) user.Gender = request.Gender;
         
         _ = await repository.UpdateAsync(userId, user, cancellationToken);
     }
