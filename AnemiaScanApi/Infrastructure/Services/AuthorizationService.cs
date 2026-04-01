@@ -98,6 +98,8 @@ public class AuthorizationService(
             Email = request.Email,
             FullName = request.FullName,
             BirthDate = request.BirthDate,
+            Sex = request.Sex,
+            Age = request.Age,
             HashPassword = hashedPassword,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

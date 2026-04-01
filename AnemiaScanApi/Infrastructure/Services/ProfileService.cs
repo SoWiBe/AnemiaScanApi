@@ -35,6 +35,7 @@ public class ProfileService(
         if (request.Sex is not null) user.Sex = request.Sex;
         if (request.Age is not null) user.Age = request.Age;
         
+        user.UpdatedAt = DateTime.UtcNow;
         _ = await repository.UpdateAsync(userId, user, cancellationToken);
     }
 

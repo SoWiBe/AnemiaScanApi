@@ -26,4 +26,14 @@ public class CreateUserRequest
     [Required(ErrorMessage = "Repeat Password is required")]
     [Compare("Password", ErrorMessage = "Passwords do not match")]
     public string RepeatPassword { get; set; } = null!;
+    
+    /// <summary>
+    /// Sex.
+    /// </summary>
+    public Enums.Sex? Sex { get; set; }
+    
+    /// <summary>
+    /// Age.
+    /// </summary>
+    public int? Age { get; set; }
 }
