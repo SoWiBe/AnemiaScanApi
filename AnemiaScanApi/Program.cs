@@ -42,7 +42,7 @@ app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("DevCorsPolicy");
+// app.UseCors("DevCorsPolicy");
 app.UseAuthorization();
 
 app.UseMiddleware<SASMiddleware>();
