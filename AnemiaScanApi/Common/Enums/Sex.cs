@@ -5,5 +5,6 @@ namespace AnemiaScanApi.Common.Enums;
 /// </summary>
 public enum Sex
 {
-    Male, Female
+    Male = 0,
+    Female = 1
 }
