@@ -89,6 +89,47 @@ public class AuthorizationController(
     }
 
     /// <summary>
+    /// Verifies registration data (email, birthdate, password matching) before sending a code.
+    /// Checks format and that it is not already taken.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("email/verify-registration/")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> VerifyRegistrationAsync(VerificationRegistrationRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await authorizationService.VerifyRegistrationRequestAsync(request, cancellationToken);
+        }
+        catch (InvalidOperationException e)
+        {
+            if (e.Message == "Email is already registered.")
+            {
+                return Conflict(new { message = "Данная почта уже зарегистрирована. Пожалуйста, войдите в систему." });
+            }
+            return BadRequest(new { message = e.Message });
+        }
+
+        var (cachingKey, code) = codeGenerator.GenerateAlphanumericCode(request.Email);
+        await emailSender.SendEmailAsync(request.Email, "Smart Anemia Scan Verification Code",
+            $"Your verification code is: {code}", cancellationToken);
+        
+        // кэшируем код на 5 минут
+        memoryCache.Set(cachingKey, code, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(5),
+            SlidingExpiration = TimeSpan.FromMinutes(5)
+        });
+        
+        return Ok();
+    }
+
+    /// <summary>
     /// Отправка кода подтверждения на почту.
     /// </summary>
     /// <param name="request"></param>
