@@ -1,0 +1,67 @@
+## Visual Studio / .NET Core
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Pp]ublish/
+
+# Secrets and local configuration
+appsettings.json
+appsettings.Development.json
+# Uncomment the line below if you want to keep appsettings.Development.json in source control
+# !appsettings.Development.json
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.v12.suo
+*.v11.suo
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be filled as of NuGet 2.8, but we generally want to ignore it 
+# since packages are restored from the .csproj/packages.config
+**/packages/*
+!**/packages/build/
+
+# Entity Framework / SQL Server
+*.mdf
+*.ldf
+*.sdf
+
+# Environment files
+.env
+.env.local
+
+# Frontend (if using Angular/React/Vue in the same project)
+node_modules/
+dist/
+build/
+.npm/
+
+# Crash dumps
+*.dmp
+*.stackdump

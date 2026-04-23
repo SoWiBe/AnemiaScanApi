@@ -144,6 +144,25 @@ public class AuthorizationService(
         await usersRepository.UpdateUserAsync(user, cancellationToken);
         Logger.LogInformation("Password updated successfully for user: {Email}", email);
     }
+
+    public async Task VerifyRegistrationRequestAsync(VerificationRegistrationRequest request, CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Verifying registration request for: {Email}", request.Email);
+
+        if (await IsUserExistAsync(request.Email, cancellationToken))
+        {
+            Logger.LogWarning("Registration verification failed: Email already registered - {Email}", request.Email);
+            throw new InvalidOperationException("Email is already registered.");
+        }
+
+        if (request.BirthDate > DateTime.UtcNow)
+        {
+            Logger.LogWarning("Registration verification failed: BirthDate is in the future - {BirthDate}", request.BirthDate);
+            throw new InvalidOperationException("Дата рождения не может быть в будущем.");
+        }
+
+        Logger.LogInformation("Registration request verified for: {Email}", request.Email);
+    }
     
     private string GenerateAccessToken(SasUser user)
     {

@@ -18,4 +18,10 @@ public interface IAuthorizationService
     /// Обновляет пароль пользователя.
     /// </summary>
     public Task UpdatePasswordAsync(string email, string newPassword, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Validates that the registration request (email, birthdate, password) is valid.
+    /// Throws <see cref="InvalidOperationException"/> if verification fails.
+    /// </summary>
+    public Task VerifyRegistrationRequestAsync(VerificationRegistrationRequest request, CancellationToken cancellationToken = default);
 }
