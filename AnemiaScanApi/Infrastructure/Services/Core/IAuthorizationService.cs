@@ -24,4 +24,9 @@ public interface IAuthorizationService
     /// Throws <see cref="InvalidOperationException"/> if verification fails.
     /// </summary>
     public Task VerifyRegistrationRequestAsync(VerificationRegistrationRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Revokes the refresh token for the authenticated user, effectively signing them out.
+    /// </summary>
+    public Task SignOutAsync(Guid userId, CancellationToken cancellationToken = default);
 }

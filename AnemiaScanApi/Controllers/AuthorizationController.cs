@@ -9,6 +9,7 @@ using AnemiaScanApi.Infrastructure.Utils.Core;
 using Microsoft.Extensions.Caching.Memory;
 
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using IAuthorizationService = AnemiaScanApi.Infrastructure.Services.Core.IAuthorizationService;
 using IEmailSender = AnemiaScanApi.Utils.Core.IEmailSender;
 
@@ -70,6 +71,25 @@ public class AuthorizationController(
     {
         var tokenRecord = await authorizationService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
         return Ok(new RefreshTokenResponse { TokenRecord = tokenRecord });
+    }
+
+    /// <summary>
+    /// Signs out the currently authenticated user by revoking their refresh token.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpPost("sign-out/")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOutAsync(CancellationToken cancellationToken = default)
+    {
+        var userIdRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdRaw, out var userId))
+            return Unauthorized();
+
+        await authorizationService.SignOutAsync(userId, cancellationToken);
+        return Ok();
     }
 
     /// <summary>
