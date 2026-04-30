@@ -1,48 +1,52 @@
-## Visual Studio Build Outputs
-bin/
-obj/
-out/
-appsettings.Development.json
-
-## User-specific files
-*.user
-*.userosscache
-*.sln.docstates
-
-## .NET Core / .NET 10
-project.lock.json
 project.fragment.lock.json
 artifacts/
 
-## IDE - Visual Studio
+## Visual Studio
 .vs/
 [Dd]ebug/
 [Rr]elease/
+# Architecture specific folders
 x64/
 x86/
 bld/
-[Bb]in/
-[Oo]bj/
 
-**/obj/
-**/bin/
-
-## IDE - VS Code
+## IDEs
+# VS Code settings (keep versions control for custom settings)
 .vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-## IDE - Rider
+# Rider
 .idea/
 *.sln.iml
 
-## OS Files
+## OS specific files
 .DS_Store
 Thumbs.db
 
 ## Packages
 *.nupkg
-# Restore-generated files
+# Node.js packages (if any front‑end assets are used)
 node_modules/
+
+# Publish folder
+publish/
+
+# Test results and coverage
+TestResults/
+coverage/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+
+[Bb]in/
+[Oo]bj/
+
+**/obj/
+**/bin/
