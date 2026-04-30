@@ -163,6 +163,24 @@ public class AuthorizationService(
 
         Logger.LogInformation("Registration request verified for: {Email}", request.Email);
     }
+
+    public async Task SignOutAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        Logger.LogInformation("Signing out user {UserId}", userId);
+
+        var user = await usersRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null)
+        {
+            Logger.LogWarning("Sign-out failed: user {UserId} not found", userId);
+            throw new UnauthorizedAccessException("User not found.");
+        }
+
+        user.RefreshToken = null;
+        user.RefreshTokenExpires = null;
+        await usersRepository.UpdateAsync(user.Id, user, cancellationToken);
+
+        Logger.LogInformation("User {UserId} signed out successfully", userId);
+    }
     
     private string GenerateAccessToken(SasUser user)
     {
