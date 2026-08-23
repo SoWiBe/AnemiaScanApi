@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
       <UserSecretsId>73f44fb7-f595-4c2e-b926-c42c4ca31890</UserSecretsId>
-  </PropertyGroup>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="BCrypt" Version="1.0.0" />
@@ -38,6 +38,12 @@
     <ItemGroup>
       <Folder Include="Common\Keys\" />
       <Folder Include="ML\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="LLM\anemia_v10_more_aug.zip">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

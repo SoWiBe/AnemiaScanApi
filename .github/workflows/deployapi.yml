@@ -2,7 +2,7 @@ name: Deploy AnemiaScanApi
 
 on:
   push:
-    branches: [ "main" ] # Авто-деплой при пуше в main
+    branches: [ "master" ] # Авто-деплой при пуше в master
   workflow_dispatch:
 
 env:
@@ -11,11 +11,11 @@ env:
   ARTIFACT_NAME: 'anemiascan-publish'
   VPS_DEPLOY_PATH: '/var/www/anemiascan-api'
   SERVICE_NAME: 'anemiascan-api'
+  SERVICE_USER: 'anemiascan'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: Master
     steps:
       - uses: actions/checkout@v4
 
@@ -50,21 +50,25 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -euo pipefail
+
+            echo "0. Обеспечиваем наличие сервисного пользователя..."
+            id ${{ env.SERVICE_USER }} &>/dev/null || sudo useradd -r -s /usr/sbin/nologin ${{ env.SERVICE_USER }}
+
             echo "1. Останавливаем сервис..."
-            sudo systemctl stop ${{ env.SERVICE_NAME }} || true
-            
+            sudo systemctl stop ${{ env.SERVICE_NAME }} 2>/dev/null || true
+
             echo "2. Подготовка папок..."
             sudo mkdir -p ${{ env.VPS_DEPLOY_PATH }}
-            sudo rm -rf ${{ env.VPS_DEPLOY_PATH }}/*
-            
+            [ -n "${{ env.VPS_DEPLOY_PATH }}" ] && sudo rm -rf ${{ env.VPS_DEPLOY_PATH }}/*
+
             echo "3. Распаковка..."
             sudo tar -xzf /tmp/${{ env.ARTIFACT_NAME }}.tar.gz -C ${{ env.VPS_DEPLOY_PATH }}
-            
+
             echo "4. Создание .env файла..."
-            sudo tee ${{ env.VPS_DEPLOY_PATH }}/.env <<EOF
+            sudo tee ${{ env.VPS_DEPLOY_PATH }}/.env >/dev/null <<'EOF'
             ASPNETCORE_ENVIRONMENT=Production
             ASPNETCORE_URLS=http://localhost:5000
-            ConnectionSettings__Postgre=${{ secrets.POSTGRE_CONNECTION }}
             JwtSettings__Secret=${{ secrets.JWT_SECRET }}
             JwtSettings__Issuer=${{ secrets.JWT_ISSUER }}
             JwtSettings__Audience=${{ secrets.JWT_AUDIENCE }}
@@ -82,9 +86,9 @@ jobs:
             CodeGenerator__Chars=${{ secrets.CODE_GEN_CHARS }}
             CodeGenerator__CacheKey=${{ secrets.CODE_GEN_CACHE_KEY }}
             EOF
-            
+
             echo "5. Настройка Systemd сервиса..."
-            sudo tee /etc/systemd/system/${{ env.SERVICE_NAME }}.service <<EOF
+            sudo tee /etc/systemd/system/${{ env.SERVICE_NAME }}.service >/dev/null <<'EOF'
             [Unit]
             Description=Anemia Scan ML API
             After=network.target
@@ -95,7 +99,7 @@ jobs:
             Restart=always
             RestartSec=10
             EnvironmentFile=${{ env.VPS_DEPLOY_PATH }}/.env
-            User=root
+            User=${{ env.SERVICE_USER }}
             # Ограничение памяти, чтобы 1ГБ сервер не завис
             MemoryMax=700M
             MemoryAccounting=true
@@ -103,12 +107,14 @@ jobs:
             [Install]
             WantedBy=multi-user.target
             EOF
-            
-            echo "6. Перезапуск..."
+
+            echo "6. Права и запуск..."
+            sudo chown -R ${{ env.SERVICE_USER }}:${{ env.SERVICE_USER }} ${{ env.VPS_DEPLOY_PATH }}
+            sudo chmod 600 ${{ env.VPS_DEPLOY_PATH }}/.env
             sudo systemctl daemon-reload
             sudo systemctl enable ${{ env.SERVICE_NAME }}
-            sudo chown -R www-data:www-data ${{ env.VPS_DEPLOY_PATH }}
-            sudo systemctl start ${{ env.SERVICE_NAME }}
-            
+            sudo systemctl restart ${{ env.SERVICE_NAME }}
+            sudo rm -f /tmp/${{ env.ARTIFACT_NAME }}.tar.gz
+
             echo "✅ Готово! Проверка статуса:"
             sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager
