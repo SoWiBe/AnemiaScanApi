@@ -19,6 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug secrets
+        run: |
+          echo "host: ${{ secrets.VPS_HOST != '' }}"
+          echo "user: ${{ secrets.VPS_USERNAME != '' }}"
+          echo "key:  ${{ secrets.VPS_SSH_KEY != '' }}"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
