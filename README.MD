@@ -1,152 +1,212 @@
-# Anemia Scan API
+# AnemiaScan API
 
-## Overview
-Anemia Scan API is an ASP.NET Core Web API built with .NET 10.0. It provides machine‑learning based analysis of medical images to support early detection of anemia.
+ASP.NET Core Web API (.NET 10) for non-invasive anemia screening via image analysis and personalized recovery programs.
 
-## Core Features
-- **Image Analysis** – Upload conjunctiva, fingernail, or palm images for automated anemia assessment.
-- **Machine Learning Core** – Central ML component located in `Infrastructure/ML` processes images and returns confidence scores.
-- **Authorization** – Secure endpoints for user registration, login, token refresh, and sign‑out implemented in `Controllers/AuthorizationController.cs`.
-- **Analysis Endpoint** – Image upload and prediction logic in `Controllers/AnalysisController.cs`.
-- **Future Extensions** – Planned MongoDB persistence, JWT authentication, and Docker deployment.
-
-## Architecture
-- **Controllers** – API surface (`AuthorizationController`, `AnalysisController`).
-- **Services** – Business logic and ML orchestration (`Infrastructure/Services`).
-- **ML Module** – Core machine‑learning models and preprocessing (`Infrastructure/ML`).
-- **Filters** – Request validation and error handling.
-
-## Prerequisites
-- .NET 10.0 SDK
-- Visual Studio 2022 or VS Code with C# extensions
-- (Optional) MongoDB instance for data persistence
-
-## Getting Started
-```bash
-# Clone the repository
-git clone https://github.com/SoWiBe/AnemiaScanApi.git
-cd AnemiaScanApi
-
-# Restore dependencies
-dotnet restore
-
-# Build the project
-dotnet build
-
-# Run the API
-dotnet run --project AnemiaScanApi
-```
-The API will be available at `https://localhost:5001` with Swagger UI enabled in development mode.
-
-## API Documentation
-Swagger UI provides interactive documentation for all endpoints at the root URL when the API runs in development.
-
-## Project Structure
-```
-AnemiaScanApi/
-├─ Controllers/
-│   ├─ AuthorizationController.cs   # Auth flow (sign‑in, sign‑up, token refresh, sign‑out)
-│   └─ AnalysisController.cs       # Image analysis endpoint
-├─ Infrastructure/
-│   ├─ ML/                         # Core ML models and preprocessing logic
-│   └─ Services/                   # Business services
-├─ Filters/                        # Validation filters
-├─ Models/                         # Request/response DTOs
-└─ Program.cs                     # Application startup
-```
-
-## Contributing
-Contributions are welcome. Please follow these steps:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes with clear messages.
-4. Push to your fork and open a pull request.
-
-## License
-This project is licensed under the MIT License.
-
-## Contact
-- **Maintainer:** Aleks Dantist – aleksey.dantist@gmail.com
-- **GitHub:** https://github.com/SoWiBe/AnemiaScanApi
-
-## Disclaimer
-The API is intended for **screening purposes only** and does not replace professional medical diagnosis. Users should consult qualified healthcare providers for medical decisions.
+> **Medical disclaimer** — this API is a screening tool only and does not replace professional medical diagnosis. Always consult a qualified healthcare provider.
 
 ---
 
+## Contents
 
-## Project Overview
-Anemia Scan API is a server‑side ASP.NET Core Web API built with .NET 10.0. It provides machine‑learning based analysis of medical images to support early detection of anemia.
-
-## Core Features
-- **Image Analysis** – Upload conjunctiva, fingernail, or palm images for automated anemia assessment.
-- **Machine Learning Core** – Central ML component located in `Infrastructure/ML` that processes images and returns confidence scores.
-- **Authorization** – Secure endpoints for user registration, login, token refresh and sign‑out, implemented in `Controllers/AuthorizationController.cs`.
-- **Analysis Endpoint** – Image upload and prediction logic in `Controllers/AnalysisController.cs`.
-- **Future Extensions** – Planned MongoDB persistence, JWT authentication, and Docker deployment.
-
-## Architecture
-- **Controllers** – Web API surface (`AuthorizationController`, `AnalysisController`).
-- **Services** – Business logic and ML orchestration (`Infrastructure/Services`).
-- **ML Module** – Core machine‑learning models and preprocessing (`Infrastructure/ML`).
-- **Filters** – Request validation and error handling.
-
-## Prerequisites
-- .NET 10.0 SDK
-- Visual Studio 2022 or VS Code with C# extensions
-- (Optional) MongoDB instance for data persistence
-
-## Getting Started
-```bash
-# Clone repository
-git clone https://github.com/SoWiBe/AnemiaScanApi.git
-cd AnemiaScanApi
-
-# Restore dependencies
-dotnet restore
-
-# Build the project
-dotnet build
-
-# Run the API
-dotnet run --project AnemiaScanApi
-```
-The API will be available at `https://localhost:5001` with Swagger UI enabled in development mode.
-
-## API Documentation
-Swagger UI provides interactive documentation for all endpoints. Access it at the root URL when the API runs in development.
-
-## Project Structure
-```
-AnemiaScanApi/
-├─ Controllers/
-│   ├─ AuthorizationController.cs   # Auth flow (sign‑in, sign‑up, token refresh, sign‑out)
-│   └─ AnalysisController.cs       # Image analysis endpoint
-├─ Infrastructure/
-│   ├─ ML/                         # Core ML models and preprocessing logic
-│   └─ Services/                   # Business services
-├─ Filters/                        # Validation filters
-├─ Models/                         # Request/response DTOs
-└─ Program.cs                     # Application startup
-```
-
-## Contributing
-Contributions are welcome. Please follow these steps:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes with clear messages.
-4. Push to your fork and open a pull request.
-
-## License
-This project is licensed under the MIT License.
-
-## Contact
-- **Maintainer:** Aleks Dantist – aleksey.dantist@gmail.com
-- **GitHub:** https://github.com/SoWiBe/AnemiaScanApi
-
-## Disclaimer
-The API is intended for **screening purposes only** and does not replace professional medical diagnosis. Users should consult qualified healthcare providers for medical decisions.l diagnosis. Always consult healthcare providers for medical advice.
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
 
 ---
 
-**Made with ❤️ for better healthcare accessibility**
+## Features
+
+| Area | Description |
+|---|---|
+| **Anemia Screening** | Upload conjunctiva / fingernail / palm images; ML model returns prediction + confidence score |
+| **Auth** | JWT bearer + refresh tokens; email verification codes; BCrypt password hashing |
+| **User Profile** | Profile CRUD, password change |
+| **Course Catalog** | Published recovery programs; audience-aware recommendations based on scan history |
+| **Enrollment & Streak** | Enroll in a course; mark daily tasks done; streak tracking (current / longest) |
+| **Checkpoint Scans** | Attach a rescan to a checkpoint day to unlock day completion and track Hb progress |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Runtime | .NET 10.0 (ASP.NET Core) |
+| ML | ML.NET 5 + TensorFlow, `PredictionEnginePool` with hot-reload |
+| Database | MongoDB 7 + GridFS (image storage) |
+| Auth | JWT Bearer (`Microsoft.AspNetCore.Authentication.JwtBearer`) |
+| Logging | Serilog (console + rolling file) |
+| Email | MailKit / SMTP |
+| API Docs | Scalar (`MapScalarApiReference`) |
+| Tests | xUnit 2.9 · Moq 4.20 · FluentAssertions 6.12 |
+
+---
+
+## Architecture
+
+```
+Request → Controller → Service → Repository → MongoDB
+```
+
+- **Controllers** (`Controllers/`) — thin; inherit `BaseSasController` for `Logger` and `GetUserId()`.
+- **Services** (`Infrastructure/Services/`) — business logic; inherit `BaseService<T>`; throw `SASException(message, statusCode)` for domain errors.
+- **Repositories** (`Infrastructure/Repositories/`) — MongoDB CRUD; inherit `BaseMongoRepository<T>`.
+- **Middleware** (`Middleware/SASMiddleware.cs`) — catches `SASException` and maps it to the correct HTTP status; uncaught exceptions → 500.
+- **DI wiring** — all registrations live in `Extensions/ServicesExtensions.AddServices()`; `Program.cs` only composes extensions.
+- **Filters** — `ValidateImageAttribute` (size, extension, magic bytes); `ValidationCodeFilter` (email verification codes via `IMemoryCache`).
+
+---
+
+## Prerequisites
+
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
+- MongoDB 7+ instance (local or Atlas)
+- SMTP server access (for email codes)
+
+---
+
+## Getting Started
+
+```powershell
+# 1. Clone
+git clone https://github.com/SoWiBe/AnemiaScanApi.git
+cd AnemiaScanApi
+
+# 2. Supply secrets (see Configuration below)
+dotnet user-secrets set "MongoDB:ConnectionString" "mongodb://localhost:27017" --project AnemiaScanApi
+
+# 3. Restore & build
+dotnet restore
+dotnet build
+
+# 4. Run
+dotnet run --project AnemiaScanApi
+```
+
+The API starts on `https://localhost:5001` (or the port shown in the console).  
+Interactive docs are available at `/scalar/v1` once running.
+
+---
+
+## Configuration
+
+Secrets are managed via [.NET User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) (ID `73f44fb7-f595-4c2e-b926-c42c4ca31890`). The checked-in `appsettings.json` ships with empty values intentionally — never commit real credentials.
+
+```powershell
+# MongoDB
+dotnet user-secrets set "MongoDB:ConnectionString" "<connection-string>" --project AnemiaScanApi
+dotnet user-secrets set "MongoDB:DatabaseName"     "<db-name>"           --project AnemiaScanApi
+
+# JWT
+dotnet user-secrets set "JwtSettings:Secret"                      "<256-bit-secret>"  --project AnemiaScanApi
+dotnet user-secrets set "JwtSettings:Issuer"                      "<issuer>"          --project AnemiaScanApi
+dotnet user-secrets set "JwtSettings:Audience"                    "<audience>"        --project AnemiaScanApi
+dotnet user-secrets set "JwtSettings:AccessTokenExpirationMinutes" "60"               --project AnemiaScanApi
+dotnet user-secrets set "JwtSettings:RefreshTokenExpirationDays"   "30"               --project AnemiaScanApi
+
+# SMTP / Email
+dotnet user-secrets set "Smtp:Host"     "<smtp-host>" --project AnemiaScanApi
+dotnet user-secrets set "Smtp:Port"     "587"         --project AnemiaScanApi
+dotnet user-secrets set "Smtp:Username" "<user>"      --project AnemiaScanApi
+dotnet user-secrets set "Smtp:Password" "<password>"  --project AnemiaScanApi
+```
+
+In production, supply the same keys as environment variables (`MongoDB__ConnectionString`, etc.) or via your platform's secret store.
+
+### ML Model
+
+The anemia model (`anemia_v10_more_aug.zip`) must be placed in `AnemiaScanApi/LLM/`. The loader looks one directory above the build output, so the path resolves automatically at dev time. Replace the file and restart to hot-reload a new model version.
+
+---
+
+## API Documentation
+
+[Scalar](https://scalar.com) UI is wired in `Program.cs` via `MapScalarApiReference`. Once the API is running, open:
+
+```
+https://localhost:5001/scalar/v1
+```
+
+The OpenAPI JSON document is at `/openapi/v1.json`.
+
+---
+
+## Testing
+
+```powershell
+dotnet test
+```
+
+The test project (`AnemiaScanApi.Tests/`) uses **xUnit + Moq + FluentAssertions**. All tests are pure unit tests — repositories are mocked, no database connection required.
+
+| Test class | Coverage |
+|---|---|
+| `StreakServiceTests` | Streak increment, reset, idempotency, longest-streak tracking |
+| `CourseCatalogServiceTests` | Catalog listing, recommendation engine, scan-order correctness, day preview mapping |
+| `CourseEnrollmentServiceTests` | Enroll (404/409/success), task completion, checkpoint-day guard, ownership guard |
+
+---
+
+## Project Structure
+
+```
+AnemiaScanApi.sln
+├── AnemiaScanApi/                         # Main API project
+│   ├── Common/                            # Domain models, enums, DTOs, constants
+│   │   ├── Enums/                         # CourseContentStatus, EnrollmentStatus, TargetAudience, …
+│   │   ├── Constants/                     # MongoCollection, ExceptionMessage, ModelName, …
+│   │   ├── Requests/                      # Input DTOs (auth, profile, courses, …)
+│   │   └── Responses/                     # Output DTOs
+│   ├── Controllers/                       # HTTP surface
+│   │   ├── Core/BaseSasController.cs
+│   │   ├── AuthorizationController.cs
+│   │   ├── AnalysisController.cs
+│   │   ├── ProfileController.cs
+│   │   ├── CoursesController.cs
+│   │   └── CourseEnrollmentsController.cs
+│   ├── Infrastructure/
+│   │   ├── Core/                          # BaseMongoRepository<T>, IMongoRepository<T>
+│   │   ├── Repositories/                  # MongoDB repository implementations + interfaces
+│   │   ├── Services/                      # Business logic implementations + interfaces (Core/)
+│   │   ├── Settings/                      # Strongly-typed config classes
+│   │   ├── Exceptions/SASException.cs
+│   │   └── Utils/                         # CodeGenerator, EmailSender
+│   ├── Extensions/                        # DI wiring, JWT, Serilog, ML, SMTP setup
+│   ├── Filters/                           # ValidateImageAttribute, ValidationCodeFilter
+│   ├── Middleware/SASMiddleware.cs        # Global exception → HTTP response mapping
+│   ├── docs/                              # ADRs and API spec
+│   └── Program.cs
+└── AnemiaScanApi.Tests/                   # Unit test project
+    ├── Services/                          # Test classes
+    └── Fixtures/                          # CourseBuilder, SasUserBuilder
+```
+
+---
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature`.
+3. Keep commits small and descriptive.
+4. Ensure `dotnet build` passes with zero errors and `dotnet test` is green.
+5. Open a pull request against `master`.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
+
+**Authors & Maintainers**
+
+| | |
+|---|---|
+| Aleksey Gryzlov | [aleksey.dantist@gmail.com](mailto:aleksey.dantist@gmail.com) · [github.com/SoWiBe](https://github.com/SoWiBe) |
+| Karim Abrahmanov | [karim.abrahmanov09@gmail.com](mailto:karim.abrahmanov09@gmail.com) · [github.com/dinsoul09](https://github.com/dinsoul09) |
