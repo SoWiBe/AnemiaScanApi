@@ -13,4 +13,16 @@ public static class MongoCollection
     /// Collection for anemia scan data.
     /// </summary>
     public const string AnemiaScans = "AnemiaScans";
+    /// <summary>
+    /// Collection for course catalog entries.
+    /// </summary>
+    public const string Courses = "Courses";
+    /// <summary>
+    /// Collection for course content (days + tasks).
+    /// </summary>
+    public const string CourseContent = "CourseContent";
+    /// <summary>
+    /// Collection for user enrollments in courses with progress.
+    /// </summary>
+    public const string CourseEnrollments = "CourseEnrollments";
 }

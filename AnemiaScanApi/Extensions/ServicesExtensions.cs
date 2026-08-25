@@ -92,17 +92,23 @@ public static class ServicesExtensions
     {
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<IAnemiaScansRepository, AnemiaScansRepository>();
+        services.AddScoped<ICoursesRepository, CoursesRepository>();
+        services.AddScoped<ICourseContentRepository, CourseContentRepository>();
+        services.AddScoped<ICourseEnrollmentsRepository, CourseEnrollmentsRepository>();
 
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
         services.AddScoped<IPredictionService, PredictionService>();
         services.AddScoped<IProfileService, ProfileService>();
-        
+        services.AddScoped<IStreakService, StreakService>();
+        services.AddScoped<ICourseCatalogService, CourseCatalogService>();
+        services.AddScoped<ICourseEnrollmentService, CourseEnrollmentService>();
+
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<ICodeGenerator, CodeGenerator>();
-        
+
         services.AddMemoryCache();
-        
+
         return services;
     }
 
