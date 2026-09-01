@@ -26,6 +26,7 @@ builder.Services.AddSenderOptions(configuration);
 builder.Services
     .AddMongoDb(configuration)
     .AddServices()
+    .AddPayments(configuration)
     .AddAnemiaPredictionModel()
     .AddValidationFilters()
     .AddEndpointsApiExplorer()

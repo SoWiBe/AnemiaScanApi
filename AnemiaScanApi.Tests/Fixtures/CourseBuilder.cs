@@ -29,6 +29,17 @@ internal sealed class CourseBuilder
         return this;
     }
 
+    /// <summary>
+    /// Flips the course to paid with a price and a free-preview window.
+    /// </summary>
+    public CourseBuilder Paid(decimal priceUsdc = 9.99m, int freeDaysPreview = 3)
+    {
+        _course.IsFree = false;
+        _course.PriceUsdc = priceUsdc;
+        _course.FreeDaysPreview = freeDaysPreview;
+        return this;
+    }
+
     public CourseBuilder Draft()
     {
         _course.ContentStatus = CourseContentStatus.Draft;

@@ -30,9 +30,11 @@ public class SASMiddleware(RequestDelegate next, ILogger<SASMiddleware> logger)
 
         var response = exception.StatusCode switch
         {
+            503 => new ExceptionResponse(HttpStatusCode.ServiceUnavailable, exception.Message),
             409 => new ExceptionResponse(HttpStatusCode.Conflict, exception.Message),
             404 => new ExceptionResponse(HttpStatusCode.NotFound, exception.Message),
             403 => new ExceptionResponse(HttpStatusCode.Forbidden, exception.Message),
+            402 => new ExceptionResponse(HttpStatusCode.PaymentRequired, exception.Message),
             401 => new ExceptionResponse(HttpStatusCode.Unauthorized, exception.Message),
             400 => new ExceptionResponse(HttpStatusCode.BadRequest, exception.Message),
             _ => new ExceptionResponse(HttpStatusCode.InternalServerError, exception.Message),

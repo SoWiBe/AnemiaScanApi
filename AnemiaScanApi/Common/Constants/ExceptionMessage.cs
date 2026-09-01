@@ -13,4 +13,10 @@ public static class ExceptionMessage
     public const string DayNotYetAvailable = "Этот день ещё не открыт";
     public const string CheckpointScanRequired = "На чекпоинт-дне нужно привязать ре-скан";
     public const string CourseTaskNotFound = "Задача не найдена в этом дне курса";
+    public const string PaymentRequired = "Этот день доступен только после оплаты курса";
+    public const string PaymentIntentNotFound = "Платёж не найден";
+    public const string PaymentExpired = "Срок оплаты истёк, создайте новый платёж";
+    public const string CourseIsFree = "Курс бесплатный, оплата не требуется";
+    public const string CourseAlreadyPaid = "Курс уже оплачен";
+    public const string PaymentProviderNotAvailable = "Этот способ оплаты пока недоступен";
 }
