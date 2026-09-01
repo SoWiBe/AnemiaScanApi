@@ -25,4 +25,8 @@ public static class MongoCollection
     /// Collection for user enrollments in courses with progress.
     /// </summary>
     public const string CourseEnrollments = "CourseEnrollments";
+    /// <summary>
+    /// Collection for course payment intents.
+    /// </summary>
+    public const string PaymentIntents = "PaymentIntents";
 }

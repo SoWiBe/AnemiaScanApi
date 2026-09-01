@@ -17,6 +17,7 @@ public class CourseEnrollmentServiceTests
     private readonly Mock<ICourseContentRepository> _contentRepo = new();
     private readonly Mock<ICourseEnrollmentsRepository> _enrollmentsRepo = new();
     private readonly Mock<IAnemiaScansRepository> _scansRepo = new();
+    private readonly Mock<IPaymentIntentsRepository> _intentsRepo = new();
 
     private CourseEnrollmentService NewService() => new(
         _coursesRepo.Object,
@@ -24,6 +25,9 @@ public class CourseEnrollmentServiceTests
         _enrollmentsRepo.Object,
         _scansRepo.Object,
         new StreakService(NullLogger<StreakService>.Instance),
+        // Real entitlement service, not a mock: courses built here are free, so the gate must
+        // stay transparent — a mock would hide a regression that starts charging for them.
+        new CourseEntitlementService(_intentsRepo.Object, NullLogger<CourseEntitlementService>.Instance),
         NullLogger<CourseEnrollmentService>.Instance);
 
     [Fact]

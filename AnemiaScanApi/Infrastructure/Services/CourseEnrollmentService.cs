@@ -14,6 +14,7 @@ public class CourseEnrollmentService(
     ICourseEnrollmentsRepository enrollmentsRepository,
     IAnemiaScansRepository anemiaScansRepository,
     IStreakService streakService,
+    ICourseEntitlementService entitlementService,
     ILogger<CourseEnrollmentService> logger)
     : BaseService<CourseEnrollmentService>(logger), ICourseEnrollmentService
 {
@@ -88,6 +89,8 @@ public class CourseEnrollmentService(
         var day = content.Days.FirstOrDefault(d => d.DayNumber == dayNumber);
         if (day is null) return null;
 
+        await entitlementService.EnsureDayAccessAsync(course, enrollment, dayNumber, cancellationToken);
+
         var completion = enrollment.Days.FirstOrDefault(d => d.DayNumber == dayNumber);
         var completedIds = completion?.CompletedTaskIds ?? new List<Guid>();
 
@@ -121,6 +124,8 @@ public class CourseEnrollmentService(
 
         var day = content.Days.FirstOrDefault(d => d.DayNumber == dayNumber)
             ?? throw new SASException(ExceptionMessage.CourseDayNotFound, 404);
+
+        await entitlementService.EnsureDayAccessAsync(course, enrollment, dayNumber, cancellationToken);
 
         if (day.Tasks.All(t => t.Id != taskId))
         {
@@ -160,6 +165,8 @@ public class CourseEnrollmentService(
         {
             throw new SASException(ExceptionMessage.CheckpointScanRequired, 400);
         }
+
+        await entitlementService.EnsureDayAccessAsync(course, enrollment, dayNumber, cancellationToken);
 
         var scan = await anemiaScansRepository.GetAnemiaScanAsync(anemiaScanId.ToString(), cancellationToken);
         if (scan is null || scan.UserId != userId.ToString())
