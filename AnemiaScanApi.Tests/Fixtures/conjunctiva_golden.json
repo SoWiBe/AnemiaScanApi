@@ -1,0 +1,222 @@
+[
+  {
+    "imageId": "Image_092",
+    "fileName": "Image_092.png",
+    "severity": "Mild",
+    "hb": 10.7,
+    "L": 27.30837700610109,
+    "a": 19.058115530226523,
+    "b": 11.446850204983022,
+    "predictedHb": 10.054201908972283
+  },
+  {
+    "imageId": "Image_104",
+    "fileName": "Image_104.png",
+    "severity": "Mild",
+    "hb": 10.2,
+    "L": 70.83921799774193,
+    "a": 16.246685174124686,
+    "b": 12.936548246868792,
+    "predictedHb": 10.261277905513298
+  },
+  {
+    "imageId": "Image_429",
+    "fileName": "Image_429.png",
+    "severity": "Mild",
+    "hb": 10.6,
+    "L": 61.43227139491195,
+    "a": 21.96626225215887,
+    "b": 17.090067705381802,
+    "predictedHb": 10.691850529300861
+  },
+  {
+    "imageId": "Image_182",
+    "fileName": "Image_182.png",
+    "severity": "Mild",
+    "hb": 10.4,
+    "L": 69.59701576537331,
+    "a": 20.29392650048335,
+    "b": 24.592036023406525,
+    "predictedHb": 10.673105135004542
+  },
+  {
+    "imageId": "Image_223",
+    "fileName": "Image_223.png",
+    "severity": "Mild",
+    "hb": 10.5,
+    "L": 59.317569022665886,
+    "a": 43.03058977459768,
+    "b": 12.72792481232002,
+    "predictedHb": 10.824797159418253
+  },
+  {
+    "imageId": "Image_512",
+    "fileName": "Image_512.png",
+    "severity": "Moderate",
+    "hb": 9.5,
+    "L": 58.82397656674648,
+    "a": 17.227888817866337,
+    "b": 12.7412501714523,
+    "predictedHb": 9.909294670578495
+  },
+  {
+    "imageId": "Image_069",
+    "fileName": "Image_069.png",
+    "severity": "Moderate",
+    "hb": 8.0,
+    "L": 70.61113908457811,
+    "a": 20.04091573457247,
+    "b": -2.096364268565735,
+    "predictedHb": 8.870616012420253
+  },
+  {
+    "imageId": "Image_519",
+    "fileName": "Image_519.png",
+    "severity": "Moderate",
+    "hb": 9.5,
+    "L": 51.89912395976325,
+    "a": 16.48952151362139,
+    "b": 11.874307008820807,
+    "predictedHb": 8.93889871784086
+  },
+  {
+    "imageId": "Image_523",
+    "fileName": "Image_523.png",
+    "severity": "Moderate",
+    "hb": 9.5,
+    "L": 52.59999947252089,
+    "a": 16.024577671522014,
+    "b": 12.200528758147724,
+    "predictedHb": 9.278734357902161
+  },
+  {
+    "imageId": "Image_007",
+    "fileName": "Image_007.png",
+    "severity": "Moderate",
+    "hb": 9.9,
+    "L": 46.43698229370179,
+    "a": 26.211198385461557,
+    "b": 12.8284041514152,
+    "predictedHb": 10.17337473931216
+  },
+  {
+    "imageId": "Image_060",
+    "fileName": "Image_060.png",
+    "severity": "Non-Anemic",
+    "hb": 11.9,
+    "L": 67.27953043927369,
+    "a": 17.95434590021319,
+    "b": 3.245321152864153,
+    "predictedHb": 11.867405630091321
+  },
+  {
+    "imageId": "Image_418",
+    "fileName": "Image_418.png",
+    "severity": "Non-Anemic",
+    "hb": 11.7,
+    "L": 62.89141531488032,
+    "a": 30.00924548910233,
+    "b": 36.26014992084054,
+    "predictedHb": 12.000722794667205
+  },
+  {
+    "imageId": "Image_071",
+    "fileName": "Image_071.png",
+    "severity": "Non-Anemic",
+    "hb": 12.4,
+    "L": 63.64841623932044,
+    "a": 29.99279787716348,
+    "b": 20.115664638169584,
+    "predictedHb": 12.078996675689563
+  },
+  {
+    "imageId": "Image_371",
+    "fileName": "Image_371.png",
+    "severity": "Non-Anemic",
+    "hb": 13.5,
+    "L": 44.825311124201306,
+    "a": 32.88204088290737,
+    "b": 23.61215878284919,
+    "predictedHb": 11.830308037228166
+  },
+  {
+    "imageId": "Image_432",
+    "fileName": "Image_432.png",
+    "severity": "Non-Anemic",
+    "hb": 13.6,
+    "L": 77.57917720402281,
+    "a": 18.21543958801028,
+    "b": 30.968746723492,
+    "predictedHb": 12.428368340311808
+  },
+  {
+    "imageId": "Image_227",
+    "fileName": "Image_227.png",
+    "severity": "Severe",
+    "hb": 4.2,
+    "L": 51.9108558279244,
+    "a": 33.37565595759096,
+    "b": 12.434288271567494,
+    "predictedHb": 6.956341516539001
+  },
+  {
+    "imageId": "Image_231",
+    "fileName": "Image_231.png",
+    "severity": "Severe",
+    "hb": 6.6,
+    "L": 56.76266680395061,
+    "a": 20.331379490287564,
+    "b": 19.37011034676621,
+    "predictedHb": 9.109857633906882
+  },
+  {
+    "imageId": "Image_244",
+    "fileName": "Image_244.png",
+    "severity": "Severe",
+    "hb": 6.0,
+    "L": 54.00620640728301,
+    "a": 52.172848595917685,
+    "b": 32.01727881033235,
+    "predictedHb": 6.907653749992082
+  },
+  {
+    "imageId": "Image_488",
+    "fileName": "Image_488.png",
+    "severity": "Severe",
+    "hb": 6.4,
+    "L": 54.513399492468814,
+    "a": 31.45371349047038,
+    "b": 13.314731506657392,
+    "predictedHb": 9.107796613586563
+  },
+  {
+    "imageId": "Image_484",
+    "fileName": "Image_484.png",
+    "severity": "Severe",
+    "hb": 6.3,
+    "L": 50.69684535505387,
+    "a": 16.30952443854523,
+    "b": 22.438531721269744,
+    "predictedHb": 7.441878910621899
+  },
+  {
+    "imageId": "Image_293",
+    "fileName": "Image_293.png",
+    "severity": "Severe",
+    "hb": 3.1,
+    "L": 32.30013394899028,
+    "a": 23.80950011124645,
+    "b": 12.811762150796165,
+    "predictedHb": 7.212303605882986
+  },
+  {
+    "imageId": "Image_700",
+    "fileName": "Image_700.png",
+    "severity": "Non-Anemic",
+    "hb": 15.0,
+    "L": 67.84018951234752,
+    "a": 33.39988768518507,
+    "b": 20.83228971694702,
+    "predictedHb": 12.401138915604843
+  }
+]

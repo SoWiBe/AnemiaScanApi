@@ -28,6 +28,7 @@ builder.Services
     .AddServices()
     .AddPayments(configuration)
     .AddAnemiaPredictionModel()
+    .AddHemoglobinPredictionModel()
     .AddValidationFilters()
     .AddEndpointsApiExplorer()
     .AddSwagger();

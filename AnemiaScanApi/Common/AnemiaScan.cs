@@ -19,9 +19,18 @@ public class AnemiaScan : BaseMongoModel
     /// </summary>
     [BsonElement("scan_date")] public DateTime ScanDate { get; set; }
     /// <summary>
-    /// The hemoglobin level measured during the scan.
+    /// The hemoglobin level measured during the scan (CIELab regression —
+    /// see AnemiaScanApi.ML.HemoglobinPrediction). Null when that model
+    /// failed on this image (bad input) — the primary anemia classification
+    /// below is unaffected either way.
     /// </summary>
     [BsonElement("hemoglobin_level")] public double? HemoglobinLevel { get; set; }
+    /// <summary>
+    /// Severity band for <see cref="HemoglobinLevel"/> (Non-Anemic/Mild/
+    /// Moderate/Severe — see AnemiaScanApi.ML.SeverityBands). Null exactly
+    /// when <see cref="HemoglobinLevel"/> is null.
+    /// </summary>
+    [BsonElement("severity")] public string? Severity { get; set; }
     /// <summary>
     /// Indicates whether the user is anemic based on the scan results.
     /// </summary>
@@ -51,7 +60,11 @@ public class AnemiaScan : BaseMongoModel
     /// </summary>
     [BsonElement("image_system_id")] public string ImageSystemId { get; set; }
     /// <summary>
-    /// The version of the machine learning model used for the scan.
+    /// The version of the CIELab Hb-regression model used for this scan
+    /// (see AnemiaScanApi.Common.Constants.ModelVersions). Null when
+    /// <see cref="HemoglobinLevel"/> wasn't computed. Does not track the
+    /// primary TF anemia classifier's version — that's a separate, older
+    /// path that predates this field being populated.
     /// </summary>
-    [BsonElement("model_version")] public string ModelVersion { get; set; } = null!;
+    [BsonElement("model_version")] public string? ModelVersion { get; set; }
 }

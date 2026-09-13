@@ -1,0 +1,111 @@
+{
+  "version": "cielab-gb-v1",
+  "trained_at_utc": "2026-09-12T16:43:37.991419+00:00",
+  "model": {
+    "type": "GradientBoostingRegressor",
+    "params": {
+      "alpha": 0.9,
+      "ccp_alpha": 0.0,
+      "criterion": "deprecated",
+      "init": null,
+      "learning_rate": 0.1,
+      "loss": "squared_error",
+      "max_depth": 3,
+      "max_features": null,
+      "max_leaf_nodes": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 1,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "n_estimators": 100,
+      "n_iter_no_change": null,
+      "random_state": 42,
+      "subsample": 1.0,
+      "tol": 0.0001,
+      "validation_fraction": 0.1,
+      "verbose": 0,
+      "warm_start": false
+    },
+    "random_state": 42
+  },
+  "features": {
+    "columns": [
+      "L",
+      "a",
+      "b"
+    ],
+    "extractor": "features.extract_cielab_from_image",
+    "alpha_visible_threshold": 250,
+    "note": "L*a*b* считается только по пикселям с alpha >= 250 (видимая часть маски ROI, не весь прямоугольник кадра) — обязательно воспроизвести эту маскировку 1:1 при переносе на другой рантайм (Этап D плана)."
+  },
+  "severity_thresholds": {
+    "source": "Anemia_Data_Collection_Sheet.xlsx (CP-AnemiC, Mendeley Data)",
+    "note": "эмпирические границы конкретно в этом датасете, не общая клиническая норма",
+    "bands": [
+      {
+        "label": "Non-Anemic",
+        "hb_min": 11.0,
+        "hb_max": null
+      },
+      {
+        "label": "Mild",
+        "hb_min": 10.0,
+        "hb_max": 10.93
+      },
+      {
+        "label": "Moderate",
+        "hb_min": 7.0,
+        "hb_max": 9.98
+      },
+      {
+        "label": "Severe",
+        "hb_min": null,
+        "hb_max": 6.9
+      }
+    ]
+  },
+  "training_data": {
+    "source_csv": "data/cpanemic_clean_v1_features.csv",
+    "n_records": 394,
+    "hb_range": [
+      3.1,
+      15.0
+    ],
+    "severity_counts": {
+      "Non-Anemic": 227,
+      "Moderate": 95,
+      "Mild": 56,
+      "Severe": 16
+    }
+  },
+  "evaluation": {
+    "mae": 1.518,
+    "mae_ci": [
+      1.405,
+      1.638
+    ],
+    "r": 0.387,
+    "r_ci": [
+      0.299,
+      0.468
+    ],
+    "n_records": 394,
+    "protocol": "условие C — официальный StratifiedKFold по квартилям Hb (колонка fold из data/cpanemic_clean_v1.csv), n_splits=5, см. data/datacard.json"
+  },
+  "not_claimable": "независимость участников не подтверждена: в таблице датасета нет идентификатора пациента; сравнение с опубликованными результатами на всех 710 записях некорректно",
+  "provenance": {
+    "dataset_doi": "CP-AnemiC, Mendeley Data V1, DOI 10.17632/m53vz6b7fx.1",
+    "source_archive_sha256": "78d7c2eca49d250f3208b7cf384238d0793f5e772d33153e6ee7d73294cd319c"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "scikit_learn": "1.9.1"
+  },
+  "onnx_export": {
+    "path": "hb_model.onnx",
+    "target_opset": 17,
+    "max_abs_diff_vs_sklearn": 9.5367431640625e-07,
+    "verified_on": "data/cpanemic_clean_v1_features.csv (394 записей)"
+  }
+}
