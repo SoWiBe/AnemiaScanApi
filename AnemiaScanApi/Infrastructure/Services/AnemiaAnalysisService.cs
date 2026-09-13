@@ -1,10 +1,12 @@
 using MongoDB.Bson;
 
 using AnemiaScanApi.Common;
+using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Common.Enums;
 using AnemiaScanApi.Common.Responses;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
+using AnemiaScanApi.ML;
 
 namespace AnemiaScanApi.Infrastructure.Services;
 
@@ -38,14 +40,16 @@ public class AnemiaAnalysisService(
         return await anemiaScansRepository.DownloadImageAsync(anemiaScan.ImageSystemId, cancellationToken);
     }
 
-    public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(Guid userId, float score, string predictionLabel, byte[] image, CancellationToken cancellationToken)
+    public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(
+        Guid userId, float score, string predictionLabel, byte[] image,
+        HemoglobinPrediction? hemoglobinPrediction, CancellationToken cancellationToken)
     {
         var analysisId = Guid.NewGuid();
         var scanDate = DateTime.UtcNow;
 
         var (gridFsId, imageId) = await SaveImageAsync(analysisId, userId, image, cancellationToken);
         var isAnemia = predictionLabel == "Low_Hb";
-        
+
         var anemiaScan = new AnemiaScan
         {
             AnalysisId = analysisId.ToString(),
@@ -53,24 +57,31 @@ public class AnemiaAnalysisService(
             ImageGridFsId = gridFsId,
             Confidence = score,
             UserId = userId.ToString(),
-            HemoglobinLevel = null, // пока что не можем предоставить данную информацию
+            // CIELab-регрессия (см. IHemoglobinPredictionService) — отдельный
+            // путь от основного TF-классификатора выше; null, если он не
+            // смог посчитать признаки для этого изображения.
+            HemoglobinLevel = hemoglobinPrediction?.HemoglobinLevel,
+            Severity = hemoglobinPrediction?.Severity,
+            ModelVersion = hemoglobinPrediction is not null ? ModelVersions.CielabHemoglobinRegression : null,
             IsAnemic = isAnemia,
             ScanDate = scanDate
         };
 
         // сохраняем анализ в базе данных
         var createdAnemiaScan = await anemiaScansRepository.CreateAnemiaScanAsync(anemiaScan, cancellationToken);
-        
+
         // записываем анализ в профиль пользователя
         await profileService.WriteAnalysisAsync(userId, createdAnemiaScan, cancellationToken);
-        
+
         return new AnalyseAnemiaResponse
         (
             createdAnemiaScan.Id,
             createdAnemiaScan.Confidence,
             createdAnemiaScan.IsAnemic ? Sick.Anemia : Sick.Healthy,
             imageId,
-            scanDate
+            scanDate,
+            createdAnemiaScan.HemoglobinLevel,
+            createdAnemiaScan.Severity
         );
     }
 }

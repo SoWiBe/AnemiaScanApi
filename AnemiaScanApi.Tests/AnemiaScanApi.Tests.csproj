@@ -21,6 +21,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Golden-фикстуры для CielabFeatureExtractorTests/HbOnnxPredictorTests —
+         эталонные L/a/b/Hb посчитаны в anemia-machine-learning (Python),
+         см. Fixtures/conjunctiva_golden.json и PLAN_pretraining_and_api_integration.md, Этап D. -->
+    <Content Include="Fixtures\ConjunctivaSamples\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Fixtures\conjunctiva_golden.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Fixtures\hb_model.onnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

@@ -99,6 +99,7 @@ public static class ServicesExtensions
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IAnemiaAnalysisService, AnemiaAnalysisService>();
         services.AddScoped<IPredictionService, PredictionService>();
+        services.AddScoped<IHemoglobinPredictionService, HemoglobinPredictionService>();
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IStreakService, StreakService>();
         services.AddScoped<ICourseCatalogService, CourseCatalogService>();

@@ -13,9 +13,10 @@ namespace AnemiaScanApi.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class AnalysisController(
-    ILogger<AnalysisController> logger, 
+    ILogger<AnalysisController> logger,
     IAnemiaAnalysisService anemiaAnalysisService,
-    IPredictionService predictionService)
+    IPredictionService predictionService,
+    IHemoglobinPredictionService hemoglobinPredictionService)
     : BaseSasController(logger)
 {
     /// <summary>
@@ -33,12 +34,16 @@ public class AnalysisController(
 
         var prediction = await predictionService.PredictAnemiaAsync(request, cancellationToken);
         var imageBytes = await request.ImageData.UseAsBytesAsync();
-        
+        // Дополнительный путь — CIELab-регрессия Hb; при сбое возвращает null
+        // и не мешает основной классификации выше (см. Этап E плана).
+        var hemoglobinPrediction = await hemoglobinPredictionService.TryPredictAsync(imageBytes, cancellationToken);
+
         var response = await anemiaAnalysisService.WriteAnalyseAsync(
             userId,
             prediction.Score!.Max(),
             prediction.PredictedLabel!,
             imageBytes,
+            hemoglobinPrediction,
             cancellationToken);
 
         return Ok(response);
@@ -59,12 +64,14 @@ public class AnalysisController(
 
         var prediction = await predictionService.PredictAnemiaAsync(request, cancellationToken);
         var imageBytes = await request.ImageData.UseAsBytesAsync();
-        
+        var hemoglobinPrediction = await hemoglobinPredictionService.TryPredictAsync(imageBytes, cancellationToken);
+
         var response = await anemiaAnalysisService.WriteAnalyseAsync(
             userId,
             prediction.Score!.Max(),
             prediction.PredictedLabel!,
             imageBytes,
+            hemoglobinPrediction,
             cancellationToken);
 
         return Ok(response);
