@@ -11,8 +11,4 @@ public record CourseListItemResponse(
     string Title,
     string Description,
     TargetAudience TargetAudience,
-    int DurationDays,
-    bool IsFree,
-    decimal PriceUsdc,
-    decimal PriceKzt,
-    int FreeDaysPreview);
+    int DurationDays);

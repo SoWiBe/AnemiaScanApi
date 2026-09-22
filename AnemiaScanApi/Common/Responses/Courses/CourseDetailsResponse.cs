@@ -12,10 +12,6 @@ public record CourseDetailsResponse(
     string Description,
     TargetAudience TargetAudience,
     int DurationDays,
-    bool IsFree,
-    decimal PriceUsdc,
-    decimal PriceKzt,
-    int FreeDaysPreview,
     string? DoctorReviewerName,
     IReadOnlyList<CourseDayPreview> DayPreviews);
 
