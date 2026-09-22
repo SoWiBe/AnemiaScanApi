@@ -23,7 +23,7 @@ public class ProfileController(
     public async Task<IActionResult> GetProfileAsync(CancellationToken cancellationToken = default)
     {
         var user = await profileService.GetProfileAsync(GetUserId(), cancellationToken);
-        return Ok(new GetProfileResponse { Profile = user });
+        return Ok(new GetProfileResponse(user.Email, user.FullName, user.BirthDate, user.Sex, user.Age, user.AnemiaScans));
     }
     
     [HttpPatch]

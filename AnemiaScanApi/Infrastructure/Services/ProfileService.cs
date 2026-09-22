@@ -13,7 +13,14 @@ public class ProfileService(
     : BaseService<ProfileService>(logger), IProfileService
 {
     public async Task<SasUser> GetProfileAsync(Guid userId, CancellationToken cancellationToken = default)
-        => await repository.GetByIdAsync(userId, cancellationToken);
+    {
+        var user = await repository.GetByIdAsync(userId, cancellationToken);
+        // Раньше null уходил в контроллер и отдавался как 200 с пустым профилем; теперь
+        // контроллер читает поля пользователя напрямую, так что null здесь — это 500.
+        if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound, 404);
+
+        return user;
+    }
 
     public async Task UpdateProfileAsync(Guid userId, UpdateProfileRequest request, CancellationToken cancellationToken)
     {
