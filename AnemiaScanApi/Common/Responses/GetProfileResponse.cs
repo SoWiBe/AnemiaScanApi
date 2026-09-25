@@ -1,6 +1,12 @@
+using AnemiaScanApi.Common.Enums;
+
 namespace AnemiaScanApi.Common.Responses;
 
-public class GetProfileResponse
-{
-    public SasUser Profile { get; set; }
-}
+public record GetProfileResponse(
+    string Email,
+    string FullName,
+    DateTime? Birthday,
+    Sex? Sex,
+    int? Age,
+    IReadOnlyList<AnemiaScan> AnemiaScans,
+    ConsentResponse? Consent);

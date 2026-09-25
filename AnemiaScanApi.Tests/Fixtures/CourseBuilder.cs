@@ -13,7 +13,6 @@ internal sealed class CourseBuilder
         Description = "28-дневная программа для взрослых",
         TargetAudience = TargetAudience.Adult,
         DurationDays = 28,
-        IsFree = true,
         ContentStatus = CourseContentStatus.Published
     };
 
@@ -26,17 +25,6 @@ internal sealed class CourseBuilder
     public CourseBuilder WithSlug(string slug)
     {
         _course.Slug = slug;
-        return this;
-    }
-
-    /// <summary>
-    /// Flips the course to paid with a price and a free-preview window.
-    /// </summary>
-    public CourseBuilder Paid(decimal priceUsdc = 9.99m, int freeDaysPreview = 3)
-    {
-        _course.IsFree = false;
-        _course.PriceUsdc = priceUsdc;
-        _course.FreeDaysPreview = freeDaysPreview;
         return this;
     }
 

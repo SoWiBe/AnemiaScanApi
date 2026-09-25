@@ -4,16 +4,27 @@ using AnemiaScanApi.Common.Requests.Profile;
 using AnemiaScanApi.Exceptions;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
+using AnemiaScanApi.Settings;
+
+using Microsoft.Extensions.Options;
 
 namespace AnemiaScanApi.Infrastructure.Services;
 
 public class ProfileService(
     ILogger<ProfileService> logger,
-    IUsersRepository repository) 
+    IUsersRepository repository,
+    IOptions<LegalSettings> legalSettings) 
     : BaseService<ProfileService>(logger), IProfileService
 {
     public async Task<SasUser> GetProfileAsync(Guid userId, CancellationToken cancellationToken = default)
-        => await repository.GetByIdAsync(userId, cancellationToken);
+    {
+        var user = await repository.GetByIdAsync(userId, cancellationToken);
+        // Раньше null уходил в контроллер и отдавался как 200 с пустым профилем; теперь
+        // контроллер читает поля пользователя напрямую, так что null здесь — это 500.
+        if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound, 404);
+
+        return user;
+    }
 
     public async Task UpdateProfileAsync(Guid userId, UpdateProfileRequest request, CancellationToken cancellationToken)
     {
@@ -54,6 +65,29 @@ public class ProfileService(
         if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound);
         
         await repository.DeleteAsync(userId, cancellationToken);
+    }
+
+    public async Task<UserConsent> AcceptConsentAsync(Guid userId, string? policyVersion, CancellationToken cancellationToken)
+    {
+        var user = await repository.GetByIdAsync(userId, cancellationToken);
+        if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound, 404);
+
+        var currentVersion = legalSettings.Value.PolicyVersion;
+        if (!string.IsNullOrWhiteSpace(policyVersion) && policyVersion != currentVersion)
+            throw new SASException(ExceptionMessage.ConsentVersionMismatch, 400);
+
+        user.Consent = new UserConsent
+        {
+            PolicyVersion = currentVersion,
+            AcceptedAt = DateTime.UtcNow,
+            Accepted = true
+        };
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await repository.UpdateAsync(userId, user, cancellationToken);
+        Logger.LogInformation("Consent for policy {PolicyVersion} recorded for user {UserId}", currentVersion, userId);
+
+        return user.Consent;
     }
 
     private static Dictionary<string, Action<SasUser, string>> GetUpdateActions() => new()

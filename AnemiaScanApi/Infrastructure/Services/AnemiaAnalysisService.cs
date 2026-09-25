@@ -6,13 +6,19 @@ using AnemiaScanApi.Common.Enums;
 using AnemiaScanApi.Common.Responses;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
+using AnemiaScanApi.Infrastructure.Utils.Core;
 using AnemiaScanApi.ML;
+using AnemiaScanApi.Settings;
+
+using Microsoft.Extensions.Options;
 
 namespace AnemiaScanApi.Infrastructure.Services;
 
 public class AnemiaAnalysisService(
     IAnemiaScansRepository anemiaScansRepository,
     IProfileService profileService,
+    IImageCompressor imageCompressor,
+    IOptions<LegalSettings> legalSettings,
     ILogger<AnemiaAnalysisService> logger)
     : BaseService<AnemiaAnalysisService>(logger), IAnemiaAnalysisService
 {
@@ -22,8 +28,11 @@ public class AnemiaAnalysisService(
         Logger.LogInformation("Analyzing anemia for analysis ID {AnalysisId} and user ID {UserId}", analysisId, userId);
 
         var imageId = Guid.NewGuid();
+        // В GridFS кладём уменьшенную копию: оригинал с телефона — 2-3 МБ, а
+        // предсказания уже посчитаны по исходным байтам выше по стеку (P0 №9).
+        var storedImage = imageCompressor.CompressForStorage(image);
         var gridFsId = await anemiaScansRepository.SaveImageAsync(
-            image, $"anemia_scan_{imageId}",
+            storedImage, $"anemia_scan_{imageId}",
             "image/jpeg",
             analysisId, 
             userId, 
@@ -81,7 +90,11 @@ public class AnemiaAnalysisService(
             imageId,
             scanDate,
             createdAnemiaScan.HemoglobinLevel,
-            createdAnemiaScan.Severity
+            createdAnemiaScan.Severity,
+            // Дисклеймер в каждом ответе: вердикт без него на экран попасть не должен (P0 №12).
+            string.IsNullOrWhiteSpace(legalSettings.Value.DisclaimerText)
+                ? MedicalDisclaimer.Text
+                : legalSettings.Value.DisclaimerText
         );
     }
 }

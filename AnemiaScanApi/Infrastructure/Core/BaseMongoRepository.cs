@@ -1,6 +1,4 @@
 using AnemiaScanApi.Common;
-using AnemiaScanApi.Settings;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace AnemiaScanApi.Infrastructure.Core;
@@ -14,12 +12,15 @@ public abstract class BaseMongoRepository<T> : IMongoRepository<T> where T : Bas
     protected readonly IMongoCollection<T> Collection;
     protected readonly ILogger Logger;
 
-    protected BaseMongoRepository(IOptions<MongoDbSettings> mongoDbSettings, string collectionName, ILogger logger)
+    /// <param name="database">
+    /// Синглтон <see cref="IMongoDatabase"/> из DI (см. ServicesExtensions.AddMongoDb).
+    /// Репозитории Scoped, но клиент и база — общие на всё приложение: свой
+    /// <c>MongoClient</c> на репозиторий означал бы TLS-хендшейк и новый пул
+    /// соединений на каждый HTTP-запрос (P0 №2 в docs/plans/MVP_PLAN.md).
+    /// </param>
+    protected BaseMongoRepository(IMongoDatabase database, string collectionName, ILogger logger)
     {
-        var client = new MongoClient(mongoDbSettings.Value.ConnectionString);
-        var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
-        
-        Collection = database.GetCollection<T>(collectionName);        
+        Collection = database.GetCollection<T>(collectionName);
         Logger = logger;
     }
 

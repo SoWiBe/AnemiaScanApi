@@ -26,7 +26,9 @@ builder.Services.AddSenderOptions(configuration);
 builder.Services
     .AddMongoDb(configuration)
     .AddServices()
-    .AddPayments(configuration)
+    .AddAppOptions(configuration)
+    .AddSasRateLimiter(configuration)
+    .AddSasHealthChecks()
     .AddAnemiaPredictionModel()
     .AddHemoglobinPredictionModel()
     .AddValidationFilters()
@@ -39,16 +41,27 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapSwagger("/openapi/{documentName}.json");
-app.MapScalarApiReference();
+// Схема API и Scalar UI наружу в проде не выставляются: это карта всех
+// эндпоинтов без единой проверки прав (P0 №7 в docs/plans/MVP_PLAN.md).
+// Понадобилось открыть на стенде — ApiDocs__Enabled=true в окружении.
+if (app.Environment.IsDevelopment() || configuration.GetValue<bool>("ApiDocs:Enabled"))
+{
+    app.MapSwagger("/openapi/{documentName}.json");
+    app.MapScalarApiReference();
+}
 
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("DevCorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
+// После аутентификации: политика анализа партиционирует лимит по пользователю
+// из JWT, до UseAuthentication() claims ещё пустые и все бы делили лимит по IP.
+app.UseRateLimiter();
 
 app.UseMiddleware<SASMiddleware>();
 
+app.MapSasHealthChecks();
 app.MapControllers();
 
 app.Run();

@@ -7,6 +7,11 @@ namespace AnemiaScanApi.Common;
 /// Catalog entry for a recovery-program course.
 /// Content lives separately in <see cref="CourseContent"/> so the catalog stays cheap to list.
 /// </summary>
+/// <remarks>
+/// Extra elements are ignored: documents written before the payment layer was removed still
+/// carry is_free/price_usdc/price_kzt/free_days_preview, and must stay readable.
+/// </remarks>
+[BsonIgnoreExtraElements]
 public class Course : BaseMongoModel
 {
     /// <summary>
@@ -33,26 +38,6 @@ public class Course : BaseMongoModel
     /// Duration of the course in days.
     /// </summary>
     [BsonElement("duration_days")] public int DurationDays { get; set; }
-
-    /// <summary>
-    /// True in Phase 1 for all courses. Flip to false in Phase 2 with a price set.
-    /// </summary>
-    [BsonElement("is_free")] public bool IsFree { get; set; } = true;
-
-    /// <summary>
-    /// Price in USDC for Solana Pay (used in Phase 2+).
-    /// </summary>
-    [BsonElement("price_usdc")] public decimal PriceUsdc { get; set; }
-
-    /// <summary>
-    /// Price in KZT for Kaspi/card (used in Phase 2+).
-    /// </summary>
-    [BsonElement("price_kzt")] public decimal PriceKzt { get; set; }
-
-    /// <summary>
-    /// Number of freemium preview days accessible without payment (Phase 2+).
-    /// </summary>
-    [BsonElement("free_days_preview")] public int FreeDaysPreview { get; set; }
 
     /// <summary>
     /// Publication status. Only <see cref="CourseContentStatus.Published"/> shows in the catalog.

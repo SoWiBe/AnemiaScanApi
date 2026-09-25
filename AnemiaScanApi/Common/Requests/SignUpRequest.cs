@@ -39,4 +39,15 @@ public class SignUpRequest : BaseAuthRequest
     [Required(ErrorMessage = ValidationConstants.RequiredPasswordErrorMessage)]
     [Compare("Password", ErrorMessage = ValidationConstants.PasswordsDoNotMatchErrorMessage)]
     public string ConfirmPassword { get; init; } = null!;
+    /// <summary>
+    /// Факт принятия политики конфиденциальности и согласия на обработку
+    /// персональных данных. Без него регистрация отклоняется (P0 №13).
+    /// </summary>
+    public bool ConsentAccepted { get; init; }
+    /// <summary>
+    /// Версия политики, которую показали пользователю. Пусто — считаем, что
+    /// показали действующую; расхождение с действующей — ошибка, значит клиент
+    /// показал устаревший текст.
+    /// </summary>
+    public string? PolicyVersion { get; init; }
 }

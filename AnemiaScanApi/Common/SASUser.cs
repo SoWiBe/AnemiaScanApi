@@ -49,6 +49,12 @@ public class SasUser : BaseMongoModel
     /// </summary>
     [BsonElement("updated_at")] public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     /// <summary>
+    /// Согласие на обработку персональных данных: версия политики, время и
+    /// факт принятия (P0 №13). Null у пользователей, зарегистрированных до
+    /// появления поля.
+    /// </summary>
+    [BsonElement("consent")] public UserConsent? Consent { get; set; }
+    /// <summary>
     /// Anemia scans.
     /// </summary>
     [BsonElement("anemia_scans")] public List<AnemiaScan> AnemiaScans { get; set; } = new();

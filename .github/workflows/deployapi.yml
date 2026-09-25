@@ -92,6 +92,8 @@ jobs:
             CodeGenerator__Length=${{ secrets.CODE_GEN_LENGTH }}
             CodeGenerator__Chars=${{ secrets.CODE_GEN_CHARS }}
             CodeGenerator__CacheKey=${{ secrets.CODE_GEN_CACHE_KEY }}
+            Legal__PolicyVersion=${{ secrets.LEGAL_POLICY_VERSION }}
+            Legal__PolicyUrl=${{ secrets.LEGAL_POLICY_URL }}
             EOF
 
             echo "5. Настройка Systemd сервиса..."
@@ -107,8 +109,11 @@ jobs:
             RestartSec=10
             EnvironmentFile=${{ env.VPS_DEPLOY_PATH }}/.env
             User=${{ env.SERVICE_USER }}
-            # Ограничение памяти, чтобы 1ГБ сервер не завис
-            MemoryMax=700M
+            # Потолок памяти. 700M приводил к OOM: ML.NET + TensorFlow-рантайм держит
+            # граф модели в памяти, рабочий RSS — порядка 1-1.5 ГБ (P0 №4).
+            # MemoryHigh включает троттлинг до того, как сработает OOM-killer.
+            MemoryHigh=2000M
+            MemoryMax=2500M
             MemoryAccounting=true
 
             [Install]

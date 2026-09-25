@@ -6,6 +6,11 @@ namespace AnemiaScanApi.Common;
 /// <summary>
 /// A user's enrollment in a course, including per-day progress and streak state.
 /// </summary>
+/// <remarks>
+/// Extra elements are ignored: enrollments written before the payment layer was removed still
+/// carry paid_intent_id, and must stay readable.
+/// </remarks>
+[BsonIgnoreExtraElements]
 public class CourseEnrollment : BaseMongoModel
 {
     /// <summary>
@@ -42,11 +47,6 @@ public class CourseEnrollment : BaseMongoModel
     /// Per-day progress. Missing entries mean the day was not started.
     /// </summary>
     [BsonElement("days")] public List<DayCompletion> Days { get; set; } = new();
-
-    /// <summary>
-    /// Payment intent that unlocked this enrollment (Phase 2+). Null for free enrollments.
-    /// </summary>
-    [BsonElement("paid_intent_id")] public Guid? PaidIntentId { get; set; }
 
     /// <summary>
     /// Set when Status transitions to Completed.

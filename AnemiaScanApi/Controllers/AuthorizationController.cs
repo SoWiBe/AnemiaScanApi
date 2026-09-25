@@ -1,3 +1,4 @@
+using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Common.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using AnemiaScanApi.Infrastructure.Utils.Core;
 using Microsoft.Extensions.Caching.Memory;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 using IAuthorizationService = AnemiaScanApi.Infrastructure.Services.Core.IAuthorizationService;
 using IEmailSender = AnemiaScanApi.Utils.Core.IEmailSender;
@@ -117,6 +119,7 @@ public class AuthorizationController(
     /// <returns></returns>
     [HttpPost("email/verify-registration/")]
     [AllowAnonymous]
+    [EnableRateLimiting(RateLimitPolicies.EmailCodes)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -156,6 +159,7 @@ public class AuthorizationController(
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost("email/send-code/")]
+    [EnableRateLimiting(RateLimitPolicies.EmailCodes)]
     public async Task<IActionResult> SendCodeAsync(SendCodeRequest request, CancellationToken cancellationToken = default)
     {
         if (!await authorizationService.IsUserExistAsync(request.Email!, cancellationToken))

@@ -37,10 +37,6 @@ public class CourseCatalogService(
             course.Description,
             course.TargetAudience,
             course.DurationDays,
-            course.IsFree,
-            course.PriceUsdc,
-            course.PriceKzt,
-            course.FreeDaysPreview,
             course.DoctorReviewerName,
             previews);
     }
@@ -81,9 +77,5 @@ public class CourseCatalogService(
         c.Title,
         c.Description,
         c.TargetAudience,
-        c.DurationDays,
-        c.IsFree,
-        c.PriceUsdc,
-        c.PriceKzt,
-        c.FreeDaysPreview);
+        c.DurationDays);
 }

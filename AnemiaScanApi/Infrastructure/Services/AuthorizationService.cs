@@ -11,6 +11,7 @@ using AnemiaScanApi.Common.Auth;
 using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Infrastructure.Repositories;
+using AnemiaScanApi.Exceptions;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Settings;
 
@@ -19,7 +20,8 @@ namespace AnemiaScanApi.Infrastructure.Services;
 public class AuthorizationService(
     ILogger<AuthorizationService> logger, 
     IUsersRepository usersRepository,
-    IOptions<JwtSettings> jwtSettings) 
+    IOptions<JwtSettings> jwtSettings,
+    IOptions<LegalSettings> legalSettings) 
     : BaseService<AuthorizationService>(logger), IAuthorizationService
 {
     public async Task<TokenRecord> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -91,6 +93,10 @@ public class AuthorizationService(
             throw new InvalidOperationException("Email already exists");
         }
 
+        // Согласие проверяем до создания пользователя: аккаунт без записанного
+        // согласия — это данные, которые мы не имеем права обрабатывать (P0 №13).
+        var consent = BuildConsent(request);
+
         // Create new user
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var newUser = new SasUser
@@ -101,6 +107,7 @@ public class AuthorizationService(
             Sex = request.Sex,
             Age = request.Age,
             HashPassword = hashedPassword,
+            Consent = consent,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
@@ -182,6 +189,35 @@ public class AuthorizationService(
         Logger.LogInformation("User {UserId} signed out successfully", userId);
     }
     
+    /// <summary>
+    /// Превращает галку из запроса в запись согласия. Несовпадение версии —
+    /// ошибка, а не «примем как есть»: иначе мы записали бы согласие под текст,
+    /// которого пользователь не видел.
+    /// </summary>
+    private UserConsent BuildConsent(SignUpRequest request)
+    {
+        if (!request.ConsentAccepted)
+        {
+            Logger.LogWarning("Registration rejected: consent not accepted for {Email}", request.Email);
+            throw new SASException(ExceptionMessage.ConsentRequired, 400);
+        }
+
+        var currentVersion = legalSettings.Value.PolicyVersion;
+        if (!string.IsNullOrWhiteSpace(request.PolicyVersion) && request.PolicyVersion != currentVersion)
+        {
+            Logger.LogWarning("Registration rejected: consent for stale policy {Accepted}, current {Current}",
+                request.PolicyVersion, currentVersion);
+            throw new SASException(ExceptionMessage.ConsentVersionMismatch, 400);
+        }
+
+        return new UserConsent
+        {
+            PolicyVersion = currentVersion,
+            AcceptedAt = DateTime.UtcNow,
+            Accepted = true
+        };
+    }
+
     private string GenerateAccessToken(SasUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
