@@ -1,4 +1,7 @@
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
@@ -76,15 +79,57 @@ public static class ServicesExtensions
     }
 
     /// <summary>
-    /// Добавляем монгу
+    /// Добавляем монгу.
+    ///
+    /// Клиент, база и GridFS-бакет — синглтоны: MongoClient потокобезопасен и
+    /// сам держит пул соединений, а создание нового клиента на каждый
+    /// Scoped-репозиторий означало бы TLS-хендшейк на каждый HTTP-запрос и
+    /// быстрый выход на лимит соединений тарифа Atlas
+    /// (P0 №2 в docs/plans/MVP_PLAN.md).
     /// </summary>
     /// <param name="configuration"></param>
     public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<MongoDbSettings>(configuration.GetSection("MongoDB"));
+
+        services.AddSingleton<IMongoClient>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            return new MongoClient(settings.ConnectionString);
+        });
+
+        services.AddSingleton<IMongoDatabase>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            return sp.GetRequiredService<IMongoClient>().GetDatabase(settings.DatabaseName);
+        });
+
+        services.AddSingleton<IGridFSBucket>(sp => new GridFSBucket(sp.GetRequiredService<IMongoDatabase>()));
+
         return services;
     }
     
+    /// <summary>
+    /// Настройки, которые должны меняться без передеплоя:
+    /// <c>Legal</c> — версия политики и тексты (P0 №12 и №13; версия попадает
+    /// в согласие пользователя, поэтому живёт в конфиге, а не в коде),
+    /// <c>ImageStorage</c> — параметры сжатия снимка перед GridFS (P0 №9).
+    /// </summary>
+    public static IServiceCollection AddAppOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<LegalSettings>(configuration.GetSection("Legal"));
+        // Незаданная переменная окружения приезжает пустой строкой и перетирает
+        // дефолт. Для версии политики это тихая порча согласий (P0 №13), поэтому
+        // пустое значение возвращаем к дефолту.
+        services.PostConfigure<LegalSettings>(legal =>
+        {
+            if (string.IsNullOrWhiteSpace(legal.PolicyVersion))
+                legal.PolicyVersion = LegalSettings.DefaultPolicyVersion;
+        });
+        services.Configure<ImageStorageSettings>(configuration.GetSection("ImageStorage"));
+        return services;
+    }
+
     /// <summary>
     /// Регистрируем все внутренние сервисы и репозитории
     /// </summary>
@@ -107,6 +152,8 @@ public static class ServicesExtensions
 
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<ICodeGenerator, CodeGenerator>();
+        // Без состояния, тяжёлых зависимостей и на каждый скан один вызов — singleton.
+        services.AddSingleton<IImageCompressor, ImageCompressor>();
 
         services.AddMemoryCache();
 

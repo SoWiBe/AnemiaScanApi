@@ -13,4 +13,6 @@ public static class ExceptionMessage
     public const string DayNotYetAvailable = "Этот день ещё не открыт";
     public const string CheckpointScanRequired = "На чекпоинт-дне нужно привязать ре-скан";
     public const string CourseTaskNotFound = "Задача не найдена в этом дне курса";
+    public const string ConsentRequired = "Для регистрации нужно принять политику конфиденциальности и согласие на обработку данных";
+    public const string ConsentVersionMismatch = "Принята устаревшая версия политики конфиденциальности, обновите приложение";
 }

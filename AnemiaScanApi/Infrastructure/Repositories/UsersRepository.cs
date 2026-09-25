@@ -1,14 +1,12 @@
 using AnemiaScanApi.Common;
 using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Infrastructure.Core;
-using AnemiaScanApi.Settings;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace AnemiaScanApi.Infrastructure.Repositories;
 
-public class UsersRepository(IOptions<MongoDbSettings> mongoDbSettings, ILogger<UsersRepository> logger)
-    : BaseMongoRepository<SasUser>(mongoDbSettings, MongoCollection.Users, logger), IUsersRepository
+public class UsersRepository(IMongoDatabase database, ILogger<UsersRepository> logger)
+    : BaseMongoRepository<SasUser>(database, MongoCollection.Users, logger), IUsersRepository
 {
     public Task<SasUser> CreateUserAsync(SasUser user, CancellationToken cancellationToken = default)
          => Collection

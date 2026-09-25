@@ -1,11 +1,9 @@
 using AnemiaScanApi.Common;
 using AnemiaScanApi.Common.Constants;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
  
 using AnemiaScanApi.Infrastructure.Core;
-using AnemiaScanApi.Settings;
 using MongoDB.Bson;
 
 namespace AnemiaScanApi.Infrastructure.Repositories;
@@ -18,21 +16,20 @@ public class AnemiaScansRepository : BaseMongoRepository<AnemiaScan>, IAnemiaSca
     /// <summary>
     /// GridFS bucket for storing images.
     /// </summary>
-    private readonly GridFSBucket _gridFsBucket;
+    private readonly IGridFSBucket _gridFsBucket;
 
     /// <summary>
     /// Service for AnemiaScan-related MongoDB operations.
     /// </summary>
-    /// <param name="mongoDbSettings"></param>
+    /// <param name="database">Синглтон базы из DI (см. ServicesExtensions.AddMongoDb).</param>
+    /// <param name="gridFsBucket">Синглтон GridFS-бакета поверх той же базы.</param>
     /// <param name="logger"></param>
-    public AnemiaScansRepository(IOptions<MongoDbSettings> mongoDbSettings, ILogger<AnemiaScansRepository> logger) 
-        : base(mongoDbSettings, MongoCollection.AnemiaScans, logger)
+    public AnemiaScansRepository(IMongoDatabase database, IGridFSBucket gridFsBucket, ILogger<AnemiaScansRepository> logger) 
+        : base(database, MongoCollection.AnemiaScans, logger)
     {
-        var client = new MongoClient(mongoDbSettings.Value.ConnectionString);
-        var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
-        _gridFsBucket = new GridFSBucket(database);
+        _gridFsBucket = gridFsBucket;
     }
-    
+
     //TODO: Transfer workflow with Images to ImagesRepository
     #region Image operations
     /// <summary>

@@ -23,7 +23,12 @@ public class ProfileController(
     public async Task<IActionResult> GetProfileAsync(CancellationToken cancellationToken = default)
     {
         var user = await profileService.GetProfileAsync(GetUserId(), cancellationToken);
-        return Ok(new GetProfileResponse(user.Email, user.FullName, user.BirthDate, user.Sex, user.Age, user.AnemiaScans));
+        var consent = user.Consent is null
+            ? null
+            : new ConsentResponse(user.Consent.PolicyVersion, user.Consent.AcceptedAt, user.Consent.Accepted);
+
+        return Ok(new GetProfileResponse(user.Email, user.FullName, user.BirthDate, user.Sex, user.Age,
+            user.AnemiaScans, consent));
     }
     
     [HttpPatch]
@@ -35,5 +40,20 @@ public class ProfileController(
     {
         await profileService.UpdateProfileAsync(GetUserId(), request, cancellationToken);
         return Ok(new UpdateProfileResponse { Message = "Данные о пользователе успешно обновлены" });
+    }
+
+    /// <summary>
+    /// Принять действующую версию политики конфиденциальности (P0 №13).
+    /// Нужен, когда версия политики поднялась уже после регистрации: клиент
+    /// видит расхождение версий и просит подписать заново.
+    /// </summary>
+    [HttpPost("consent/")]
+    [ProducesResponseType(typeof(ConsentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AcceptConsentAsync(AcceptConsentRequest request, CancellationToken cancellationToken = default)
+    {
+        var consent = await profileService.AcceptConsentAsync(GetUserId(), request.PolicyVersion, cancellationToken);
+        return Ok(new ConsentResponse(consent.PolicyVersion, consent.AcceptedAt, consent.Accepted));
     }
 }
