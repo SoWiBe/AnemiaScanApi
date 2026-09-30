@@ -1,0 +1,16 @@
+[Unit]
+Description=AnemiaScan MongoDB backup
+After=network-online.target mongod.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/mongodb-backup.sh
+# Ротация архивов и выгрузка требуют root; сам дамп ходит в базу по MONGO_URI
+# из /etc/anemiascan-backup.env (файл с паролем, режим 600).
+User=root
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=Nightly AnemiaScan MongoDB backup
+
+[Timer]
+# 03:20 UTC. Со сдвигом от круглого часа, чтобы не совпадать с чужими
+# крон-задачами на той же машине.
+OnCalendar=*-*-* 03:20:00 UTC
+# Сервер мог быть выключен в момент срабатывания — догнать после старта.
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

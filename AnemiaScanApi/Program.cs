@@ -1,7 +1,10 @@
+using System.Net;
 using System.Text.Json.Serialization;
 
 using AnemiaScanApi.Extensions;
 using AnemiaScanApi.Middleware;
+
+using Microsoft.AspNetCore.HttpOverrides;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +52,23 @@ if (app.Environment.IsDevelopment() || configuration.GetValue<bool>("ApiDocs:Ena
     app.MapSwagger("/openapi/{documentName}.json");
     app.MapScalarApiReference();
 }
+
+// Приложение слушает loopback за nginx, поэтому реальный IP клиента приезжает
+// только в X-Forwarded-For. Без этого rate-limit по IP (политика email-кодов)
+// сложил бы всех в одну корзину 127.0.0.1 — пять писем в десять минут на всех.
+// Ставится до UseRouting: дальше по конвейеру IP уже читают.
+var forwardedHeaders = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    // Доверяем ровно одному прокси — локальному nginx. Иначе клиент мог бы
+    // подделать X-Forwarded-For и обойти лимит.
+    ForwardLimit = 1
+};
+forwardedHeaders.KnownProxies.Clear();
+forwardedHeaders.KnownNetworks.Clear();
+forwardedHeaders.KnownProxies.Add(IPAddress.Loopback);
+forwardedHeaders.KnownProxies.Add(IPAddress.IPv6Loopback);
+app.UseForwardedHeaders(forwardedHeaders);
 
 app.UseHttpsRedirection();
 app.UseRouting();
