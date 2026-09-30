@@ -1,0 +1,16 @@
+[Unit]
+Description=Disable transparent huge pages for MongoDB
+Before=mongod.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+# MongoDB требует отключённые THP: с ними WiredTiger получает рваную
+# производительность и завышенный RSS. Настройка не переживает перезагрузку,
+# поэтому юнит, а не разовая команда.
+ExecStart=/bin/sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
+ExecStart=/bin/sh -c 'echo never > /sys/kernel/mm/transparent_hugepage/defrag'
+
+[Install]
+WantedBy=basic.target

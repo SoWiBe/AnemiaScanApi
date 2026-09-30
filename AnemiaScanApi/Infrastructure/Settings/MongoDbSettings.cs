@@ -2,6 +2,8 @@ namespace AnemiaScanApi.Settings;
 
 /// <summary>
 /// Configuration settings for MongoDB.
+/// Имена коллекций сюда не выносятся — они в
+/// <see cref="Common.Constants.MongoCollection"/>.
 /// </summary>
 public class MongoDbSettings
 {
@@ -13,8 +15,4 @@ public class MongoDbSettings
     /// Name of the MongoDB database.
     /// </summary>
     public string DatabaseName { get; set; }
-    /// <summary>
-    /// A dictionary of collection names and their corresponding names.
-    /// </summary>
-    public Dictionary<string, string> Collections { get; set; }
 }
