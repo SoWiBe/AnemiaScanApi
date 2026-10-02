@@ -18,4 +18,11 @@ public interface IAnemiaAnalysisService
         Guid userId, float score, string predictionLabel, byte[] image,
         HemoglobinPrediction? hemoglobinPrediction, CancellationToken cancellationToken);
     Task<byte[]> GetImageAsync(string analysisId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Страница истории сканов пользователя (P0 №8). Выборка строго по userId —
+    /// идентификатор берётся из JWT, а не из запроса.
+    /// </summary>
+    Task<AnalysisHistoryResponse> GetHistoryAsync(Guid userId, int page, int pageSize,
+        CancellationToken cancellationToken = default);
 }

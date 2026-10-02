@@ -41,4 +41,15 @@ public interface IAnemiaScansRepository : IMongoRepository<AnemiaScan>
     /// <returns></returns>
     Task<AnemiaScan> CreateAnemiaScanAsync(AnemiaScan anemiaScan, CancellationToken cancellationToken = default);
     Task<AnemiaScan> GetAnemiaScanAsync(string analysisId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Сканы пользователя, новые сверху, страницей (P0 №8).
+    /// </summary>
+    Task<IReadOnlyList<AnemiaScan>> GetByUserAsync(Guid userId, int skip, int take,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Сколько всего сканов у пользователя — для постраничной навигации.
+    /// </summary>
+    Task<long> CountByUserAsync(Guid userId, CancellationToken cancellationToken = default);
 }

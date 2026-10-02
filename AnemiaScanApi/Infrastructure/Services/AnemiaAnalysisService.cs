@@ -49,6 +49,30 @@ public class AnemiaAnalysisService(
         return await anemiaScansRepository.DownloadImageAsync(anemiaScan.ImageSystemId, cancellationToken);
     }
 
+    public async Task<AnalysisHistoryResponse> GetHistoryAsync(Guid userId, int page, int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var skip = (page - 1) * pageSize;
+
+        var total = await anemiaScansRepository.CountByUserAsync(userId, cancellationToken);
+        var scans = await anemiaScansRepository.GetByUserAsync(userId, skip, pageSize, cancellationToken);
+
+        Logger.LogInformation("Returning {Count} of {Total} scans for user {UserId}", scans.Count, total, userId);
+
+        var items = scans
+            .Select(scan => new AnalysisHistoryItemResponse(
+                scan.Id,
+                scan.ScanDate,
+                scan.IsAnemic ? Sick.Anemia : Sick.Healthy,
+                scan.Confidence,
+                scan.HemoglobinLevel,
+                scan.Severity,
+                Guid.TryParse(scan.ImageSystemId, out var imageId) ? imageId : null))
+            .ToList();
+
+        return new AnalysisHistoryResponse(items, total, page, pageSize, ResolveDisclaimer());
+    }
+
     public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(
         Guid userId, float score, string predictionLabel, byte[] image,
         HemoglobinPrediction? hemoglobinPrediction, CancellationToken cancellationToken)
@@ -92,9 +116,15 @@ public class AnemiaAnalysisService(
             createdAnemiaScan.HemoglobinLevel,
             createdAnemiaScan.Severity,
             // Дисклеймер в каждом ответе: вердикт без него на экран попасть не должен (P0 №12).
-            string.IsNullOrWhiteSpace(legalSettings.Value.DisclaimerText)
-                ? MedicalDisclaimer.Text
-                : legalSettings.Value.DisclaimerText
+            ResolveDisclaimer()
         );
     }
+
+    /// <summary>
+    /// Текст дисклеймера: переопределение из конфига, иначе встроенный (P0 №12).
+    /// </summary>
+    private string ResolveDisclaimer()
+        => string.IsNullOrWhiteSpace(legalSettings.Value.DisclaimerText)
+            ? MedicalDisclaimer.Text
+            : legalSettings.Value.DisclaimerText;
 }

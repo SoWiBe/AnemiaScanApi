@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anemiascan/schemas/course.schema.json",
+  "title": "AnemiaScan course",
+  "description": "Один курс целиком: карточка каталога + все дни. Импортёр раскладывает это в коллекции Courses и CourseContent. Описание полей для автора — docs/course-content-schema.md",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["slug", "title", "description", "targetAudience", "durationDays", "days"],
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "Стабильный идентификатор в URL. Менять нельзя после публикации — на него ссылается мобилка.",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "title": {
+      "type": "string",
+      "description": "Заголовок карточки в каталоге.",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "description": "Краткое описание для карточки каталога. Обычный текст, не Markdown.",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "targetAudience": {
+      "description": "Аудитория курса. На MVP нужен только Adult.",
+      "enum": ["Adult", "Pregnant", "Child", "Postpartum"]
+    },
+    "durationDays": {
+      "type": "integer",
+      "description": "Длительность курса в днях. Должна совпадать с количеством элементов days.",
+      "minimum": 1,
+      "maximum": 365
+    },
+    "contentStatus": {
+      "description": "Published — курс виден в каталоге. Всё остальное скрыто.",
+      "enum": ["Draft", "DoctorReview", "Published"],
+      "default": "Draft"
+    },
+    "doctorReviewerName": {
+      "type": ["string", "null"],
+      "description": "Имя врача-ревьюера. На MVP остаётся пустым — клинического ревью нет.",
+      "maxLength": 200
+    },
+    "days": {
+      "type": "array",
+      "description": "Дни курса. Ровно durationDays штук, dayNumber с 1 без пропусков.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/day" }
+    }
+  },
+  "$defs": {
+    "day": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dayNumber", "theory"],
+      "properties": {
+        "dayNumber": {
+          "type": "integer",
+          "description": "Номер дня в курсе, начиная с 1.",
+          "minimum": 1
+        },
+        "theory": {
+          "type": "string",
+          "description": "Теория дня в Markdown. Без назначений: ни препаратов, ни дозировок, ни схем приёма.",
+          "minLength": 1
+        },
+        "isRescanCheckpoint": {
+          "type": "boolean",
+          "description": "День пересъёмки: пользователя просят снять глаз заново. По этим дням строится график Hb в прогрессе.",
+          "default": false
+        },
+        "tasks": {
+          "type": "array",
+          "description": "Задачи дня. Может быть пустым, но день без задач — это день без действия.",
+          "items": { "$ref": "#/$defs/task" }
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Проставляется импортёром при первом импорте. После того как курс пошёл пользователям, менять нельзя — на эти id ссылается прогресс в CourseEnrollment."
+        },
+        "title": {
+          "type": "string",
+          "description": "Короткая формулировка действия.",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "description": {
+          "type": ["string", "null"],
+          "description": "Необязательное пояснение к задаче.",
+          "maxLength": 2000
+        }
+      }
+    }
+  }
+}
