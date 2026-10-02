@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Common.Requests;
+using AnemiaScanApi.Common.Responses;
 using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Extensions;
 using AnemiaScanApi.Infrastructure.Services.Core;
@@ -48,6 +49,23 @@ public class AnalysisController(
             imageBytes,
             hemoglobinPrediction,
             cancellationToken);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// История сканов пользователя, новые сверху (P0 №8).
+    /// Нужна экрану истории: до этого список доставался только целиком
+    /// через GET /profile/info вместе со всем документом пользователя.
+    /// </summary>
+    [HttpGet("history/")]
+    [ProducesResponseType(typeof(AnalysisHistoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetHistory([FromQuery] AnalysisHistoryRequest request, CancellationToken cancellationToken)
+    {
+        var response = await anemiaAnalysisService.GetHistoryAsync(
+            GetUserId(), request.Page, request.PageSize, cancellationToken);
 
         return Ok(response);
     }

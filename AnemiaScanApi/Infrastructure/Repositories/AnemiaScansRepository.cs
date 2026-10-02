@@ -96,5 +96,27 @@ public class AnemiaScansRepository : BaseMongoRepository<AnemiaScan>, IAnemiaSca
         return anemiaScan;
     }
     
+    /// <summary>
+    /// Сканы пользователя, новые сверху. UserId в документе хранится строкой,
+    /// поэтому сравнение идёт со строковым представлением Guid.
+    /// </summary>
+    public async Task<IReadOnlyList<AnemiaScan>> GetByUserAsync(Guid userId, int skip, int take,
+        CancellationToken cancellationToken = default)
+    {
+        var ownerId = userId.ToString();
+        return await Collection
+            .Find(x => x.UserId == ownerId)
+            .SortByDescending(x => x.ScanDate)
+            .Skip(skip)
+            .Limit(take)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<long> CountByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var ownerId = userId.ToString();
+        return Collection.CountDocumentsAsync(x => x.UserId == ownerId, cancellationToken: cancellationToken);
+    }
+
     #endregion  
 }
