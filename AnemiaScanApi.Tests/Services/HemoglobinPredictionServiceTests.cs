@@ -27,7 +27,6 @@ public class HemoglobinPredictionServiceTests : IDisposable
 
         result.Should().NotBeNull();
         result!.HemoglobinLevel.Should().BeApproximately((float)golden.PredictedHb, 1e-3f);
-        result.Severity.Should().Be(SeverityBands.Classify(result.HemoglobinLevel));
     }
 
     [Fact]

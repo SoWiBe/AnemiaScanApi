@@ -1,4 +1,5 @@
 using AnemiaScanApi.Common.Enums;
+using AnemiaScanApi.ML;
 
 namespace AnemiaScanApi.Common.Responses;
 
@@ -36,4 +37,6 @@ public record AnalysisHistoryItemResponse(
     double Confidence,
     double? HemoglobinLevel,
     string? Severity,
+    SeverityReference? SeverityReference,
+    VerdictAgreement? VerdictAgreement,
     Guid? ImageSystemId);
