@@ -18,9 +18,8 @@ public class HemoglobinPredictionService(HbOnnxPredictor predictor, ILogger<Hemo
 
             var features = CielabFeatureExtractor.Extract(image);
             var hemoglobin = predictor.Predict(features);
-            var severity = SeverityBands.Classify(hemoglobin);
 
-            return new HemoglobinPrediction(hemoglobin, severity);
+            return new HemoglobinPrediction(hemoglobin);
         }
         catch (Exception ex)
         {

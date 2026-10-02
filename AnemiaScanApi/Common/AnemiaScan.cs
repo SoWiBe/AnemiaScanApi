@@ -32,6 +32,20 @@ public class AnemiaScan : BaseMongoModel
     /// </summary>
     [BsonElement("severity")] public string? Severity { get; set; }
     /// <summary>
+    /// Шкала ВОЗ, по которой получена <see cref="Severity"/> — см.
+    /// AnemiaScanApi.ML.SeverityReference (P0 №10). Фиксируется в момент скана:
+    /// правка пола или возраста в профиле не должна задним числом менять смысл
+    /// старых результатов. Null у сканов, сделанных до появления поля.
+    /// </summary>
+    [BsonElement("severity_reference")] public string? SeverityReference { get; set; }
+    /// <summary>
+    /// Сошлись ли TF-классификатор и CIELab-регрессия на этом снимке — см.
+    /// AnemiaScanApi.ML.VerdictAgreement (P0 №11). Хранится, чтобы можно было
+    /// посчитать частоту расхождений, не переобрабатывая снимки заново.
+    /// Null у сканов, сделанных до появления поля.
+    /// </summary>
+    [BsonElement("verdict_agreement")] public string? VerdictAgreement { get; set; }
+    /// <summary>
     /// Indicates whether the user is anemic based on the scan results.
     /// </summary>
     [BsonElement("is_anemic")] public bool IsAnemic { get; set; }
