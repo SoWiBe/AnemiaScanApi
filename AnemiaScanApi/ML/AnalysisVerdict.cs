@@ -42,7 +42,7 @@ public sealed record AnalysisVerdict(Sick Outcome, VerdictAgreement Agreement, b
 /// - <b>CIELab-регрессия</b> (3 признака L/a/b → бустинг): число Hb. Их две,
 ///   выбирается по возрасту (см. HemoglobinPredictionService): детская
 ///   (CP-AnemiC, 6-59 месяцев, MAE 1.52, r 0.387) и взрослая
-///   (Eyes-defy-anemia, 19-88 лет, MAE 1.33, r 0.698).
+///   (Eyes-defy-anemia, 19-88 лет, MAE 1.38, r 0.686).
 ///
 /// ПОЧЕМУ ВЕРДИКТ ОТДАЁТСЯ КЛАССИФИКАТОРУ. Его качество измерено именно как
 /// классификатора — чувствительность и специфичность. У регрессии измерена
