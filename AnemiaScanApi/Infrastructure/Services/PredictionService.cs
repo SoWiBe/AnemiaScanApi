@@ -4,15 +4,17 @@ using AnemiaScanApi.Common.LLM;
 using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Exceptions;
+using AnemiaScanApi.ML;
 using Microsoft.Extensions.ML;
 
 namespace AnemiaScanApi.Services;
 
 public class PredictionService(
     PredictionEnginePool<AnemiaInput, AnemiaPredictionOutput> predictionEnginePool,
+    AnemiaClassifier classifier,
     ILogger<PredictionService> logger) : BaseService<PredictionService>(logger), IPredictionService
 {
-    public async Task<AnemiaPredictionOutput> PredictAnemiaAsync(PredictionRequest request, CancellationToken cancellationToken)
+    public async Task<ClassifierDecision> PredictAnemiaAsync(PredictionRequest request, CancellationToken cancellationToken)
     {
         if (request.ImageData is null) throw new SASException("Image data is null", (int)HttpStatusCode.BadRequest);
         var tempPath = Path.GetTempFileName();
@@ -29,7 +31,10 @@ public class PredictionService(
             var input = new AnemiaInput { ImagePath = tempPath };
             var prediction = predictionEnginePool.Predict(ModelName.SasModel, input);
 
-            return prediction is not null ? prediction : throw new SASException(ExceptionMessage.PredictionFail);
+            if (prediction is null) throw new SASException(ExceptionMessage.PredictionFail);
+
+            // Вердикт — по порогу из карточки модели, а не argmax ML.NET.
+            return classifier.Decide(prediction);
         }
         catch (Exception ex)
         {

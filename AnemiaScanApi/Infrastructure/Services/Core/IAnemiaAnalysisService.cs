@@ -10,7 +10,7 @@ namespace AnemiaScanApi.Infrastructure.Services.Core;
 public interface IAnemiaAnalysisService
 {
     Task<AnalyseAnemiaResponse> WriteAnalyseAsync(
-        Guid userId, float score, string predictionLabel, byte[] image, CancellationToken cancellationToken);
+        Guid userId, ClassifierDecision decision, byte[] image, CancellationToken cancellationToken);
     Task<byte[]> GetImageAsync(string analysisId, CancellationToken cancellationToken = default);
 
     /// <summary>

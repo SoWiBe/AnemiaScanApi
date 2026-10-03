@@ -34,7 +34,7 @@ public record AnalysisHistoryItemResponse(
     Guid Id,
     DateTime ScanDate,
     Sick Sick,
-    double Confidence,
+    double AnemiaProbability,
     double? HemoglobinLevel,
     string? Severity,
     SeverityReference? SeverityReference,

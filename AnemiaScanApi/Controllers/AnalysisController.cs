@@ -42,8 +42,7 @@ public class AnalysisController(
 
         var response = await anemiaAnalysisService.WriteAnalyseAsync(
             userId,
-            prediction.Score!.Max(),
-            prediction.PredictedLabel!,
+            prediction,
             imageBytes,
             cancellationToken);
 
@@ -86,8 +85,7 @@ public class AnalysisController(
 
         var response = await anemiaAnalysisService.WriteAnalyseAsync(
             userId,
-            prediction.Score!.Max(),
-            prediction.PredictedLabel!,
+            prediction,
             imageBytes,
             cancellationToken);
 

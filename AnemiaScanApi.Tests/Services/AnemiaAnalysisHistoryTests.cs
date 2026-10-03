@@ -38,7 +38,7 @@ public class AnemiaAnalysisHistoryTests
         UserId = Guid.NewGuid().ToString(),
         ScanDate = scanDate,
         IsAnemic = anemic,
-        Confidence = 0.91,
+        AnemiaProbability = 0.91,
         HemoglobinLevel = 10.4,
         Severity = "Mild",
         ImageSystemId = imageSystemId ?? Guid.NewGuid().ToString()
@@ -68,7 +68,7 @@ public class AnemiaAnalysisHistoryTests
         item.Id.Should().Be(scan.Id);
         item.ScanDate.Should().Be(scan.ScanDate);
         item.Sick.Should().Be(Sick.Anemia);
-        item.Confidence.Should().Be(scan.Confidence);
+        item.AnemiaProbability.Should().Be(scan.AnemiaProbability);
         item.HemoglobinLevel.Should().Be(scan.HemoglobinLevel);
         item.Severity.Should().Be("Mild");
         item.ImageSystemId.Should().Be(imageId);

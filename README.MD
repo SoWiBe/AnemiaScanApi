@@ -56,7 +56,7 @@ for breaking changes clients need to track.
 
 | Area | Description |
 |---|---|
-| **Anemia screening** | Upload a conjunctiva image; returns a binary verdict with confidence, an estimated hemoglobin value, a severity band and a medical disclaimer |
+| **Anemia screening** | Upload a conjunctiva image; returns a verdict with the anemia probability, an estimated hemoglobin value, a severity band and a medical disclaimer |
 | **Image storage** | Scans are downscaled to 1024 px and re-encoded to JPEG before landing in GridFS — models always run on the original upload |
 | **Auth** | JWT bearer with refresh tokens, email verification codes, BCrypt password hashing |
 | **Consent capture** | Policy version, timestamp and acceptance are written to the user document at sign-up; a dedicated endpoint re-signs a bumped policy |
@@ -74,7 +74,7 @@ Two independent models run on every scan.
 
 | Model | Runtime | Output | Source |
 |---|---|---|---|
-| Anemia classifier | ML.NET + TensorFlow, `PredictionEnginePool` with hot-reload | Binary `Low_Hb` verdict + confidence — this is what drives `IsAnemic` | `LLM/anemia_v10_more_aug.zip` |
+| Anemia classifier (v13) | ML.NET + TensorFlow + LightGBM, `PredictionEnginePool` | `Low_Hb` probability; verdict `IsAnemic` = probability >= threshold from the model card (0.15) | `LLM/anemia_v13_conjunctiva_full.zip` + `.card.json` |
 | Hemoglobin regression | ONNX Runtime, singleton `InferenceSession` | Hb value in g/dL + WHO severity band | `ML/hb_model.onnx` |
 
 The regression path extracts CIELab features from the conjunctiva region in C#
@@ -250,8 +250,10 @@ These have working defaults and can be changed without a rebuild:
 ### ML models
 
 Both model files are copied to the build output and resolved relative to it:
-`LLM/anemia_v10_more_aug.zip` and `ML/hb_model.onnx`. The TensorFlow model is registered with
-`watchForChanges: true`, so replacing the file reloads it without a restart.
+`LLM/anemia_v13_conjunctiva_full.zip` (with its card `.card.json`), `ML/hb_model.onnx` and
+`ML/hb_model_adults.zip`. The classifier and its card are a pair: the card holds the decision
+threshold, so hot-reload is off — both change together through a deploy with restart. The
+LightGBM native library needs `libgomp1` on Linux.
 
 `SciSharp.TensorFlow.Redist` requires **AVX2**. Virtual machines exposing a generic `qemu64` CPU
 model will crash with `Illegal instruction` on startup — verify with

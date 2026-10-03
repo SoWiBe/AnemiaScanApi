@@ -49,7 +49,7 @@ Run everything below **on the VPS as a sudo-capable user** (via SSH from your ma
 ```bash
 sudo add-apt-repository ppa:dotnet/backports -y   # .NET 10 isn't in the default 24.04 feeds yet
 sudo apt update
-sudo apt install -y aspnetcore-runtime-10.0 nginx
+sudo apt install -y aspnetcore-runtime-10.0 nginx libgomp1   # libgomp1 — OpenMP для нативной LightGBM (классификатор v13)
 dotnet --list-runtimes                            # confirm Microsoft.AspNetCore.App 10.0.x is present
 ```
 
@@ -540,8 +540,11 @@ Do **not** put comments (`#`) on the same line as `EnvironmentFile=` in the unit
 **`Unable to load shared library 'tensorflow'` or similar on prediction.**
 `SciSharp.TensorFlow.Redist` should bundle the Linux native lib. Check `/var/www/anemiascan-api/runtimes/linux-x64/native/` exists after deploy; if not, the publish RID mismatch is the cause — the workflow uses `-r linux-x64` which is correct.
 
-**`FileNotFoundException: ...anemia_v10_more_aug.zip` on first prediction.**
-Model wasn't copied into publish output. Check `AnemiaScanApi.csproj` contains the `<Content Include="LLM\anemia_v10_more_aug.zip">` block, and that `LLMExtensions.cs` reads from `"LLM"` (not `"../LLM"`).
+**`FileNotFoundException: ...anemia_v13_conjunctiva_full.zip` или `...card.json`.**
+Модель или её карточка не попали в publish. В `AnemiaScanApi.csproj` должны быть оба элемента — `LLM\anemia_v13_conjunctiva_full.zip` и `LLM\anemia_v13_conjunctiva_full.card.json`. Без карточки приложение не стартует намеренно: в ней порог решения, и молча откатываться на argmax нельзя.
+
+**`DllNotFoundException: lib_lightgbm` или `libgomp.so.1: cannot open shared object file` на первом скане.**
+Классификатор v13 обучен LightGBM, а его нативной части нужен OpenMP: `sudo apt install -y libgomp1` и перезапуск сервиса. Health-check это не ловит — модель грузится лениво, при первом скане.
 
 **502 Bad Gateway from nginx.**
 Kestrel isn't listening. `sudo ss -tlnp | grep 5000` — if empty, the service died. Check `journalctl`.

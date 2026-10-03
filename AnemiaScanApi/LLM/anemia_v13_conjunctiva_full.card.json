@@ -1,0 +1,82 @@
+{
+  "version": "conjunctiva-v13",
+  "trained_at_utc": "2026-10-03T14:17:29.1570806Z",
+  "model_file": "anemia_v13_conjunctiva_full.zip",
+  "architecture": "TensorFlow Inception (заморожен) → LightGBM; вход 224×224 RGB",
+  "input": {
+    "variant": "ForncealPalpebral",
+    "format": "PNG RGBA: конъюнктива непрозрачна, остальное прозрачно и чёрное под прозрачностью, кадр 3:4 целиком — см. AnemiaScanApi/docs/image-upload-contract.md",
+    "note": "Классификатор не видит альфа-канал: фон для него — это цвет под прозрачностью."
+  },
+  "labels": {
+    "positive": "Low_Hb",
+    "negative": "High_Hb",
+    "rule": "пороги ВОЗ по полу и возрасту (AnemiaScanML/Dataset/AnemiaThresholds.cs)"
+  },
+  "decision": {
+    "threshold": 0.15,
+    "apply_to": "вероятность класса Low_Hb: анемия, если она >= threshold",
+    "rule": "самый высокий порог, при котором чувствительность на out-of-fold предсказаниях >= 85 %",
+    "why_not_argmax": "argmax (≈ порог 0.5) оптимизирует accuracy; скринингу нужна чувствительность"
+  },
+  "training_data": {
+    "source": "Eyes-defy-anemia (India + Italy), маски конъюнктивы после MaskNormalizer",
+    "patients": 215,
+    "anemic_patients": 90,
+    "healthy_patients": 125,
+    "augmented_images": 270,
+    "images_by_class": {
+      "High_Hb": 125,
+      "Low_Hb": 360
+    },
+    "seed": 42,
+    "test_split": "нет — модель обучена на всех пациентах"
+  },
+  "expected_performance": {
+    "protocol": "5-кратная кросс-валидация по пациентам той же процедурой обучения, out-of-fold",
+    "why": "у модели, обученной на всех пациентах, нет отложенной выборки — это и есть честная оценка",
+    "at_threshold": {
+      "threshold": 0.15,
+      "sensitivity": {
+        "value": 0.878,
+        "ci95": [
+          0.794,
+          0.93
+        ]
+      },
+      "specificity": {
+        "value": 0.592,
+        "ci95": [
+          0.504,
+          0.674
+        ]
+      },
+      "missed_anemic": 11,
+      "false_alarms": 51
+    },
+    "at_threshold_0_5": {
+      "threshold": 0.5,
+      "sensitivity": {
+        "value": 0.722,
+        "ci95": [
+          0.622,
+          0.804
+        ]
+      },
+      "specificity": {
+        "value": 0.776,
+        "ci95": [
+          0.695,
+          0.84
+        ]
+      },
+      "missed_anemic": 25,
+      "false_alarms": 28
+    }
+  },
+  "not_claimable": [
+    "Снимки датасета сделаны приставкой со стандартизованным светом; в приложении свой свет не используется. Перенос метрик на снимки пользователей не измерен — см. замер light-check.",
+    "Маски датасета обведены специалистами; в приложении контур обводит пользователь.",
+    "В датасете 41% анемичных. При меньшей распространённости доля ложных тревог среди положительных вердиктов выше."
+  ]
+}

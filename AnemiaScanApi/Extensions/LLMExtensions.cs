@@ -6,15 +6,36 @@ namespace AnemiaScanApi.Extensions;
 
 public static class LLMExtensions
 {
+    /// <summary>Файл классификатора. Карточка с порогом — рядом, с суффиксом .card.json.</summary>
+    public const string ClassifierModelFile = "anemia_v13_conjunctiva_full.zip";
+
+    /// <summary>
+    /// TF-классификатор (Inception + LightGBM) и его карточка с порогом решения.
+    ///
+    /// Модель v13 обучена в AnemiaScanML (команда train-final) на всех 215
+    /// пациентах по вырезанной конъюнктиве; ожидаемое качество и порог — в
+    /// карточке. Вход — снимок по контракту docs/image-upload-contract.md.
+    ///
+    /// watchForChanges выключен: модель и карточка с порогом — пара. Горячая
+    /// перезагрузка подменила бы модель, оставив старый порог, прочитанный при
+    /// старте. Обе меняются только вместе, через деплой с перезапуском.
+    ///
+    /// Карточка читается здесь же, при регистрации: если её нет, приложение не
+    /// стартует, а не работает молча по argmax.
+    /// </summary>
     public static IServiceCollection AddAnemiaPredictionModel(this IServiceCollection services)
     {
-        var modelPath = Path.Combine(AppContext.BaseDirectory, "LLM", "anemia_v10_more_aug.zip");
+        var modelPath = Path.Combine(AppContext.BaseDirectory, "LLM", ClassifierModelFile);
+        var card = AnemiaClassifierCard.Load(Path.ChangeExtension(modelPath, null) + ".card.json");
 
         services.AddPredictionEnginePool<AnemiaInput, AnemiaPredictionOutput>()
             .FromFile(
-                modelName: "SASModel",
+                modelName: Common.Constants.ModelName.SasModel,
                 filePath: modelPath,
-                watchForChanges: true);
+                watchForChanges: false);
+
+        services.AddSingleton(card);
+        services.AddSingleton<AnemiaClassifier>();
 
         return services;
     }

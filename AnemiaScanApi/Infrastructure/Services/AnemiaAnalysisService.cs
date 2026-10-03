@@ -40,7 +40,7 @@ public class AnemiaAnalysisService(
             cancellationToken);
         
         Logger.LogInformation("Anemia analysis completed for analysis ID {AnalysisId} and user ID {UserId}", analysisId, userId);
-        Logger.LogInformation("Anemia analysis result: Confidence {Confidence}, ObjectId {ObjectId}", 0.85, gridFsId);
+        Logger.LogInformation("Image saved to GridFS: {ObjectId}", gridFsId);
         return (gridFsId, imageId);
     }
     
@@ -65,7 +65,7 @@ public class AnemiaAnalysisService(
                 scan.Id,
                 scan.ScanDate,
                 scan.IsAnemic ? Sick.Anemia : Sick.Healthy,
-                scan.Confidence,
+                scan.AnemiaProbability,
                 scan.HemoglobinLevel,
                 scan.Severity,
                 Enum.TryParse<SeverityReference>(scan.SeverityReference, out var reference) ? reference : null,
@@ -77,13 +77,13 @@ public class AnemiaAnalysisService(
     }
 
     public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(
-        Guid userId, float score, string predictionLabel, byte[] image, CancellationToken cancellationToken)
+        Guid userId, ClassifierDecision decision, byte[] image, CancellationToken cancellationToken)
     {
         var analysisId = Guid.NewGuid();
         var scanDate = DateTime.UtcNow;
 
         var (gridFsId, imageId) = await SaveImageAsync(analysisId, userId, image, cancellationToken);
-        var isAnemia = predictionLabel == "Low_Hb";
+        var isAnemia = decision.IsAnemic;
 
         // Демография нужна и шкале тяжести (P0 №10), и выбору регрессии Hb: детская
         // и взрослая модели обучены на разных возрастах. Читаем один раз.
@@ -118,7 +118,8 @@ public class AnemiaAnalysisService(
             AnalysisId = analysisId.ToString(),
             ImageSystemId = imageId.ToString(),
             ImageGridFsId = gridFsId,
-            Confidence = score,
+            AnemiaProbability = decision.AnemiaProbability,
+            ClassifierVersion = decision.ClassifierVersion,
             UserId = userId.ToString(),
             // CIELab-регрессия (см. IHemoglobinPredictionService) — отдельный
             // путь от основного TF-классификатора выше; null, если он не
@@ -147,7 +148,7 @@ public class AnemiaAnalysisService(
         return new AnalyseAnemiaResponse
         (
             createdAnemiaScan.Id,
-            createdAnemiaScan.Confidence,
+            createdAnemiaScan.AnemiaProbability,
             createdAnemiaScan.IsAnemic ? Sick.Anemia : Sick.Healthy,
             imageId,
             scanDate,
