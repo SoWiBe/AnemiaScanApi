@@ -34,6 +34,7 @@ builder.Services
     .AddSasHealthChecks()
     .AddAnemiaPredictionModel()
     .AddHemoglobinPredictionModel()
+    .AddAdultHemoglobinPredictionModel()
     .AddValidationFilters()
     .AddEndpointsApiExplorer()
     .AddSwagger();

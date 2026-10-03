@@ -28,6 +28,7 @@ public class AnemiaAnalysisServiceTests
     private readonly Mock<IAnemiaScansRepository> _scans = new();
     private readonly Mock<IProfileService> _profile = new();
     private readonly Mock<IImageCompressor> _compressor = new();
+    private readonly Mock<IHemoglobinPredictionService> _hemoglobin = new();
 
     private AnemiaAnalysisService NewService(LegalSettings? legal = null)
     {
@@ -40,21 +41,28 @@ public class AnemiaAnalysisServiceTests
         _scans.Setup(r => r.CreateAnemiaScanAsync(It.IsAny<AnemiaScan>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((AnemiaScan scan, CancellationToken _) => scan);
 
-        return new AnemiaAnalysisService(_scans.Object, _profile.Object, _compressor.Object,
+        return new AnemiaAnalysisService(_scans.Object, _profile.Object, _compressor.Object, _hemoglobin.Object,
             Options.Create(legal ?? new LegalSettings()), NullLogger<AnemiaAnalysisService>.Instance);
     }
 
     private Task<Common.Responses.AnalyseAnemiaResponse> WriteAsync(AnemiaAnalysisService service)
-        => service.WriteAnalyseAsync(Guid.NewGuid(), 0.93f, "Low_Hb", OriginalImage, null, CancellationToken.None);
+        => service.WriteAnalyseAsync(Guid.NewGuid(), 0.93f, "Low_Hb", OriginalImage, CancellationToken.None);
 
     /// <summary>
     /// Прогон с посчитанным Hb и заданным профилем — ровно тот путь, на котором
     /// выбирается шкала тяжести (P0 №10).
     /// </summary>
     private async Task<(Common.Responses.AnalyseAnemiaResponse Response, AnemiaScan Scan)> WriteWithProfileAsync(
-        float hemoglobin, int? ageYears, Sex? sex)
+        float hemoglobin, int? ageYears, Sex? sex, bool hemoglobinInDomain = false)
     {
         var userId = Guid.NewGuid();
+
+        // Регрессия мокается: какую модель она выберет и почему — предмет
+        // HemoglobinPredictionServiceTests. Здесь важно, что сервис передаёт ей
+        // возраст и честно пробрасывает её флаг достоверности.
+        _hemoglobin.Setup(h => h.TryPredictAsync(OriginalImage, ageYears, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HemoglobinPrediction(hemoglobin, ModelVersions.CielabHemoglobinRegressionAdults,
+                AgeInDomain: hemoglobinInDomain, InputSegmented: hemoglobinInDomain));
 
         if (ageYears is not null || sex is not null)
         {
@@ -79,8 +87,7 @@ public class AnemiaAnalysisServiceTests
             .Callback((AnemiaScan scan, CancellationToken _) => created = scan)
             .ReturnsAsync((AnemiaScan scan, CancellationToken _) => scan);
 
-        var response = await service.WriteAnalyseAsync(
-            userId, 0.9f, "Low_Hb", OriginalImage, new HemoglobinPrediction(hemoglobin), CancellationToken.None);
+        var response = await service.WriteAnalyseAsync(userId, 0.9f, "Low_Hb", OriginalImage, CancellationToken.None);
 
         return (response, created!);
     }
@@ -137,7 +144,6 @@ public class AnemiaAnalysisServiceTests
 
         response.Verdict.Outcome.Should().Be(Sick.Anemia);
         response.Verdict.Agreement.Should().Be(VerdictAgreement.Agree);
-        response.Verdict.HemoglobinInDomain.Should().BeFalse("регрессия обучена на детях");
         scan.VerdictAgreement.Should().Be(nameof(VerdictAgreement.Agree));
     }
 
@@ -153,11 +159,31 @@ public class AnemiaAnalysisServiceTests
     }
 
     [Fact]
-    public async Task WriteAnalyseAsync_MarksHemoglobinInDomainForSmallChild()
+    public async Task WriteAnalyseAsync_PassesPatientAgeToRegression()
     {
-        var (response, _) = await WriteWithProfileAsync(10.5f, ageYears: 3, sex: Sex.Male);
+        // Какую из двух регрессий брать, решает возраст, а он известен только
+        // после чтения профиля — поэтому вызов переехал сюда из контроллера.
+        await WriteWithProfileAsync(10.5f, ageYears: 40, sex: Sex.Male);
 
-        response.Verdict.HemoglobinInDomain.Should().BeTrue("CP-AnemiC — дети 6-59 месяцев");
+        _hemoglobin.Verify(h => h.TryPredictAsync(OriginalImage, 40, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task WriteAnalyseAsync_TakesHemoglobinDomainFromPrediction(bool inDomain)
+    {
+        var (response, _) = await WriteWithProfileAsync(10.5f, ageYears: 40, sex: Sex.Male, hemoglobinInDomain: inDomain);
+
+        response.Verdict.HemoglobinInDomain.Should().Be(inDomain);
+    }
+
+    [Fact]
+    public async Task WriteAnalyseAsync_RecordsWhichModelComputedHemoglobin()
+    {
+        var (_, scan) = await WriteWithProfileAsync(10.5f, ageYears: 40, sex: Sex.Male);
+
+        scan.ModelVersion.Should().Be(ModelVersions.CielabHemoglobinRegressionAdults);
     }
 
     [Fact]

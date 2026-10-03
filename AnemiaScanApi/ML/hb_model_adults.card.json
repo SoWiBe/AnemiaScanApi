@@ -1,0 +1,60 @@
+{
+  "version": "cielab-gb-adults-v1",
+  "trained_at_utc": "2026-10-02T18:09:59.6900276Z",
+  "model": {
+    "type": "FastTree regression (ML.NET)",
+    "numberOfLeaves": 15,
+    "numberOfTrees": 100,
+    "learningRate": 0.1,
+    "seed": 42
+  },
+  "features": {
+    "columns": [
+      "L",
+      "a",
+      "b"
+    ],
+    "extractor": "AnemiaScanApi.ML.CielabFeatureExtractor",
+    "alpha_visible_threshold": 250,
+    "note": "Экстрактор подключён в проект ссылкой на исходник из API, поэтому признаки при обучении и инференсе считаются одним кодом. Вход — сегментированная конъюнктива (forniceal_palpebral), не целое фото глаза."
+  },
+  "training_data": {
+    "source": "Eyes-defy-anemia (India + Italy)",
+    "n_records": 215,
+    "population": "взрослые",
+    "age_range": [
+      19,
+      88
+    ],
+    "hb_range": [
+      7,
+      17.4
+    ],
+    "by_country": {
+      "India": 94,
+      "Italy": 121
+    },
+    "by_sex": {
+      "Male": 129,
+      "Female": 86
+    }
+  },
+  "evaluation": {
+    "protocol": "5-кратная кросс-валидация по пациентам, out-of-fold предсказания",
+    "mae": 1.329,
+    "rmse": 1.735,
+    "r": 0.698,
+    "baseline_mae_predicting_mean": 2.004,
+    "compared_to_child_model": {
+      "mae": 1.518,
+      "r": 0.387,
+      "population": "дети 6-59 месяцев (CP-AnemiC)"
+    }
+  },
+  "not_claimable": [
+    "Снимки сделаны приставкой, которая стандартизует освещение и устраняет внешний свет. У пользователя с голым телефоном этих условий нет, и перенос точности на боевые снимки не измерен.",
+    "Вход — ручная сегментация конъюнктивы, сделанная авторами датасета. Автоматической сегментации в пайплайне нет.",
+    "Беременные в выборке не выделены; отдельная шкала ВОЗ для них не проверялась."
+  ],
+  "citation_required": "См. AnemiaScanML/README.md — авторы датасета просят ссылаться на три работы."
+}
