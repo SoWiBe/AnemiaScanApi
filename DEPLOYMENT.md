@@ -2,6 +2,22 @@
 
 Guide for deploying AnemiaScanApi to an Ubuntu 24.04 LTS VPS via GitHub Actions.
 
+## Прод
+
+| | |
+|---|---|
+| Адрес | **https://api-anemiascan.ru** |
+| Сервер | GoodHost NVMe-VPS-E, Алматы (`185.234.114.228`) |
+| Опубликован | 30.09.2026 |
+| TLS | Let's Encrypt, автопродление через `certbot.timer`, сертификат до 29.12.2026 |
+
+Быстрая проверка живости:
+
+```bash
+curl -s https://api-anemiascan.ru/health
+curl -s https://api-anemiascan.ru/health/ready | jq
+```
+
 ## Architecture
 
 ```
