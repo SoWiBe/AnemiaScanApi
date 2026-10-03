@@ -31,6 +31,33 @@ public static class LLMExtensions
     {
         var modelPath = Path.Combine(AppContext.BaseDirectory, "ML", "hb_model.onnx");
         services.AddSingleton(_ => new HbOnnxPredictor(modelPath));
+        // Под общим интерфейсом — чтобы выбор модели по возрасту видел все
+        // регрессии разом через IEnumerable<IHemoglobinModel>.
+        services.AddSingleton<IHemoglobinModel>(sp => sp.GetRequiredService<HbOnnxPredictor>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Регистрирует CIELab-регрессию Hb, обученную на взрослых
+    /// (<c>ML/hb_model_adults.zip</c>, карточка — <c>hb_model_adults.card.json</c>).
+    ///
+    /// В отличие от ONNX-модели выше — через пул: PredictionEngine в ML.NET
+    /// не потокобезопасен. Сам предиктор при этом singleton, пул внутри него
+    /// раздаёт движки по запросам.
+    /// </summary>
+    public static IServiceCollection AddAdultHemoglobinPredictionModel(this IServiceCollection services)
+    {
+        var modelPath = Path.Combine(AppContext.BaseDirectory, "ML", "hb_model_adults.zip");
+
+        services.AddPredictionEnginePool<HbAdultModelInput, HbAdultModelOutput>()
+            .FromFile(
+                modelName: HbMlNetPredictor.ModelName,
+                filePath: modelPath,
+                watchForChanges: false);
+
+        services.AddSingleton<HbMlNetPredictor>();
+        services.AddSingleton<IHemoglobinModel>(sp => sp.GetRequiredService<HbMlNetPredictor>());
 
         return services;
     }

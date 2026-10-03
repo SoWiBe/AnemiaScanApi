@@ -18,6 +18,7 @@ public class AnemiaAnalysisService(
     IAnemiaScansRepository anemiaScansRepository,
     IProfileService profileService,
     IImageCompressor imageCompressor,
+    IHemoglobinPredictionService hemoglobinPredictionService,
     IOptions<LegalSettings> legalSettings,
     ILogger<AnemiaAnalysisService> logger)
     : BaseService<AnemiaAnalysisService>(logger), IAnemiaAnalysisService
@@ -76,8 +77,7 @@ public class AnemiaAnalysisService(
     }
 
     public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(
-        Guid userId, float score, string predictionLabel, byte[] image,
-        HemoglobinPrediction? hemoglobinPrediction, CancellationToken cancellationToken)
+        Guid userId, float score, string predictionLabel, byte[] image, CancellationToken cancellationToken)
     {
         var analysisId = Guid.NewGuid();
         var scanDate = DateTime.UtcNow;
@@ -85,9 +85,14 @@ public class AnemiaAnalysisService(
         var (gridFsId, imageId) = await SaveImageAsync(analysisId, userId, image, cancellationToken);
         var isAnemia = predictionLabel == "Low_Hb";
 
-        // Демография нужна и для шкалы тяжести (P0 №10), и для вердикта (P0 №11):
-        // область определения CIELab-регрессии задана возрастом. Читаем один раз.
+        // Демография нужна и шкале тяжести (P0 №10), и выбору регрессии Hb: детская
+        // и взрослая модели обучены на разных возрастах. Читаем один раз.
         var (ageYears, sex) = await ReadDemographicsAsync(userId, cancellationToken);
+
+        // Регрессия вызывается здесь, а не в контроллере: до чтения профиля
+        // возраст неизвестен и выбрать модель нечем. При сбое — null, основной
+        // вердикт классификатора от этого не страдает.
+        var hemoglobinPrediction = await hemoglobinPredictionService.TryPredictAsync(image, ageYears, cancellationToken);
 
         // Тяжесть зависит от пола и возраста, поэтому считается здесь, а не в
         // модели: регрессия отдаёт только число Hb и о пациенте не знает.
@@ -99,7 +104,7 @@ public class AnemiaAnalysisService(
             Logger.LogInformation("Профиль {UserId} неполон, тяжесть оценена по строгой шкале", userId);
 
         // Сводим два независимых пути в один вердикт.
-        var verdict = VerdictReconciler.Reconcile(isAnemia, severity, ageYears);
+        var verdict = VerdictReconciler.Reconcile(isAnemia, severity, hemoglobinPrediction?.InDomain ?? false);
 
         if (verdict.Agreement == VerdictAgreement.Disagree)
         {
@@ -127,7 +132,8 @@ public class AnemiaAnalysisService(
             // Согласие путей пишем в скан, чтобы потом можно было посчитать, как
             // часто модели расходятся, не переобрабатывая снимки заново.
             VerdictAgreement = verdict.Agreement.ToString(),
-            ModelVersion = hemoglobinPrediction is not null ? ModelVersions.CielabHemoglobinRegression : null,
+            // Какая из двух регрессий посчитала Hb — чтобы в истории было видно.
+            ModelVersion = hemoglobinPrediction?.ModelVersion,
             IsAnemic = isAnemia,
             ScanDate = scanDate
         };

@@ -4,9 +4,10 @@ namespace AnemiaScanApi.Infrastructure.Services.Core;
 
 /// <summary>
 /// CIELab-регрессия Hb — дополнительный путь предсказания рядом с основным
-/// TF-классификатором (<see cref="IPredictionService"/>). См.
-/// PLAN_pretraining_and_api_integration.md, Этап E: не заменяет основную
-/// классификацию, а дополняет её непрерывным значением Hb + severity.
+/// TF-классификатором (<see cref="IPredictionService"/>): не заменяет его
+/// вердикт, а дополняет непрерывным значением Hb.
+///
+/// Регрессий две — детская и взрослая; какая считает, решает возраст пациента.
 /// </summary>
 public interface IHemoglobinPredictionService
 {
@@ -15,5 +16,7 @@ public interface IHemoglobinPredictionService
     /// пикселей и т.п.) вместо исключения — отказ этого пути не должен
     /// ронять основной анализ анемии.
     /// </summary>
-    Task<HemoglobinPrediction?> TryPredictAsync(byte[] imageBytes, CancellationToken cancellationToken);
+    /// <param name="ageYears">Возраст пациента; null — профиль неполон.</param>
+    Task<HemoglobinPrediction?> TryPredictAsync(byte[] imageBytes, int? ageYears,
+        CancellationToken cancellationToken);
 }

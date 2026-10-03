@@ -13,7 +13,12 @@ public class MlModelsHealthCheck : IHealthCheck
     private static readonly string[] ModelPaths =
     [
         Path.Combine(AppContext.BaseDirectory, "LLM", "anemia_v10_more_aug.zip"),
-        Path.Combine(AppContext.BaseDirectory, "ML", "hb_model.onnx")
+        Path.Combine(AppContext.BaseDirectory, "ML", "hb_model.onnx"),
+        // Взрослая регрессия Hb грузится пулом лениво, при первом скане. Сервис
+        // регрессии глотает исключения, так что без этой строки пропавший файл
+        // не уронил бы ничего — у всех сканов просто молча перестал бы
+        // приходить Hb.
+        Path.Combine(AppContext.BaseDirectory, "ML", "hb_model_adults.zip")
     ];
 
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,

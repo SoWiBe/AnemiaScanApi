@@ -33,6 +33,12 @@
     <Content Include="Fixtures\hb_model.onnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <!-- Признаки и лабораторный Hb 215 взрослых из Eyes-defy-anemia — выгрузка
+         AnemiaScanML (команда train-hb, Data_v2/cielab-features.csv). На этих
+         же пациентах обучена ML/hb_model_adults.zip. -->
+    <Content Include="Fixtures\cielab_features_adults.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,8 @@ internal static class GoldenFixtures
 
     private static readonly Lazy<IReadOnlyList<ConjunctivaGoldenRecord>> Records = new(Load);
 
+    public static IReadOnlyList<ConjunctivaGoldenRecord> All => Records.Value;
+
     public static IEnumerable<object[]> AsTheoryData() => Records.Value.Select(r => new object[] { r });
 
     private static List<ConjunctivaGoldenRecord> Load()

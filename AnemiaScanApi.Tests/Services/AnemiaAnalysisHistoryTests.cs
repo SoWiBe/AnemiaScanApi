@@ -27,6 +27,7 @@ public class AnemiaAnalysisHistoryTests
         _scans.Object,
         Mock.Of<IProfileService>(),
         Mock.Of<IImageCompressor>(),
+        Mock.Of<IHemoglobinPredictionService>(),
         Options.Create(legal ?? new LegalSettings()),
         NullLogger<AnemiaAnalysisService>.Instance);
 
