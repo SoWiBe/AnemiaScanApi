@@ -3,6 +3,10 @@ using AnemiaScanApi.ML;
 
 namespace AnemiaScanApi.Common.Responses;
 
+/// <param name="AnemiaProbability">
+/// Вероятность анемии по классификатору, 0..1. Вердикт <see cref="Sick"/> — это
+/// сравнение её с порогом из карточки модели (сейчас 0.15), а не с 0.5.
+/// </param>
 /// <param name="HemoglobinLevel">
 /// CIELab-регрессия Hb (г/дл) — null, если модель не смогла посчитать
 /// признаки для этого изображения. Не влияет на <see cref="Sick"/> —
@@ -28,7 +32,7 @@ namespace AnemiaScanApi.Common.Responses;
 /// </param>
 public record AnalyseAnemiaResponse(
     Guid Id,
-    double Confidence,
+    double AnemiaProbability,
     Sick Sick,
     Guid ImageSystemId,
     DateTime AnalyseDate,

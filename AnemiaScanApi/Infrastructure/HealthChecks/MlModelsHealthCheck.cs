@@ -12,7 +12,11 @@ public class MlModelsHealthCheck : IHealthCheck
 {
     private static readonly string[] ModelPaths =
     [
-        Path.Combine(AppContext.BaseDirectory, "LLM", "anemia_v10_more_aug.zip"),
+        Path.Combine(AppContext.BaseDirectory, "LLM", Extensions.LLMExtensions.ClassifierModelFile),
+        // Без карточки неизвестен порог решения — приложение и не стартует, но
+        // пропажу после старта лучше видеть в readiness-пробе.
+        Path.Combine(AppContext.BaseDirectory, "LLM",
+            Path.ChangeExtension(Extensions.LLMExtensions.ClassifierModelFile, null) + ".card.json"),
         Path.Combine(AppContext.BaseDirectory, "ML", "hb_model.onnx"),
         // Взрослая регрессия Hb грузится пулом лениво, при первом скане. Сервис
         // регрессии глотает исключения, так что без этой строки пропавший файл

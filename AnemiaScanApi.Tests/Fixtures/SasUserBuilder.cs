@@ -38,7 +38,7 @@ internal sealed class SasUserBuilder
         AnalysisId = Guid.NewGuid().ToString(),
         IsAnemic = true,
         ScanDate = scanDate,
-        Confidence = 0.9,
+        AnemiaProbability = 0.9,
         UserId = Guid.NewGuid().ToString()
     };
 
@@ -48,7 +48,7 @@ internal sealed class SasUserBuilder
         AnalysisId = Guid.NewGuid().ToString(),
         IsAnemic = false,
         ScanDate = scanDate,
-        Confidence = 0.9,
+        AnemiaProbability = 0.9,
         UserId = Guid.NewGuid().ToString()
     };
 }

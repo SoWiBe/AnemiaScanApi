@@ -35,10 +35,11 @@ public sealed record AnalysisVerdict(Sick Outcome, VerdictAgreement Agreement, b
 /// ЧТО ЗА ДВЕ МОДЕЛИ. Они не помогают друг другу и не дообучают друг друга —
 /// это два отдельных мнения об одной фотографии:
 ///
-/// - <b>TF-классификатор</b> (Inception + LightGBM): метка Low_Hb/High_Hb.
-///   Обучен на Eyes-defy-anemia — 215 <b>взрослых</b> 19-88 лет.
-///   Измерен: sensitivity 72.2%, specificity 77.6% на out-of-fold
-///   кросс-валидации (см. AnemiaScanML/README.md).
+/// - <b>TF-классификатор v13</b> (Inception + LightGBM): вероятность Low_Hb,
+///   вердикт по порогу 0.15 из карточки модели (см. AnemiaClassifier).
+///   Обучен на вырезанной конъюнктиве 215 <b>взрослых</b> 19-88 лет из
+///   Eyes-defy-anemia. На out-of-fold кросс-валидации: sensitivity 87.8%,
+///   specificity 59.2% (см. AnemiaScanML/README.md).
 /// - <b>CIELab-регрессия</b> (3 признака L/a/b → бустинг): число Hb. Их две,
 ///   выбирается по возрасту (см. HemoglobinPredictionService): детская
 ///   (CP-AnemiC, 6-59 месяцев, MAE 1.52, r 0.387) и взрослая

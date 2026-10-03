@@ -46,7 +46,7 @@ public class AnemiaAnalysisServiceTests
     }
 
     private Task<Common.Responses.AnalyseAnemiaResponse> WriteAsync(AnemiaAnalysisService service)
-        => service.WriteAnalyseAsync(Guid.NewGuid(), 0.93f, "Low_Hb", OriginalImage, CancellationToken.None);
+        => service.WriteAnalyseAsync(Guid.NewGuid(), new ClassifierDecision(true, 0.93f, "test-classifier"), OriginalImage, CancellationToken.None);
 
     /// <summary>
     /// Прогон с посчитанным Hb и заданным профилем — ровно тот путь, на котором
@@ -87,7 +87,7 @@ public class AnemiaAnalysisServiceTests
             .Callback((AnemiaScan scan, CancellationToken _) => created = scan)
             .ReturnsAsync((AnemiaScan scan, CancellationToken _) => scan);
 
-        var response = await service.WriteAnalyseAsync(userId, 0.9f, "Low_Hb", OriginalImage, CancellationToken.None);
+        var response = await service.WriteAnalyseAsync(userId, new ClassifierDecision(true, 0.9f, "test-classifier"), OriginalImage, CancellationToken.None);
 
         return (response, created!);
     }

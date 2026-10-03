@@ -7,6 +7,12 @@ namespace AnemiaScanApi.Common;
 /// <summary>
 /// Model for anemia scan data.
 /// </summary>
+/// <remarks>
+/// Лишние поля игнорируются: в сканах, записанных до 03.10.2026, есть поле
+/// confidence, которое заменено на anemia_probability, — такие документы
+/// должны оставаться читаемыми.
+/// </remarks>
+[BsonIgnoreExtraElements]
 public class AnemiaScan : BaseMongoModel
 {
     [BsonElement("analysis_id")] public string AnalysisId { get; set; }
@@ -58,9 +64,17 @@ public class AnemiaScan : BaseMongoModel
     /// </summary>
     [BsonElement("updated_at")] public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     /// <summary>
-    /// The confidence level of the anemia detection.
+    /// Вероятность анемии по TF-классификатору — вероятность класса Low_Hb, 0..1.
+    /// От порога решения не зависит. Раньше здесь было поле confidence — максимум
+    /// из двух вероятностей, который при пороге 0.15 вводил в заблуждение:
+    /// вердикт «анемия» соседствовал с confidence 0.8 у класса «здоров».
     /// </summary>
-    [BsonElement("confidence")] public double Confidence { get; set; }
+    [BsonElement("anemia_probability")] public double AnemiaProbability { get; set; }
+    /// <summary>
+    /// Версия классификатора из его карточки — чтобы по истории было видно,
+    /// какая модель и с каким порогом выдала вердикт.
+    /// </summary>
+    [BsonElement("classifier_version")] public string? ClassifierVersion { get; set; }
     /// <summary>
     /// The type of image captured for the scan.
     /// </summary>
