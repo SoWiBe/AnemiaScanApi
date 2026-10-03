@@ -2,6 +2,21 @@
 
 Guide for deploying AnemiaScanApi to an Ubuntu 24.04 LTS VPS via GitHub Actions.
 
+## Прод
+
+| | |
+|---|---|
+| Адрес | **https://api-anemiascan.ru** |
+| Опубликован | 30.09.2026 |
+| TLS | Let's Encrypt, автопродление через `certbot.timer`, сертификат до 29.12.2026 |
+
+Быстрая проверка живости:
+
+```bash
+curl -s https://api-anemiascan.ru/health
+curl -s https://api-anemiascan.ru/health/ready | jq
+```
+
 ## Architecture
 
 ```
@@ -19,7 +34,7 @@ MongoDB работает **на том же VPS**, слушая только loo
 
 **Требования к VPS:** 4 vCPU x86-64 с AVX2, **6 ГБ RAM минимум** (8 ГБ комфортно), **80 ГБ NVMe**, Ubuntu 24.04 LTS.
 На 6 ГБ обязателен swap — см. «MongoDB на том же VPS».
-Выбрано: GoodHost NVMe-VPS-E (6 vCPU / 6 ГБ / 120 ГБ) — решение от 29.09.2026.
+Текущий сервер: 6 vCPU / 6 ГБ / 120 ГБ NVMe — решение от 29.09.2026.
 ARM (Ampere, Graviton) не подойдёт — в `.csproj` жёстко `PlatformTarget x64`.
 Прежние «2 vCPU / 4 ГБ / 40 ГБ» из `MVP_PLAN.md` §3 считались под «на сервере только API»; с локальной базой этого не хватает.
 
@@ -229,7 +244,7 @@ sudo systemctl restart mongod
 | **Занято всего** | ~4.5 ГБ | **1.0 ГБ из 5.8** |
 | **Swap использован** | — | **0** |
 
-Замер сделан на GoodHost NVMe-VPS-E (Xeon Gold 6154) после серии реальных сканов
+Замер сделан на боевом сервере после серии реальных сканов
 через `POST /analysis/anemia/prediction/`. **Оценка при планировании была завышена
 втрое** — фактически хватило бы и 4 ГБ. `MemoryMax=2500M` оставлен как есть: он
 ничего не стоит и ловит утечки, если появятся.
@@ -366,11 +381,11 @@ ls -lh /var/backups/anemiascan/                   # что лежит локал
 
 ## Замеры на боевом сервере (30.09.2026)
 
-Первый полный прогон на GoodHost NVMe-VPS-E, Алматы. Закрывает пункт «замер RSS и
+Первый полный прогон на боевом сервере. Закрывает пункт «замер RSS и
 времени ответа под нагрузкой» из Фазы 4 плана — сделан заранее.
 
-**Железо:** Intel Xeon Gold 6154 @ 3.00 GHz, 6 vCPU, 5.8 ГБ RAM, 115 ГБ NVMe,
-Ubuntu 24.04.5 LTS, KVM. AVX2 и AVX-512 присутствуют.
+**Железо:** x86-64, 6 vCPU, 5.8 ГБ RAM, 115 ГБ NVMe, Ubuntu 24.04 LTS, KVM.
+AVX2 и AVX-512 присутствуют.
 
 > **Важно при выборе ноды:** изначально провайдер выдал generic-модель CPU
 > (`QEMU Virtual CPU version 2.5+`) вообще без AVX. Официальные сборки TensorFlow
