@@ -1,6 +1,6 @@
 {
   "version": "cielab-gb-adults-v1",
-  "trained_at_utc": "2026-10-02T18:09:59.6900276Z",
+  "trained_at_utc": "2026-10-03T13:17:16.7851914Z",
   "model": {
     "type": "FastTree regression (ML.NET)",
     "numberOfLeaves": 15,
@@ -41,9 +41,9 @@
   },
   "evaluation": {
     "protocol": "5-кратная кросс-валидация по пациентам, out-of-fold предсказания",
-    "mae": 1.329,
-    "rmse": 1.735,
-    "r": 0.698,
+    "mae": 1.375,
+    "rmse": 1.766,
+    "r": 0.686,
     "baseline_mae_predicting_mean": 2.004,
     "compared_to_child_model": {
       "mae": 1.518,

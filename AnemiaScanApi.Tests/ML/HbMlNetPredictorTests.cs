@@ -14,7 +14,7 @@ namespace AnemiaScanApi.Tests.ML;
 ///
 /// Фикстура — признаки и лабораторный Hb тех самых 215 взрослых, на которых
 /// модель обучена. Поэтому здесь проверяется не обобщение (его меряет
-/// кросс-валидация в AnemiaScanML: MAE 1.329, r 0.698), а то, что модель в API
+/// кросс-валидация в AnemiaScanML: MAE и r записаны в карточке модели), а то, что модель в API
 /// вообще работает так же, как при обучении. Главный риск, который ловит тест, —
 /// неверное сопоставление колонок: ML.NET связывает признаки по имени свойства,
 /// и перепутанные L/A/B не дают ошибки, а дают мусорные предсказания.
@@ -70,11 +70,16 @@ public class HbMlNetPredictorTests
         var mae = predicted.Zip(actual, (p, a) => Math.Abs(p - a)).Average();
         var r = Pearson(predicted, actual);
 
-        // На обучающих пациентах связь заведомо сильнее, чем на out-of-fold
-        // (0.698). Если колонки сопоставились неверно, r падает к нулю —
-        // этот порог проводит черту между «модель работает» и «модель сломана».
+        // На обучающих пациентах связь заведомо сильнее, чем out-of-fold.
+        // Порог проверен подменой: у правильной модели r = 0.975, а если в
+        // предикторе перепутать L и B — 0.692. Не к нулю: признак a остаётся на
+        // месте и сам по себе связан с Hb. При переобучении модели эту проверку
+        // стоит повторить.
         r.Should().BeGreaterThan(0.8, $"in-sample корреляция = {r:F3}");
-        mae.Should().BeLessThan(1.329, $"in-sample MAE = {mae:F3} не может быть хуже out-of-fold");
+        // Out-of-fold MAE берём из карточки модели, а не хардкодим: карточку
+        // переписывает тренер при каждом переобучении.
+        var outOfFoldMae = ReadCardMae();
+        mae.Should().BeLessThan(outOfFoldMae, $"in-sample MAE = {mae:F3} не может быть хуже out-of-fold {outOfFoldMae:F3}");
     }
 
     [Fact]
@@ -93,6 +98,13 @@ public class HbMlNetPredictorTests
             i => parallel[i] = predictor.Predict(rows[i].Features));
 
         parallel.Should().Equal(sequential);
+    }
+
+    private static double ReadCardMae()
+    {
+        var cardPath = Path.Combine(AppContext.BaseDirectory, "ML", "hb_model_adults.card.json");
+        using var card = System.Text.Json.JsonDocument.Parse(File.ReadAllText(cardPath));
+        return card.RootElement.GetProperty("evaluation").GetProperty("mae").GetDouble();
     }
 
     private static double Pearson(double[] x, double[] y)
