@@ -67,6 +67,24 @@ public class AnalysisController(
     }
 
     /// <summary>
+    /// Внести Hb из анализа крови для скана. Повторный вызов перезаписывает
+    /// значение — так исправляется опечатка.
+    /// </summary>
+    [HttpPut("{scanId:guid}/lab-hemoglobin")]
+    [ProducesResponseType(typeof(LabHemoglobinResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetLabHemoglobin(Guid scanId, [FromBody, Required] LabHemoglobinRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await anemiaAnalysisService.SetLabHemoglobinAsync(
+            GetUserId(), scanId, request.Hemoglobin, request.MeasuredAt, cancellationToken);
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Фоновый анализ анемии
     /// </summary>
     /// <param name="request"></param>

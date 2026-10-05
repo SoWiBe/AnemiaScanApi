@@ -95,4 +95,16 @@ public class AnemiaScan : BaseMongoModel
     /// path that predates this field being populated.
     /// </summary>
     [BsonElement("model_version")] public string? ModelVersion { get; set; }
+    /// <summary>
+    /// Гемоглобин из лабораторного анализа крови, г/дл, который пользователь
+    /// внёс сам. Это единственная «правда» о реальном Hb после скана: по ней
+    /// измеряется, насколько модели ошибаются на живых людях, а не на чужом
+    /// датасете. Null, пока пользователь ничего не внёс.
+    /// </summary>
+    [BsonElement("lab_hemoglobin")] public double? LabHemoglobin { get; set; }
+    /// <summary>
+    /// Дата, когда сдана кровь (UTC, время отброшено). Нужна, чтобы при оценке
+    /// моделей брать только анализы, близкие по времени к скану.
+    /// </summary>
+    [BsonElement("lab_measured_at")] public DateTime? LabMeasuredAt { get; set; }
 }

@@ -19,4 +19,11 @@ public interface IAnemiaAnalysisService
     /// </summary>
     Task<AnalysisHistoryResponse> GetHistoryAsync(Guid userId, int page, int pageSize,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Сохраняет Hb из анализа крови, который пользователь сдал рядом со сканом.
+    /// 404 — если скана нет или он чужой; 400 — если дата анализа вне допустимого окна.
+    /// </summary>
+    Task<LabHemoglobinResponse> SetLabHemoglobinAsync(Guid userId, Guid scanId, double hemoglobin,
+        DateTime? measuredAt, CancellationToken cancellationToken = default);
 }

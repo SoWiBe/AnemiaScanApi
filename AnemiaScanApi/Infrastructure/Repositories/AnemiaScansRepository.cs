@@ -118,5 +118,29 @@ public class AnemiaScansRepository : BaseMongoRepository<AnemiaScan>, IAnemiaSca
         return Collection.CountDocumentsAsync(x => x.UserId == ownerId, cancellationToken: cancellationToken);
     }
 
-    #endregion  
+    public async Task<AnemiaScan?> GetOwnedAsync(Guid scanId, Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var ownerId = userId.ToString();
+        return await Collection
+            .Find(x => x.Id == scanId && x.UserId == ownerId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<bool> SetLabHemoglobinAsync(Guid scanId, Guid userId, double hemoglobin, DateTime measuredAt,
+        CancellationToken cancellationToken = default)
+    {
+        var ownerId = userId.ToString();
+        var update = Builders<AnemiaScan>.Update
+            .Set(x => x.LabHemoglobin, hemoglobin)
+            .Set(x => x.LabMeasuredAt, measuredAt)
+            .Set(x => x.UpdatedAt, DateTime.UtcNow);
+
+        var result = await Collection.UpdateOneAsync(
+            x => x.Id == scanId && x.UserId == ownerId, update, cancellationToken: cancellationToken);
+
+        return result.MatchedCount > 0;
+    }
+
+    #endregion
 }
