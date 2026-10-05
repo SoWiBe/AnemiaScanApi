@@ -4,6 +4,7 @@ using AnemiaScanApi.Common;
 using AnemiaScanApi.Common.Constants;
 using AnemiaScanApi.Common.Enums;
 using AnemiaScanApi.Common.Responses;
+using AnemiaScanApi.Exceptions;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Infrastructure.Utils.Core;
@@ -70,10 +71,48 @@ public class AnemiaAnalysisService(
                 scan.Severity,
                 Enum.TryParse<SeverityReference>(scan.SeverityReference, out var reference) ? reference : null,
                 Enum.TryParse<VerdictAgreement>(scan.VerdictAgreement, out var agreement) ? agreement : null,
-                Guid.TryParse(scan.ImageSystemId, out var imageId) ? imageId : null))
+                Guid.TryParse(scan.ImageSystemId, out var imageId) ? imageId : null,
+                scan.LabHemoglobin,
+                scan.LabMeasuredAt))
             .ToList();
 
         return new AnalysisHistoryResponse(items, total, page, pageSize, ResolveDisclaimer());
+    }
+
+    /// <summary>
+    /// Насколько анализ крови может отстоять от скана по времени. Через месяц Hb
+    /// уже мог измениться, и сравнивать его с оценкой по снимку нельзя.
+    /// </summary>
+    public const int LabMaxDaysFromScan = 14;
+
+    public async Task<LabHemoglobinResponse> SetLabHemoglobinAsync(Guid userId, Guid scanId, double hemoglobin,
+        DateTime? measuredAt, CancellationToken cancellationToken = default)
+    {
+        var scan = await anemiaScansRepository.GetOwnedAsync(scanId, userId, cancellationToken)
+                   ?? throw new SASException("Скан не найден", StatusCodes.Status404NotFound);
+
+        var today = DateTime.UtcNow.Date;
+        var date = (measuredAt ?? today).Date;
+
+        if (date > today)
+            throw new SASException("Дата анализа не может быть в будущем", StatusCodes.Status400BadRequest);
+
+        if (Math.Abs((date - scan.ScanDate.Date).TotalDays) > LabMaxDaysFromScan)
+            throw new SASException(
+                $"Анализ крови должен быть сдан не более чем за {LabMaxDaysFromScan} дней до или после скана: иначе гемоглобин мог измениться и сравнивать его со снимком нельзя",
+                StatusCodes.Status400BadRequest);
+
+        var updated = await anemiaScansRepository.SetLabHemoglobinAsync(
+            scanId, userId, hemoglobin, date, cancellationToken);
+
+        // Скан могли удалить между чтением и записью.
+        if (!updated)
+            throw new SASException("Скан не найден", StatusCodes.Status404NotFound);
+
+        Logger.LogInformation("Для скана {ScanId} внесён Hb из анализа крови (модель дала {Predicted})",
+            scanId, scan.HemoglobinLevel);
+
+        return new LabHemoglobinResponse(scanId, hemoglobin, date);
     }
 
     public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(

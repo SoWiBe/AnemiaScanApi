@@ -52,4 +52,18 @@ public interface IAnemiaScansRepository : IMongoRepository<AnemiaScan>
     /// Сколько всего сканов у пользователя — для постраничной навигации.
     /// </summary>
     Task<long> CountByUserAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Скан по идентификатору, но только если он принадлежит пользователю.
+    /// Чужой скан и несуществующий неразличимы — оба null.
+    /// </summary>
+    Task<AnemiaScan?> GetOwnedAsync(Guid scanId, Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Записывает Hb из анализа крови в скан пользователя. Владелец проверяется
+    /// в самом фильтре, а не отдельным чтением: между проверкой и записью чужой
+    /// скан не проскочит. False — такого скана у пользователя нет.
+    /// </summary>
+    Task<bool> SetLabHemoglobinAsync(Guid scanId, Guid userId, double hemoglobin, DateTime measuredAt,
+        CancellationToken cancellationToken = default);
 }

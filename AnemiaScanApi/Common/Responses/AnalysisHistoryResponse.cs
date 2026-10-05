@@ -26,6 +26,8 @@ public record AnalysisHistoryResponse(
 /// </summary>
 /// <param name="HemoglobinLevel">CIELab-регрессия Hb (г/дл); null, если модель не смогла посчитать признаки.</param>
 /// <param name="Severity">Non-Anemic/Mild/Moderate/Severe — null ровно тогда, когда <paramref name="HemoglobinLevel"/> null.</param>
+/// <param name="LabHemoglobin">Hb из анализа крови (г/дл), внесённый пользователем; null, если не вносил.</param>
+/// <param name="LabMeasuredAt">Дата сдачи крови; null ровно тогда, когда <paramref name="LabHemoglobin"/> null.</param>
 /// <param name="ImageSystemId">
 /// Идентификатор снимка. Null у записей, где он не разбирается как Guid —
 /// в базе это строка, и ломать выдачу истории из-за одной кривой записи незачем.
@@ -39,4 +41,6 @@ public record AnalysisHistoryItemResponse(
     string? Severity,
     SeverityReference? SeverityReference,
     VerdictAgreement? VerdictAgreement,
-    Guid? ImageSystemId);
+    Guid? ImageSystemId,
+    double? LabHemoglobin,
+    DateTime? LabMeasuredAt);

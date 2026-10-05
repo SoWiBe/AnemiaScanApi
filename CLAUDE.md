@@ -4,54 +4,83 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-ASP.NET Core Web API on **.NET 10.0** (`net10.0`, `x64`, nullable + implicit usings enabled). Single project `AnemiaScanApi/AnemiaScanApi.csproj` under solution `AnemiaScanApi.sln`. No test projects, no Dockerfile.
+AnemiaScan MVP backend: ASP.NET Core Web API on **.NET 10.0** (`net10.0`, `x64`, nullable + implicit usings). The mobile app (Expo) lives in another repo; models are trained in the separate **AnemiaScanML** repo and only their artifacts (`.zip` / `.onnx` + cards) are copied here.
+
+Solution `AnemiaScanApi.sln`: `AnemiaScanApi/` (the API) and `AnemiaScanApi.Tests/` (xUnit + FluentAssertions + Moq). No Dockerfile.
+
+Production: `https://api-anemiascan.ru` — a self-hosted VPS in Kazakhstan (systemd unit `anemiascan-api`, nginx + TLS, self-hosted MongoDB). Deploy is automatic on push to `master` (`.github/workflows/deployapi.yml`); see `DEPLOYMENT.md`. Server addresses and IPs must not be written into the repo (it is public).
 
 ## Commands
 
-Run from the repo root (`AnemiaScanApi/`, containing the `.sln`):
+Run from the repo root (containing the `.sln`):
 
 ```powershell
 dotnet restore
 dotnet build
-dotnet run --project AnemiaScanApi              # launches the API
-dotnet build AnemiaScanApi/AnemiaScanApi.csproj # build a single project
+dotnet test                                      # ~230 tests, ~10 s
+dotnet run --project AnemiaScanApi               # launches the API
 ```
 
-Secrets are stored via **User Secrets** (`UserSecretsId = 73f44fb7-f595-4c2e-b926-c42c4ca31890`). `appsettings.json` intentionally ships with empty `MongoDB`, `JwtSettings`, `EmailSender`, `Smtp`, and `CodeGenerator` values — supply them locally via `dotnet user-secrets set ...` or environment variables, not by editing the checked-in file.
+Secrets are stored via **User Secrets** (`UserSecretsId = 73f44fb7-f595-4c2e-b926-c42c4ca31890`). `appsettings.json` intentionally ships with empty `MongoDB`, `JwtSettings`, `EmailSender`, `Smtp`, and `CodeGenerator` values — supply them locally via `dotnet user-secrets set ...` or environment variables (`Section__Key` on the server), never by editing the checked-in file.
 
-API docs at runtime: OpenAPI JSON at `/openapi/{documentName}.json` and Scalar UI via `MapScalarApiReference` (mapped in `Program.cs`). The Swagger UI helper `UseCustomSwaggerUi()` exists in `ServicesExtensions` but is **not wired into the pipeline** — add `app.UseCustomSwaggerUi()` if you need the Swashbuckle UI.
+API docs (OpenAPI JSON + Scalar UI) are exposed **only in Development** or when `ApiDocs:Enabled=true`. Health probes: `/health` (liveness) and `/health/ready` (MongoDB + model files present).
 
 ## Architecture
 
-Request flow: **Controller → Service (`Infrastructure/Services`) → Repository (`Infrastructure/Repositories`) → MongoDB**. Cross-cutting concerns run as ASP.NET filters, attributes, or middleware.
+Request flow: **Controller → Service (`Infrastructure/Services`) → Repository (`Infrastructure/Repositories`) → MongoDB**. Cross-cutting concerns are filters, attributes, middleware.
 
-- **DI wiring** is centralized in `Extensions/` (`ServicesExtensions`, `JwtExtensions`, `LLMExtensions`, `SenderExtensions`, `LoggerExtensions`). New services/repositories must be registered inside `ServicesExtensions.AddServices()` — `Program.cs` only composes these extensions and does not know about individual types.
-- **Base types** to inherit from (do not roll your own):
-  - Controllers → `Controllers.Core.BaseSasController` (provides `Logger` and `GetUserId()` from the `ClaimTypes.NameIdentifier` JWT claim).
-  - Services → `Infrastructure.Services.Core.BaseService<T>` (just an `ILogger<T>` field).
-  - Repositories → `Infrastructure.Core.BaseMongoRepository<T>` where `T : BaseMongoModel`. It builds its own `MongoClient` per instance from `MongoDbSettings`.
-  - Mongo entities → `Common.BaseMongoModel` (defines `[BsonId] Guid Id`).
-- **Error handling** goes through `Middleware/SASMiddleware.cs`. Throw `Exceptions.SASException(message, statusCode)` from services to produce a typed `ExceptionResponse` (409/404/403/401/400 → matching HTTP; anything else → 500). Uncaught exceptions become 500s. Do not `try/catch` in controllers for the purpose of returning error JSON — let the middleware handle it.
-- **ML model** is loaded by `LLMExtensions.AddAnemiaPredictionModel()` via `PredictionEnginePool<AnemiaInput, AnemiaPredictionOutput>` with `watchForChanges: true`. The model file path is computed as `Path.Combine(AppContext.BaseDirectory, "../LLM", "anemia_v10_more_aug.zip")` — i.e. **one directory above the build output**, resolving to the project's `LLM/` folder at dev time. If you move or rename the .zip, update this path. Registered model name constant is `Common.Constants.ModelName.SasModel`.
-  - `AnemiaAnalysisService.WriteAnalyseAsync` treats `PredictedLabel == "Low_Hb"` as anemic; this label string is dictated by the trained model and should not be changed casually.
-- **Auth**: JWT bearer configured in `JwtExtensions.AddJwtAuthentication` from the `JwtSettings` section (`Secret`, `Issuer`, `Audience`, `AccessTokenExpirationMinutes`, `RefreshTokenExpirationDays`; `ClockSkew = Zero`). Passwords hashed with **BCrypt.Net**. Refresh tokens are 64 random bytes (base64) stored on the `SasUser` document; `SignOutAsync` clears them. Controllers/actions requiring auth use `[Authorize]`.
-- **Email verification codes** use `IMemoryCache` (registered in `AddServices()`) with a 5-minute absolute+sliding TTL. Cache key format is `{CodeGeneratorSettings.CacheKey}:{email.ToLower()}` — always produce/read it via `ICodeGenerator.GetCacheKey(email)` / `GenerateAlphanumericCode(email)`; the `ValidationCodeFilter` reads the same key and expects `BaseAuthRequest.EmailCode` on the request DTO.
-- **Image storage**: `AnemiaScansRepository` writes uploads to **MongoDB GridFS** (bucket built from `MongoDbSettings.ConnectionString/DatabaseName`) with filename `anemia_scan_{Guid}`. Downloads use the same filename convention. Collections are named via `Common.Constants.MongoCollection` (`Users`, `AnemiaScans`).
-- **File uploads** validated with `Filters/ValidateImageAttribute` (size, extension, MIME, magic bytes for JPEG/PNG/GIF/BMP/WebP). The filter looks up the file by an action-argument name (default `"image"`) — pass the actual parameter name if it differs. Use `FileExtensions.UseAsBytesAsync(IFormFile)` to materialize the uploaded stream.
-- **Logging**: Serilog is configured in two places. `LoggerExtensions.AddLogging` bootstraps a console logger and swaps in the host logger; runtime sinks (console + rolling `logs/myapp.txt` and error-only `logs/errors.txt`) come from `Serilog` section of `appsettings.json`.
-- **CORS**: single named policy `DevCorsPolicy` allowing origin `http://localhost:8081` only (dev-only). Add a production policy rather than widening this one.
+- **DI wiring** is centralized in `Extensions/` (`ServicesExtensions`, `JwtExtensions`, `LLMExtensions`, `SenderExtensions`, `LoggerExtensions`, `RateLimitingExtensions`, `HealthExtensions`). New services/repositories go into `ServicesExtensions.AddServices()`; `Program.cs` only composes extensions.
+- **Base types** (do not roll your own):
+  - Controllers → `Controllers.Core.BaseSasController` (`Logger`, `GetUserId()` from the `NameIdentifier` claim).
+  - Services → `Infrastructure.Services.Core.BaseService<T>`.
+  - Repositories → `Infrastructure.Core.BaseMongoRepository<T>` (`T : BaseMongoModel`). It receives the **singleton** `IMongoDatabase` from DI — never construct a `MongoClient` per repository/request.
+  - Mongo entities → `Common.BaseMongoModel` (`[BsonId] Guid Id`).
+- **Errors**: throw `Exceptions.SASException(message, statusCode)` from services; `Middleware/SASMiddleware.cs` turns it into a typed response (409/404/403/401/400 → same HTTP code, anything else → 500). Don't `try/catch` in controllers to build error JSON.
+- **Auth**: JWT bearer (`JwtSettings`), BCrypt password hashes, 64-byte random refresh tokens stored on the user document. `[Authorize]` on actions. Identity always comes from the JWT, never from request body/query.
+- **Email codes**: `IMemoryCache`, key via `ICodeGenerator.GetCacheKey(email)`; `ValidationCodeFilter` expects `BaseAuthRequest.EmailCode`.
+- **Rate limiting**: policies in `Common/Constants/RateLimitPolicies.cs` (`anemia-prediction` per user, `email-codes` per IP). The app listens on loopback behind nginx; `UseForwardedHeaders` trusts exactly one proxy — keep it before `UseRateLimiter`.
+- **Images**: `AnemiaScansRepository` stores a *compressed* copy in **MongoDB GridFS** (`anemia_scan_{Guid}`); predictions are computed from the original bytes. Filter `Filters/ValidateImageAttribute` exists and is registered in DI but is not currently applied to the upload action. The planned upload contract (PNG with alpha, outlined conjunctiva, `CaptureLight`, `DeviceModel`) is in `docs/image-upload-contract.md` and is **not enforced yet** — enable it only after the app release with outlining.
+- **Logging**: Serilog (`LoggerExtensions.AddLogging` + `Serilog` section of `appsettings.json`).
+- **CORS**: single policy `DevCorsPolicy` (`http://localhost:8081`). Add a production policy instead of widening it.
+
+## ML pipeline (`AnemiaScanApi/ML`, `LLM/`)
+
+Two independent opinions about one photo, reconciled into one verdict (`ML/AnalysisVerdict.cs`):
+
+1. **Classifier v13** (`LLM/anemia_v13_conjunctiva_full.zip` + `.card.json`): TensorFlow Inception features + LightGBM, loaded by `LLMExtensions.AddAnemiaPredictionModel()` via `PredictionEnginePool<AnemiaInput, AnemiaPredictionOutput>` (`watchForChanges: false`, model name `ModelName.SasModel`). The **decision threshold (0.15) comes from the card**, not argmax: `AnemiaClassifier.Decide` → `ClassifierDecision(IsAnemic, AnemiaProbability, ClassifierVersion)`. Positive class is `Low_Hb`. The card is mandatory — a missing card fails startup. The zip and card are a pair; replace both together and update `LLMExtensions.ClassifierModelFile`, the `.csproj` `Content` items and `MlModelsHealthCheck`. LightGBM's native library needs `libgomp1` on Linux.
+2. **CIELab Hb regression** (3 features L/a/b → boosting), two models chosen by age in `HemoglobinPredictionService`: child (`ML/hb_model.onnx`, ONNX, age 0–4) and adult (`ML/hb_model_adults.zip`, ML.NET, age 19–88; `HbMlNetPredictor`). Both implement `IHemoglobinModel`. `HemoglobinPrediction.InDomain` = age within the model's trained range **and** input segmented (transparent background, `ConjunctivaMask`). Out of domain → the number must not be shown as a measurement.
+3. **Severity** (`ML/SeverityBands.cs`): WHO thresholds by sex/age, strictest scale if the profile is incomplete; the scale used is stored on the scan (`severity_reference`).
+4. **Verdict**: the classifier decides; the regression only adds severity and an agreement flag (`Agree/Disagree/Unavailable`). Disagreement is shown, not hidden.
+
+Honest numbers (out-of-fold CV on 215 adults, patient-level): classifier sensitivity 87.8% / specificity 59.2% at threshold 0.15 — about 4 of 10 healthy people get an "anemia" verdict, so UI wording must be "worth getting a blood test", never a diagnosis. Details in AnemiaScanML/README.md. Every analysis response carries the medical disclaimer (`MedicalDisclaimer`).
+
+The API returns `anemiaProbability` (probability of `Low_Hb`, 0..1), not the old `confidence`. Old scan documents stay readable (`[BsonIgnoreExtraElements]`).
+
+## Scans and lab ground truth
+
+`AnemiaScan` (collection `AnemiaScans`) stores verdict, probability, classifier version, Hb, severity, agreement, model version. The user can attach the real lab result: `PUT /analysis/{scanId}/lab-hemoglobin` (g/dL, 3–25; date within ±14 days of the scan; ownership enforced in the Mongo filter). This is the only way to measure the models on real people. Note: `ProfileService.WriteAnalysisAsync` also embeds a copy of each scan into the user document; lab values are written only to the `AnemiaScans` collection.
 
 ## Namespace layout quirks
 
-Folder → namespace mapping is not strict. Several files sit in `Infrastructure/...` folders but declare short namespaces:
+Folder → namespace mapping is not strict:
 
-- `Infrastructure/Services/*.cs` → `AnemiaScanApi.Services`
+- `Infrastructure/Services/*.cs` → `AnemiaScanApi.Services` (some files use `AnemiaScanApi.Infrastructure.Services`; check the neighbours)
 - `Infrastructure/Settings/*.cs` → `AnemiaScanApi.Settings`
 - `Infrastructure/Utils/*.cs` → `AnemiaScanApi.Utils` (and `.Utils.Core`)
 - `Infrastructure/Exceptions/SASException.cs` → `AnemiaScanApi.Exceptions`
 
-Interfaces under `Infrastructure/Services/Core/` and `Infrastructure/Utils/Core/` do use the full folder namespace. When adding new types, match the surrounding files' pattern rather than assuming folder = namespace, otherwise DI registration in `ServicesExtensions` will need matching `using` changes. Note also the name collision on `IAuthorizationService` / `IEmailSender` (project's vs framework's) — `AuthorizationController.cs` disambiguates with `using ... = ...;` aliases; follow that pattern when consuming these.
+Match the surrounding files' pattern. `IAuthorizationService` / `IEmailSender` collide with framework types — `AuthorizationController.cs` disambiguates with `using ... = ...;`.
 
-## ADRs
+## Docs
 
-Architecture notes and API design decisions live in `AnemiaScanApi/docs/adr/` (e.g. `001-use-mongodb-for-analysis-storage.md`, `api-specification.md`). Consult these before changing storage or API contracts.
+- `docs/api-contract-changes.md` — changelog of the API contract for the frontend. **Update it in the same change whenever a request/response shape changes.**
+- `docs/image-upload-contract.md` — photo format agreed with the frontend.
+- `docs/plans/MVP_PLAN.md` — priorities (P0 numbers are referenced in code comments); `docs/adr/` — design decisions; `docs/course-content-schema.md` — course content format.
+- `DEPLOYMENT.md` — server setup, deploy, troubleshooting.
+
+## Working agreements
+
+- Git: the only commit author is the user (Aleksey); **no `Co-Authored-By` trailers**. Commit messages in English.
+- The app is not in production use yet, so API changes don't need backward-compat shims or deprecated fields — but tell the frontend via `docs/api-contract-changes.md`.
+- Never commit photos of people's eyes (`light-check/`) or server details.
+- Deferred on purpose by the user (don't push unprompted): SSH hardening, backups (receiver must be in Kazakhstan), course importer. A lighting measurement on 3–5 people is **mandatory before release**.
