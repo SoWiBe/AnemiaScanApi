@@ -34,18 +34,24 @@ public abstract class BaseMongoRepository<T> : IMongoRepository<T> where T : Bas
             .Find(x => x.Id == id)
             .FirstOrDefaultAsync(cancellationToken);
     
-    public virtual Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default)
-        => Collection
-            .InsertOneAsync(entity, cancellationToken: cancellationToken)
-            .ContinueWith(_ => entity, cancellationToken);
-      
-    public virtual Task<T> UpdateAsync(Guid id, T entity, CancellationToken cancellationToken = default)
-        => Collection
-            .ReplaceOneAsync(x => x.Id == id, entity, cancellationToken: cancellationToken)
-            .ContinueWith(_ => entity, cancellationToken);
+    // Ниже — именно await, а не ContinueWith(_ => entity): продолжение без
+    // проверки статуса выполнялось и после упавшей записи, исключение терялось,
+    // и вызывающий код получал «успех» при несохранённом документе.
+    public virtual async Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default)
+    {
+        await Collection.InsertOneAsync(entity, cancellationToken: cancellationToken);
+        return entity;
+    }
 
-    public virtual Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => Collection
-            .DeleteOneAsync(x => x.Id == id, cancellationToken: cancellationToken)
-            .ContinueWith(_ => true, cancellationToken);
+    public virtual async Task<T> UpdateAsync(Guid id, T entity, CancellationToken cancellationToken = default)
+    {
+        await Collection.ReplaceOneAsync(x => x.Id == id, entity, cancellationToken: cancellationToken);
+        return entity;
+    }
+
+    public virtual async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        await Collection.DeleteOneAsync(x => x.Id == id, cancellationToken: cancellationToken);
+        return true;
+    }
 }
