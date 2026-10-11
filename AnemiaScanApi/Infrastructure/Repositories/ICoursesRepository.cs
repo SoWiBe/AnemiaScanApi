@@ -15,4 +15,10 @@ public interface ICoursesRepository : IMongoRepository<Course>
     /// Returns a published course by its slug, or null if not found or not published.
     /// </summary>
     Task<Course?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Курс по slug в любом статусе, включая черновики. Нужен импортёру: каталог
+    /// черновиков не видит, а повторный импорт должен найти и их.
+    /// </summary>
+    Task<Course?> FindBySlugAsync(string slug, CancellationToken cancellationToken = default);
 }

@@ -17,7 +17,7 @@ Run from the repo root (containing the `.sln`):
 ```powershell
 dotnet restore
 dotnet build
-dotnet test                                      # ~230 tests, ~10 s
+dotnet test                                      # ~280 tests, ~10 s
 dotnet run --project AnemiaScanApi               # launches the API
 ```
 
@@ -56,6 +56,20 @@ Honest numbers (out-of-fold CV on 215 adults, patient-level): classifier sensiti
 
 The API returns `anemiaProbability` (probability of `Low_Hb`, 0..1), not the old `confidence`. Old scan documents stay readable (`[BsonIgnoreExtraElements]`).
 
+**Phone photos are an open blocker (measured 06.10.2026, `light-check` in AnemiaScanML).** On 22 real phone photos of 6 people both v13 and the retrained v14 answer "anemia" for everyone (v13 even for an all-black frame), and the probability jumps between two consecutive frames; the Hb number crosses the 12 g/dL line for 4 of 6 people. The dataset was shot with a close-up attachment, so CV numbers do not transfer. **Decision (11.10.2026): the photo verdict and the Hb number are not to be shown to users until the model is validated on phone photos of people with a lab hemoglobin** (protocol: `AnemiaScanML/PHONE_VALIDATION.md`). The API still returns them — hiding them in the response is not implemented yet. Related leaks to fix with it: `GET /courses/recommended` returns a course only when the last scan is "anemic", and enrollment progress builds its Hb timeline from the model's Hb.
+
+## Courses
+
+Course content lives in the repo: `AnemiaScanApi/Content/Courses/<slug>.json` (one file = one course; file name must equal the slug). There is no admin endpoint and no manual upload: `CourseContentSyncHostedService` syncs the folder into Mongo on every startup, so content reaches production only through git → PR → deploy.
+
+- `Infrastructure/Courses/CourseDocumentParser` validates a file (mirrors `docs/schemas/course.schema.json`, plus what a schema can't express) and reports all errors at once with field paths. Unknown fields are errors.
+- `CourseImportService` upserts by slug. **Task ids survive re-import** (matched by day + position, or an explicit `id`) because `CourseEnrollment` progress references them. Days are written before the catalog card; the card carries `content_hash`, written last, so an interrupted import is retried and an unchanged file causes no writes.
+- A bad file is logged and skipped; it never blocks other courses or startup. Deleting a file does not delete the course — set `contentStatus: "Draft"` to hide it.
+- `ShippedCourseContentTests` runs every file in the folder through the same validation — `dotnet test` is the pre-PR check for content.
+- A `Published` course must not contain a day with no tasks and no rescan checkpoint: such a day can never be completed (see `CourseEnrollmentService.TryMarkDayCompleted`).
+
+Author-facing format: `docs/course-content-schema.md`.
+
 ## Scans and lab ground truth
 
 `AnemiaScan` (collection `AnemiaScans`) stores verdict, probability, classifier version, Hb, severity, agreement, model version. The user can attach the real lab result: `PUT /analysis/{scanId}/lab-hemoglobin` (g/dL, 3–25; date within ±14 days of the scan; ownership enforced in the Mongo filter). This is the only way to measure the models on real people. Note: `ProfileService.WriteAnalysisAsync` also embeds a copy of each scan into the user document; lab values are written only to the `AnemiaScans` collection.
@@ -83,4 +97,4 @@ Match the surrounding files' pattern. `IAuthorizationService` / `IEmailSender` c
 - Git: the only commit author is the user (Aleksey); **no `Co-Authored-By` trailers**. Commit messages in English.
 - The app is not in production use yet, so API changes don't need backward-compat shims or deprecated fields — but tell the frontend via `docs/api-contract-changes.md`.
 - Never commit photos of people's eyes (`light-check/`) or server details.
-- Deferred on purpose by the user (don't push unprompted): SSH hardening, backups (receiver must be in Kazakhstan), course importer. A lighting measurement on 3–5 people is **mandatory before release**.
+- Deferred on purpose by the user (don't push unprompted): SSH hardening, backups (receiver must be in Kazakhstan).
