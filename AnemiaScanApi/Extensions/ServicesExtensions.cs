@@ -5,6 +5,7 @@ using MongoDB.Driver.GridFS;
 
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
+using AnemiaScanApi.Infrastructure.Courses;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services;
 using AnemiaScanApi.Infrastructure.Services.Core;
@@ -113,7 +114,8 @@ public static class ServicesExtensions
     /// Настройки, которые должны меняться без передеплоя:
     /// <c>Legal</c> — версия политики и тексты (P0 №12 и №13; версия попадает
     /// в согласие пользователя, поэтому живёт в конфиге, а не в коде),
-    /// <c>ImageStorage</c> — параметры сжатия снимка перед GridFS (P0 №9).
+    /// <c>ImageStorage</c> — параметры сжатия снимка перед GridFS (P0 №9),
+    /// <c>CourseContent</c> — откуда и когда загружать курсы (P0 №3).
     /// </summary>
     public static IServiceCollection AddAppOptions(this IServiceCollection services, IConfiguration configuration)
     {
@@ -127,6 +129,7 @@ public static class ServicesExtensions
                 legal.PolicyVersion = LegalSettings.DefaultPolicyVersion;
         });
         services.Configure<ImageStorageSettings>(configuration.GetSection("ImageStorage"));
+        services.Configure<CourseContentSettings>(configuration.GetSection("CourseContent"));
         return services;
     }
 
@@ -149,6 +152,11 @@ public static class ServicesExtensions
         services.AddScoped<IStreakService, StreakService>();
         services.AddScoped<ICourseCatalogService, CourseCatalogService>();
         services.AddScoped<ICourseEnrollmentService, CourseEnrollmentService>();
+        services.AddScoped<ICourseImportService, CourseImportService>();
+
+        // Загрузка курсов из Content/Courses при старте (P0 №3).
+        services.AddScoped<CourseContentSync>();
+        services.AddHostedService<CourseContentSyncHostedService>();
 
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<ICodeGenerator, CodeGenerator>();

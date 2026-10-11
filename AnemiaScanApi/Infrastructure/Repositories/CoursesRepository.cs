@@ -18,4 +18,9 @@ public class CoursesRepository(IMongoDatabase database, ILogger<CoursesRepositor
         => await Collection
             .Find(x => x.Slug == slug && x.ContentStatus == CourseContentStatus.Published)
             .FirstOrDefaultAsync(cancellationToken);
+
+    public async Task<Course?> FindBySlugAsync(string slug, CancellationToken cancellationToken = default)
+        => await Collection
+            .Find(x => x.Slug == slug)
+            .FirstOrDefaultAsync(cancellationToken);
 }

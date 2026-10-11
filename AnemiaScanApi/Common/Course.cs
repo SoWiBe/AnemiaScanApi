@@ -45,7 +45,7 @@ public class Course : BaseMongoModel
     [BsonElement("content_status")] public CourseContentStatus ContentStatus { get; set; } = CourseContentStatus.Draft;
 
     /// <summary>
-    /// Name of the doctor who signed off on the content. Required for Published.
+    /// Name of the doctor who signed off on the content. Empty on MVP: there is no clinical review yet.
     /// </summary>
     [BsonElement("doctor_reviewer_name")] public string? DoctorReviewerName { get; set; }
 
@@ -53,6 +53,15 @@ public class Course : BaseMongoModel
     /// Timestamp of publication.
     /// </summary>
     [BsonElement("published_at")] public DateTime? PublishedAt { get; set; }
+
+    /// <summary>
+    /// Отпечаток файла курса, из которого сделан последний импорт (см.
+    /// CourseImportService). Совпал — курс не трогаем: синхронизация идёт при
+    /// каждом старте сервиса и не должна переписывать базу без причины.
+    /// Пишется последним шагом импорта, поэтому заодно отмечает, что импорт
+    /// дошёл до конца. Null у курсов, заведённых не импортёром.
+    /// </summary>
+    [BsonElement("content_hash")] [BsonIgnoreIfNull] public string? ContentHash { get; set; }
 
     [BsonElement("created_at")] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     [BsonElement("updated_at")] public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

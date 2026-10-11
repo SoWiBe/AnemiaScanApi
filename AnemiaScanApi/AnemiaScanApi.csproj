@@ -61,6 +61,11 @@
         <Content Include="ML\hb_model_adults.zip">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <!-- Файлы курсов: при старте сервис загружает их в базу (CourseContentSync).
+             Update, а не Include, по той же причине, что и у карточки модели выше. -->
+        <Content Update="Content\Courses\*.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

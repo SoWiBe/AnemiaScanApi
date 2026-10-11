@@ -112,7 +112,7 @@
 |---|---|---|---|
 | 1 | **`GET /profile/info` отдаёт весь `SasUser`, включая `hash_password` и `refresh_token`** | `ProfileController` + `GetProfileResponse` | 1 ч |
 | 2 | **`new MongoClient` на каждый репозиторий в каждом запросе** — с Atlas это TLS-хендшейк на запрос и лимит соединений тарифа. Клиент → синглтон | `BaseMongoRepository`, `AnemiaScansRepository` | 2 ч |
-| 3 | **Нет контента курсов и импортёра** — фича не существует для пользователя | новый seed/импорт | 2–3 дня (в основном контент) |
+| 3 | **Нет контента курсов** — фича не существует для пользователя. ~~Импортёр~~ — **сделан 11.10.2026**: курсы лежат в `Content/Courses/*.json` и загружаются в базу при старте сервиса (см. `docs/course-content-schema.md`). Осталось написать и опубликовать сами курсы | контент | 2–3 дня |
 | 4 | **`MemoryMax=700M`** → OOM под TF | `deployapi.yml` | 15 мин |
 | 5 | **Нет `/health`** — деплой и рестарт вслепую, нельзя настроить мониторинг | `Program.cs` | 1 ч |
 | 6 | **Нет rate-limit** на `/analysis/anemia/prediction` (тяжёлый CPU) и на отправку email-кодов (спам с вашего SMTP) | `Program.cs` (`AddRateLimiter`) | 3 ч |
