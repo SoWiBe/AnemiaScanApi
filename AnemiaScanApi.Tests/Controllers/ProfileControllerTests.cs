@@ -44,7 +44,7 @@ public class ProfileControllerTests
         return controller;
     }
 
-    private static SasUser UserWithSecrets(Guid id, params AnemiaScan[] scans)
+    private static SasUser UserWithSecrets(Guid id)
     {
         var user = new SasUser
         {
@@ -58,8 +58,6 @@ public class ProfileControllerTests
             RefreshToken = RefreshToken,
             RefreshTokenExpires = new DateTime(2026, 12, 31, 0, 0, 0, DateTimeKind.Utc)
         };
-
-        user.AnemiaScans.AddRange(scans);
         return user;
     }
 
@@ -67,6 +65,11 @@ public class ProfileControllerTests
         => _profileService
             .Setup(s => s.GetProfileAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+    private void GivenScans(Guid userId, params AnemiaScan[] scans)
+        => _profileService
+            .Setup(s => s.GetScansAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(scans);
 
     // ---------- GET /profile/info ----------
 
@@ -87,7 +90,8 @@ public class ProfileControllerTests
     {
         var userId = Guid.NewGuid();
         var scan = SasUserBuilder.AnemicScan(new DateTime(2026, 9, 1, 12, 0, 0, DateTimeKind.Utc));
-        var user = UserWithSecrets(userId, scan);
+        var user = UserWithSecrets(userId);
+        GivenScans(userId, scan);
         GivenProfile(userId, user);
 
         var result = await NewController(userId).GetProfileAsync();
@@ -103,6 +107,29 @@ public class ProfileControllerTests
     }
 
     /// <summary>
+    /// Сканы в профиле берутся из коллекции сканов, поэтому всё, что дописано к
+    /// скану позже, в профиле видно. Раньше профиль отдавал копию из документа
+    /// пользователя, сделанную в момент съёмки, и анализа крови в ней не было.
+    /// </summary>
+    [Fact]
+    public async Task GetProfile_ScansCarryLabHemoglobinEnteredLater()
+    {
+        var userId = Guid.NewGuid();
+        var scan = SasUserBuilder.AnemicScan(new DateTime(2026, 9, 1, 12, 0, 0, DateTimeKind.Utc));
+        scan.LabHemoglobin = 11.8;
+        scan.LabMeasuredAt = new DateTime(2026, 9, 2, 0, 0, 0, DateTimeKind.Utc);
+        GivenProfile(userId, UserWithSecrets(userId));
+        GivenScans(userId, scan);
+
+        var result = await NewController(userId).GetProfileAsync();
+        var response = (GetProfileResponse)((OkObjectResult)result).Value!;
+
+        response.AnemiaScans.Single().LabHemoglobin.Should().Be(11.8);
+        response.AnemiaScans.Single().LabMeasuredAt.Should().Be(scan.LabMeasuredAt);
+        _profileService.Verify(s => s.GetScansAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    /// <summary>
     /// Регрессия на саму утечку: сериализованный ответ не должен содержать ни хеша
     /// пароля, ни refresh-токена — как бы ни менялся маппинг дальше.
     /// </summary>
@@ -110,7 +137,8 @@ public class ProfileControllerTests
     public async Task GetProfile_ResponseNeverCarriesCredentials()
     {
         var userId = Guid.NewGuid();
-        GivenProfile(userId, UserWithSecrets(userId, SasUserBuilder.HealthyScan(DateTime.UtcNow)));
+        GivenProfile(userId, UserWithSecrets(userId));
+        GivenScans(userId, SasUserBuilder.HealthyScan(DateTime.UtcNow));
 
         var result = await NewController(userId).GetProfileAsync();
         var json = JsonSerializer.Serialize(((OkObjectResult)result).Value);
@@ -143,7 +171,9 @@ public class ProfileControllerTests
 
         await NewController(userId).GetProfileAsync();
 
+        // И профиль, и сканы запрашиваются по id из токена — и ни по какому другому.
         _profileService.Verify(s => s.GetProfileAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+        _profileService.Verify(s => s.GetScansAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
         _profileService.VerifyNoOtherCalls();
     }
 

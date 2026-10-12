@@ -5,6 +5,13 @@ namespace AnemiaScanApi.Common;
 /// <summary>
 /// Model for a user in the system.
 /// </summary>
+/// <remarks>
+/// Лишние поля игнорируются: до 12.10.2026 в документе пользователя лежала копия
+/// каждого скана (anemia_scans). Копии больше не пишутся и не читаются — сканы
+/// живут только в коллекции AnemiaScans, — но старые документы с этим полем
+/// должны оставаться читаемыми.
+/// </remarks>
+[BsonIgnoreExtraElements]
 public class SasUser : BaseMongoModel
 {
     /// <summary>
@@ -54,8 +61,4 @@ public class SasUser : BaseMongoModel
     /// появления поля.
     /// </summary>
     [BsonElement("consent")] public UserConsent? Consent { get; set; }
-    /// <summary>
-    /// Anemia scans.
-    /// </summary>
-    [BsonElement("anemia_scans")] public List<AnemiaScan> AnemiaScans { get; set; } = new();
 }

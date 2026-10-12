@@ -22,13 +22,17 @@ public class ProfileController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetProfileAsync(CancellationToken cancellationToken = default)
     {
-        var user = await profileService.GetProfileAsync(GetUserId(), cancellationToken);
+        var userId = GetUserId();
+        var user = await profileService.GetProfileAsync(userId, cancellationToken);
+        // Сканы читаются из своей коллекции, а не из копии в документе пользователя:
+        // копия не получала правок скана (например, внесённый анализ крови).
+        var scans = await profileService.GetScansAsync(userId, cancellationToken);
         var consent = user.Consent is null
             ? null
             : new ConsentResponse(user.Consent.PolicyVersion, user.Consent.AcceptedAt, user.Consent.Accepted);
 
         return Ok(new GetProfileResponse(user.Email, user.FullName, user.BirthDate, user.Sex, user.Age,
-            user.AnemiaScans, consent));
+            scans, consent));
     }
     
     [HttpPatch]

@@ -26,6 +26,7 @@ public class ProfileServiceConsentTests
     private ProfileService NewService() => new(
         NullLogger<ProfileService>.Instance,
         _users.Object,
+        Mock.Of<IAnemiaScansRepository>(),
         Options.Create(new LegalSettings { PolicyVersion = CurrentPolicyVersion }));
 
     private SasUser GivenUser(Guid userId)

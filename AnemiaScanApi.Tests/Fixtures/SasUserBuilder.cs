@@ -18,18 +18,6 @@ internal sealed class SasUserBuilder
         return this;
     }
 
-    public SasUserBuilder WithScan(AnemiaScan scan)
-    {
-        _user.AnemiaScans.Add(scan);
-        return this;
-    }
-
-    public SasUserBuilder WithScans(params AnemiaScan[] scans)
-    {
-        _user.AnemiaScans.AddRange(scans);
-        return this;
-    }
-
     public SasUser Build() => _user;
 
     public static AnemiaScan AnemicScan(DateTime scanDate) => new()

@@ -10,6 +10,7 @@ public class CourseCatalogService(
     ICoursesRepository coursesRepository,
     ICourseContentRepository courseContentRepository,
     IUsersRepository usersRepository,
+    IAnemiaScansRepository anemiaScansRepository,
     ILogger<CourseCatalogService> logger)
     : BaseService<CourseCatalogService>(logger), ICourseCatalogService
 {
@@ -44,8 +45,11 @@ public class CourseCatalogService(
     public async Task<RecommendedCourseResponse?> GetRecommendedAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await usersRepository.GetByIdAsync(userId, cancellationToken);
-        var lastScan = user?.AnemiaScans
-            .OrderByDescending(s => s.ScanDate)
+        if (user is null) return null;
+
+        // Последний скан — из коллекции сканов (новые сверху), а не из копии в
+        // документе пользователя: копии больше нет.
+        var lastScan = (await anemiaScansRepository.GetByUserAsync(userId, skip: 0, take: 1, cancellationToken))
             .FirstOrDefault();
 
         if (lastScan is null || !lastScan.IsAnemic)
@@ -56,7 +60,7 @@ public class CourseCatalogService(
         var courses = (await coursesRepository.GetPublishedAsync(cancellationToken)).ToList();
         if (courses.Count == 0) return null;
 
-        var (audience, reason) = PickAudience(user!);
+        var (audience, reason) = PickAudience(user);
         var pick = courses.FirstOrDefault(c => c.TargetAudience == audience)
                    ?? courses.FirstOrDefault(c => c.TargetAudience == TargetAudience.Adult);
 
