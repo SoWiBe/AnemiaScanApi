@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Filters;
+using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services.Core;
 using AnemiaScanApi.Infrastructure.Utils.Core;
-using Microsoft.Extensions.Caching.Memory;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
@@ -27,8 +27,28 @@ public class AuthorizationController(
     IAuthorizationService authorizationService,
     IEmailSender emailSender,
     ICodeGenerator codeGenerator,
-    IMemoryCache memoryCache) : BaseSasController(logger)
+    IVerificationCodeStore codeStore) : BaseSasController(logger)
 {
+    /// <summary>
+    /// Создаёт код, сохраняет его и отправляет письмом.
+    ///
+    /// Сначала сохранение, потом письмо. Наоборот было бы хуже: если база не
+    /// ответила после отправки, человек получил бы код, который не сработает.
+    /// При таком порядке сбой почты оставляет в базе лишь код, которого никто
+    /// не видел, — он истечёт сам.
+    /// </summary>
+    private async Task SendVerificationCodeAsync(string email, CancellationToken cancellationToken)
+    {
+        var code = codeGenerator.GenerateAlphanumericCode();
+        await codeStore.SaveAsync(email, code, cancellationToken);
+        await emailSender.SendEmailAsync(email, "Smart Anemia Scan Verification Code",
+            $"Your verification code is: {code}", cancellationToken);
+    }
+
+    /// <summary>Совпал ли присланный код с действующим кодом для адреса.</summary>
+    private async Task<bool> IsCodeValidAsync(string email, string? code, CancellationToken cancellationToken)
+        => await codeStore.CheckAsync(email, code, cancellationToken) == VerificationCodeCheck.Valid;
+
     /// <summary>
     /// Авторизация по логину и паролю.
     /// </summary>
@@ -138,17 +158,9 @@ public class AuthorizationController(
             return BadRequest(new { message = e.Message });
         }
 
-        var (cachingKey, code) = codeGenerator.GenerateAlphanumericCode(request.Email);
-        await emailSender.SendEmailAsync(request.Email, "Smart Anemia Scan Verification Code",
-            $"Your verification code is: {code}", cancellationToken);
-        
-        // кэшируем код на 5 минут
-        memoryCache.Set(cachingKey, code, new MemoryCacheEntryOptions
-        {
-            AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(5),
-            SlidingExpiration = TimeSpan.FromMinutes(5)
-        });
-        
+        // код действует 5 минут (VerificationCodeStore.Lifetime)
+        await SendVerificationCodeAsync(request.Email, cancellationToken);
+
         return Ok();
     }
 
@@ -165,17 +177,9 @@ public class AuthorizationController(
         if (!await authorizationService.IsUserExistAsync(request.Email!, cancellationToken))
             return NotFound(new { message = "пользователь не найден в системе, пройдите этап регистрации для этого" });
         
-        var (cachingKey, code) = codeGenerator.GenerateAlphanumericCode(request.Email!);
-        await emailSender.SendEmailAsync(request.Email!, "Smart Anemia Scan Verification Code",
-            $"Your verification code is: {code}", cancellationToken);
-        
-        // кэшируем код на 5 минут
-        memoryCache.Set(cachingKey, code, new MemoryCacheEntryOptions
-        {
-            AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(5),
-            SlidingExpiration = TimeSpan.FromMinutes(5)
-        });
-        
+        // код действует 5 минут (VerificationCodeStore.Lifetime)
+        await SendVerificationCodeAsync(request.Email!, cancellationToken);
+
         return Ok();
     }
 
@@ -194,10 +198,7 @@ public class AuthorizationController(
         if (!await authorizationService.IsUserExistAsync(request.Email, cancellationToken))
             return NotFound(new { message = "пользователь не найден в системе, пройдите этап регистрации для этого" });
 
-        var cachingKey = codeGenerator.GetCacheKey(request.Email);
-        var cachedCode = memoryCache.Get<string>(cachingKey);
-
-        if (string.IsNullOrWhiteSpace(cachedCode) || !cachedCode.Equals(request.Code))
+        if (!await IsCodeValidAsync(request.Email, request.Code, cancellationToken))
             return BadRequest(new { message = "Указан неправильный код подтверждения или код истек" });
 
         return Ok();
@@ -219,16 +220,13 @@ public class AuthorizationController(
         if (!await authorizationService.IsUserExistAsync(request.Email, cancellationToken))
             return NotFound(new { message = "пользователь не найден в системе, пройдите этап регистрации для этого" });
 
-        var cachingKey = codeGenerator.GetCacheKey(request.Email);
-        var cachedCode = memoryCache.Get<string>(cachingKey);
-
-        if (string.IsNullOrWhiteSpace(cachedCode) || !cachedCode.Equals(request.Code))
+        if (!await IsCodeValidAsync(request.Email, request.Code, cancellationToken))
             return BadRequest(new { message = "Указан неправильный код подтверждения или код истек" });
 
         await authorizationService.UpdatePasswordAsync(request.Email, request.NewPassword, cancellationToken);
-        
+
         // удаляем код после успешного обновления
-        memoryCache.Remove(cachingKey);
+        await codeStore.RemoveAsync(request.Email, cancellationToken);
 
         return Ok();
     }

@@ -520,6 +520,7 @@ Smtp__Server=smtp.gmail.com
 Smtp__Port=587
 CodeGenerator__Length=6
 CodeGenerator__Chars=ABCDEFGHJKLMNPQRSTUVWXYZ23456789
+# CodeGenerator__CacheKey не используется с 12.10.2026 (коды в Mongo), строку можно не задавать
 CodeGenerator__CacheKey=verify_code
 Legal__PolicyVersion=1.0
 Legal__PolicyUrl=https://example.com/privacy

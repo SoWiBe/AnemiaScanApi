@@ -2,6 +2,6 @@ namespace AnemiaScanApi.Infrastructure.Utils.Core;
 
 public interface ICodeGenerator
 {
-    public (string, string) GenerateAlphanumericCode(string email, int? length = null);
-    public string GetCacheKey(string email);
+    /// <summary>Случайный код подтверждения из алфавита и длины, заданных в настройках.</summary>
+    public string GenerateAlphanumericCode(int? length = null);
 }

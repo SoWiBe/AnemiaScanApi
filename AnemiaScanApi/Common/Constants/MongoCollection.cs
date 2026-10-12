@@ -25,4 +25,8 @@ public static class MongoCollection
     /// Collection for user enrollments in courses with progress.
     /// </summary>
     public const string CourseEnrollments = "CourseEnrollments";
+    /// <summary>
+    /// Коды подтверждения из писем; документы удаляются сами по TTL-индексу.
+    /// </summary>
+    public const string VerificationCodes = "VerificationCodes";
 }

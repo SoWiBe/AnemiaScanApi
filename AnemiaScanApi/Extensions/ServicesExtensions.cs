@@ -163,7 +163,9 @@ public static class ServicesExtensions
         // Без состояния, тяжёлых зависимостей и на каждый скан один вызов — singleton.
         services.AddSingleton<IImageCompressor, ImageCompressor>();
 
-        services.AddMemoryCache();
+        // Коды подтверждения из писем — в Mongo, чтобы переживали рестарт сервиса.
+        // Синглтон: внутри только коллекция из общей базы и флаг «индекс создан».
+        services.AddSingleton<IVerificationCodeStore, VerificationCodeStore>();
 
         return services;
     }

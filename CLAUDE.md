@@ -17,7 +17,7 @@ Run from the repo root (containing the `.sln`):
 ```powershell
 dotnet restore
 dotnet build
-dotnet test                                      # ~280 tests, ~10 s
+dotnet test                                      # ~300 tests, ~10 s; 10 Mongo-backed tests are skipped unless TEST_MONGO_URL is set
 dotnet run --project AnemiaScanApi               # launches the API
 ```
 
@@ -37,10 +37,10 @@ Request flow: **Controller → Service (`Infrastructure/Services`) → Repositor
   - Mongo entities → `Common.BaseMongoModel` (`[BsonId] Guid Id`).
 - **Errors**: throw `Exceptions.SASException(message, statusCode)` from services; `Middleware/SASMiddleware.cs` turns it into a typed response (409/404/403/401/400 → same HTTP code, anything else → 500). Don't `try/catch` in controllers to build error JSON.
 - **Auth**: JWT bearer (`JwtSettings`), BCrypt password hashes, 64-byte random refresh tokens stored on the user document. `[Authorize]` on actions. Identity always comes from the JWT, never from request body/query.
-- **Email codes**: `IMemoryCache`, key via `ICodeGenerator.GetCacheKey(email)`; `ValidationCodeFilter` expects `BaseAuthRequest.EmailCode`.
+- **Email codes**: stored in MongoDB (`VerificationCodeStore`, collection `VerificationCodes`, one document per email, SHA-256 of the code, 5-minute lifetime checked on read plus a TTL index) so they survive a restart/deploy. `ICodeGenerator` uses a cryptographic RNG. `ValidationCodeFilter` expects `BaseAuthRequest.EmailCode`. Save the code before sending the email, not after.
 - **Rate limiting**: policies in `Common/Constants/RateLimitPolicies.cs` (`anemia-prediction` per user, `email-codes` per IP). The app listens on loopback behind nginx; `UseForwardedHeaders` trusts exactly one proxy — keep it before `UseRateLimiter`.
 - **Images**: `AnemiaScansRepository` stores a *compressed* copy in **MongoDB GridFS** (`anemia_scan_{Guid}`); predictions are computed from the original bytes. Filter `Filters/ValidateImageAttribute` exists and is registered in DI but is not currently applied to the upload action. The planned upload contract (PNG with alpha, outlined conjunctiva, `CaptureLight`, `DeviceModel`) is in `docs/image-upload-contract.md` and is **not enforced yet** — enable it only after the app release with outlining.
-- **Logging**: Serilog (`LoggerExtensions.AddLogging` + `Serilog` section of `appsettings.json`).
+- **Logging**: Serilog. Sinks come **only** from the `Serilog` section of `appsettings.json` (`LoggerExtensions.AddLogging`); adding `WriteTo.*` in code duplicates every line. If the section is missing, a console sink is added as a fallback.
 - **CORS**: single policy `DevCorsPolicy` (`http://localhost:8081`). Add a production policy instead of widening it.
 
 ## ML pipeline (`AnemiaScanApi/ML`, `LLM/`)
@@ -72,7 +72,7 @@ Author-facing format: `docs/course-content-schema.md`.
 
 ## Scans and lab ground truth
 
-`AnemiaScan` (collection `AnemiaScans`) stores verdict, probability, classifier version, Hb, severity, agreement, model version. The user can attach the real lab result: `PUT /analysis/{scanId}/lab-hemoglobin` (g/dL, 3–25; date within ±14 days of the scan; ownership enforced in the Mongo filter). This is the only way to measure the models on real people. Note: `ProfileService.WriteAnalysisAsync` also embeds a copy of each scan into the user document; lab values are written only to the `AnemiaScans` collection.
+`AnemiaScan` (collection `AnemiaScans`) stores verdict, probability, classifier version, Hb, severity, agreement, model version. The user can attach the real lab result: `PUT /analysis/{scanId}/lab-hemoglobin` (g/dL, 3–25; date within ±14 days of the scan; ownership enforced in the Mongo filter). This is the only way to measure the models on real people. Scans live only in this collection: the copy that used to be embedded in the user document (`anemia_scans`) was removed on 12.10.2026, and `GET /profile/info` and course recommendation read scans from here. Known gap: `DeleteProfileAsync` deletes the user document but not the user's scans and GridFS images.
 
 ## Namespace layout quirks
 
