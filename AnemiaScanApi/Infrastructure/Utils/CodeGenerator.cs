@@ -1,6 +1,7 @@
+using System.Security.Cryptography;
+
 using AnemiaScanApi.Infrastructure.Settings;
 using AnemiaScanApi.Infrastructure.Utils.Core;
-using AnemiaScanApi.Settings;
 using Microsoft.Extensions.Options;
 
 namespace AnemiaScanApi.Infrastructure.Utils;
@@ -10,29 +11,15 @@ namespace AnemiaScanApi.Infrastructure.Utils;
 /// </summary>
 public class CodeGenerator(IOptions<CodeGeneratorSettings> codeGeneratorSettings) : ICodeGenerator
 {
-    private readonly Random _random = new();
-
     /// <summary>
-    /// Генерация буквенно-цифрового кода
+    /// Генерация буквенно-цифрового кода.
+    ///
+    /// Криптографический генератор, а не <c>System.Random</c>: этим кодом входят в
+    /// аккаунт и сбрасывают пароль, а Random предсказуем по нескольким выходам.
     /// </summary>
-    /// <param name="email"></param>
-    /// <param name="length"></param>
-    /// <returns></returns>
-    public (string, string) GenerateAlphanumericCode(string email, int? length = null)
+    public string GenerateAlphanumericCode(int? length = null)
     {
         var chars = codeGeneratorSettings.Value.Chars;
-        
-        var code = new string(Enumerable.Repeat(chars, length ?? codeGeneratorSettings.Value.Length)
-            .Select(s => s[_random.Next(s.Length)]).ToArray());
-        
-        return ($"{codeGeneratorSettings.Value.CacheKey}:{email.ToLower()}", code);
+        return RandomNumberGenerator.GetString(chars, length ?? codeGeneratorSettings.Value.Length);
     }
-
-    /// <summary>
-    /// Получение ключа из кэша
-    /// </summary>
-    /// <param name="email"></param>
-    /// <returns></returns>
-    public string GetCacheKey(string email)
-        => $"{codeGeneratorSettings.Value.CacheKey}:{email.ToLower()}";
 }

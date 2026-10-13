@@ -54,6 +54,13 @@ public interface IAnemiaScansRepository : IMongoRepository<AnemiaScan>
     Task<long> CountByUserAsync(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Все сканы пользователя, от старых к новым. Для <c>GET /profile/info</c>,
+    /// который исторически отдаёт историю целиком; новым экранам нужен
+    /// постраничный <see cref="GetByUserAsync"/>.
+    /// </summary>
+    Task<IReadOnlyList<AnemiaScan>> GetAllByUserAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Скан по идентификатору, но только если он принадлежит пользователю.
     /// Чужой скан и несуществующий неразличимы — оба null.
     /// </summary>

@@ -14,12 +14,27 @@ public class CourseCatalogServiceTests
     private readonly Mock<ICoursesRepository> _coursesRepo = new();
     private readonly Mock<ICourseContentRepository> _contentRepo = new();
     private readonly Mock<IUsersRepository> _usersRepo = new();
+    private readonly Mock<IAnemiaScansRepository> _scansRepo = new();
 
     private CourseCatalogService NewService() => new(
         _coursesRepo.Object,
         _contentRepo.Object,
         _usersRepo.Object,
+        _scansRepo.Object,
         NullLogger<CourseCatalogService>.Instance);
+
+    /// <summary>
+    /// Пользователь и его последний скан. Скан отдаётся ровно на запрос «один
+    /// самый новый» (skip 0, take 1): на любой другой запрос мок вернёт null,
+    /// и тест упадёт, если сервис начнёт выбирать скан иначе.
+    /// </summary>
+    private void GivenUserWithLastScan(Guid userId, AnemiaScan? lastScan)
+    {
+        _usersRepo.Setup(r => r.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SasUserBuilder().WithId(userId).Build());
+        _scansRepo.Setup(r => r.GetByUserAsync(userId, 0, 1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(lastScan is null ? [] : [lastScan]);
+    }
 
     [Fact]
     public async Task GetCatalog_ReturnsMappedListItems()
@@ -51,11 +66,18 @@ public class CourseCatalogServiceTests
     public async Task GetRecommended_LastScanHealthy_ReturnsNull()
     {
         var userId = Guid.NewGuid();
-        var user = new SasUserBuilder()
-            .WithId(userId)
-            .WithScan(SasUserBuilder.HealthyScan(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)))
-            .Build();
-        _usersRepo.Setup(r => r.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        GivenUserWithLastScan(userId, SasUserBuilder.HealthyScan(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)));
+
+        var result = await NewService().GetRecommendedAsync(userId);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetRecommended_NoScans_ReturnsNull()
+    {
+        var userId = Guid.NewGuid();
+        GivenUserWithLastScan(userId, lastScan: null);
 
         var result = await NewService().GetRecommendedAsync(userId);
 
@@ -66,17 +88,11 @@ public class CourseCatalogServiceTests
     public async Task GetRecommended_LastScanAnemic_ReturnsAdultCourse()
     {
         var userId = Guid.NewGuid();
-        var user = new SasUserBuilder()
-            .WithId(userId)
-            .WithScans(
-                SasUserBuilder.HealthyScan(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)),
-                SasUserBuilder.AnemicScan(new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)))
-            .Build();
+        GivenUserWithLastScan(userId, SasUserBuilder.AnemicScan(new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)));
 
         var adultCourse = new CourseBuilder().ForAudience(TargetAudience.Adult).Build();
         var pregnantCourse = new CourseBuilder().ForAudience(TargetAudience.Pregnant).WithSlug("pregnancy").Build();
 
-        _usersRepo.Setup(r => r.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(user);
         _coursesRepo.Setup(r => r.GetPublishedAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { pregnantCourse, adultCourse });
 
@@ -88,20 +104,18 @@ public class CourseCatalogServiceTests
     }
 
     [Fact]
-    public async Task GetRecommended_UsesLatestScanNotFirst()
+    public async Task GetRecommended_AsksRepositoryForTheSingleNewestScan()
     {
         var userId = Guid.NewGuid();
-        var user = new SasUserBuilder()
-            .WithId(userId)
-            .WithScans(
-                SasUserBuilder.AnemicScan(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)),
-                SasUserBuilder.HealthyScan(new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)))
-            .Build();
-        _usersRepo.Setup(r => r.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+        // Новый скан здоровый, более старый был бы анемичным. Репозиторий отдаёт
+        // сканы от новых к старым, и сервис обязан взять ровно первый.
+        GivenUserWithLastScan(userId, SasUserBuilder.HealthyScan(new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)));
 
         var result = await NewService().GetRecommendedAsync(userId);
 
         result.Should().BeNull();
+        _scansRepo.Verify(r => r.GetByUserAsync(userId, 0, 1, It.IsAny<CancellationToken>()), Times.Once);
+        _scansRepo.VerifyNoOtherCalls();
     }
 
     [Fact]

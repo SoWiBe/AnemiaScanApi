@@ -13,6 +13,7 @@ namespace AnemiaScanApi.Infrastructure.Services;
 public class ProfileService(
     ILogger<ProfileService> logger,
     IUsersRepository repository,
+    IAnemiaScansRepository anemiaScansRepository,
     IOptions<LegalSettings> legalSettings) 
     : BaseService<ProfileService>(logger), IProfileService
 {
@@ -50,14 +51,8 @@ public class ProfileService(
         _ = await repository.UpdateAsync(userId, user, cancellationToken);
     }
 
-    public async Task WriteAnalysisAsync(Guid userId, AnemiaScan scan, CancellationToken cancellationToken)
-    {
-        var user = await repository.GetByIdAsync(userId, cancellationToken);
-        if (user is null) throw new SASException(ExceptionMessage.ProfileNotFound);
-        
-        user.AnemiaScans.Add(scan);
-        await repository.UpdateAsync(userId, user, cancellationToken);
-    }
+    public Task<IReadOnlyList<AnemiaScan>> GetScansAsync(Guid userId, CancellationToken cancellationToken)
+        => anemiaScansRepository.GetAllByUserAsync(userId, cancellationToken);
 
     public async Task DeleteProfileAsync(Guid userId, CancellationToken cancellationToken)
     {

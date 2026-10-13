@@ -112,6 +112,16 @@ public class AnemiaScansRepository : BaseMongoRepository<AnemiaScan>, IAnemiaSca
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<AnemiaScan>> GetAllByUserAsync(Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var ownerId = userId.ToString();
+        return await Collection
+            .Find(x => x.UserId == ownerId)
+            .SortBy(x => x.ScanDate)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<long> CountByUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var ownerId = userId.ToString();

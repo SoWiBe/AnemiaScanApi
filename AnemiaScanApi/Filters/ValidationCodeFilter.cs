@@ -1,17 +1,13 @@
 using AnemiaScanApi.Common.Requests;
-using AnemiaScanApi.Infrastructure.Settings;
+using AnemiaScanApi.Infrastructure.Repositories;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace AnemiaScanApi.Filters;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class ValidationCodeFilter(
-    IMemoryCache memoryCache,
-    IOptions<CodeGeneratorSettings> codeGeneratorSettings) : ActionFilterAttribute
+public class ValidationCodeFilter(IVerificationCodeStore codeStore) : ActionFilterAttribute
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -20,16 +16,17 @@ public class ValidationCodeFilter(
             context.Result = new BadRequestObjectResult("Неверный запрос");
             return;
         }
-        
-        var cachedCode = memoryCache.Get<string>($"{codeGeneratorSettings.Value.CacheKey}:{authRequest.Email!.ToLower()}");
 
-        if (string.IsNullOrWhiteSpace(cachedCode))
+        var check = await codeStore.CheckAsync(authRequest.Email!, authRequest.EmailCode,
+            context.HttpContext.RequestAborted);
+
+        if (check == VerificationCodeCheck.Missing)
         {
             context.Result = new BadRequestObjectResult("Повторно отправьте код подтверждения на почту");
             return;
         }
 
-        if (!cachedCode.Equals(authRequest.EmailCode))
+        if (check == VerificationCodeCheck.Mismatch)
         {
             context.Result = new BadRequestObjectResult("Указан не правильный код подтверждения");
             return;

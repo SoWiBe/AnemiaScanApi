@@ -181,9 +181,6 @@ public class AnemiaAnalysisService(
         // сохраняем анализ в базе данных
         var createdAnemiaScan = await anemiaScansRepository.CreateAnemiaScanAsync(anemiaScan, cancellationToken);
 
-        // записываем анализ в профиль пользователя
-        await profileService.WriteAnalysisAsync(userId, createdAnemiaScan, cancellationToken);
-
         return new AnalyseAnemiaResponse
         (
             createdAnemiaScan.Id,
