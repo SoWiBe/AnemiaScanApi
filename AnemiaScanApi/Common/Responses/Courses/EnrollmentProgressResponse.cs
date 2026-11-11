@@ -3,7 +3,7 @@ using AnemiaScanApi.Common.Enums;
 namespace AnemiaScanApi.Common.Responses.Courses;
 
 /// <summary>
-/// Full progress view including per-day completion and Hb dynamics from checkpoint scans.
+/// Full progress view including per-day completion and user-entered laboratory Hb from checkpoint scans.
 /// </summary>
 public record EnrollmentProgressResponse(
     Guid EnrollmentId,
@@ -31,6 +31,6 @@ public record DayProgressItem(
     Guid? CheckpointScanId);
 
 /// <summary>
-/// One point on the Hb progress chart.
+/// One laboratory result on the Hb progress chart; never a model prediction.
 /// </summary>
-public record HemoglobinPoint(int DayNumber, DateTime ScanDate, double? HemoglobinLevel, bool IsAnemic);
+public record HemoglobinPoint(int DayNumber, DateOnly LabMeasuredAt, double LabHemoglobin);

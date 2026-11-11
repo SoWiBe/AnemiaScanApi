@@ -39,7 +39,7 @@ Request flow: **Controller → Service (`Infrastructure/Services`) → Repositor
 - **Auth**: JWT bearer (`JwtSettings`), BCrypt password hashes, 64-byte random refresh tokens stored on the user document. `[Authorize]` on actions. Identity always comes from the JWT, never from request body/query.
 - **Email codes**: stored in MongoDB (`VerificationCodeStore`, collection `VerificationCodes`, one document per email, SHA-256 of the code, 5-minute lifetime checked on read plus a TTL index) so they survive a restart/deploy. `ICodeGenerator` uses a cryptographic RNG. `ValidationCodeFilter` expects `BaseAuthRequest.EmailCode`. Save the code before sending the email, not after.
 - **Rate limiting**: policies in `Common/Constants/RateLimitPolicies.cs` (`anemia-prediction` per user, `email-codes` per IP). The app listens on loopback behind nginx; `UseForwardedHeaders` trusts exactly one proxy — keep it before `UseRateLimiter`.
-- **Images**: `AnemiaScansRepository` stores a *compressed* copy in **MongoDB GridFS** (`anemia_scan_{Guid}`); predictions are computed from the original bytes. Filter `Filters/ValidateImageAttribute` exists and is registered in DI but is not currently applied to the upload action. The planned upload contract (PNG with alpha, outlined conjunctiva, `CaptureLight`, `DeviceModel`) is in `docs/image-upload-contract.md` and is **not enforced yet** — enable it only after the app release with outlining.
+- **Images**: `AnemiaScansRepository` stores a *compressed* copy in **MongoDB GridFS** (`anemia_scan_{Guid}`); predictions are computed from the original bytes. Since 12.11.2026 both prediction actions use `Filters/ValidateImageAttribute`: nonempty static JPEG/PNG/BMP/GIF/WebP, matching extension/MIME/content, at most 10 MiB, 16 million pixels and 8192 px per side, valid pixel decoding. Request/form limits apply before action execution. The planned upload contract (PNG with alpha, outlined conjunctiva, `CaptureLight`, `DeviceModel`) is in `docs/image-upload-contract.md` and is **not enforced yet** — enable it only after the app release with outlining.
 - **Logging**: Serilog. Sinks come **only** from the `Serilog` section of `appsettings.json` (`LoggerExtensions.AddLogging`); adding `WriteTo.*` in code duplicates every line. If the section is missing, a console sink is added as a fallback.
 - **CORS**: single policy `DevCorsPolicy` (`http://localhost:8081`). Add a production policy instead of widening it.
 
@@ -54,9 +54,9 @@ Two independent opinions about one photo, reconciled into one verdict (`ML/Analy
 
 Honest numbers (out-of-fold CV on 215 adults, patient-level): classifier sensitivity 87.8% / specificity 59.2% at threshold 0.15 — about 4 of 10 healthy people get an "anemia" verdict, so UI wording must be "worth getting a blood test", never a diagnosis. Details in AnemiaScanML/README.md. Every analysis response carries the medical disclaimer (`MedicalDisclaimer`).
 
-The API returns `anemiaProbability` (probability of `Low_Hb`, 0..1), not the old `confidence`. Old scan documents stay readable (`[BsonIgnoreExtraElements]`).
+Since 11.11.2026 public scan DTOs expose only metadata, laboratory Hb and `predictionStatus: "Unavailable"`. Probability, verdict and regression outputs remain internal in MongoDB. Old scan documents stay readable (`[BsonIgnoreExtraElements]`).
 
-**Phone photos are an open blocker (measured 06.10.2026, `light-check` in AnemiaScanML).** On 22 real phone photos of 6 people both v13 and the retrained v14 answer "anemia" for everyone (v13 even for an all-black frame), and the probability jumps between two consecutive frames; the Hb number crosses the 12 g/dL line for 4 of 6 people. The dataset was shot with a close-up attachment, so CV numbers do not transfer. **Decision (11.10.2026): the photo verdict and the Hb number are not to be shown to users until the model is validated on phone photos of people with a lab hemoglobin** (protocol: `AnemiaScanML/PHONE_VALIDATION.md`). The API still returns them — hiding them in the response is not implemented yet. Related leaks to fix with it: `GET /courses/recommended` returns a course only when the last scan is "anemic", and enrollment progress builds its Hb timeline from the model's Hb.
+**Phone photos are an open blocker (measured 06.10.2026, `light-check` in AnemiaScanML).** On 22 real phone photos of 6 people both v13 and the retrained v14 answer "anemia" for everyone (v13 even for an all-black frame), and the probability jumps between two consecutive frames; the Hb number crosses the 12 g/dL line for 4 of 6 people. The dataset was shot with a close-up attachment, so CV numbers do not transfer. **Decision (11.10.2026): the photo verdict and the Hb number are not to be shown to users until the model is validated on phone photos of people with a lab hemoglobin** (protocol: `AnemiaScanML/PHONE_VALIDATION.md`). Implemented 11.11.2026: predictions are excluded from analysis, history and profile DTOs; `GET /courses/recommended` always returns 204; enrollment Hb timelines use only user-entered laboratory results and measurement dates.
 
 ## Courses
 
@@ -72,7 +72,7 @@ Author-facing format: `docs/course-content-schema.md`.
 
 ## Scans and lab ground truth
 
-`AnemiaScan` (collection `AnemiaScans`) stores verdict, probability, classifier version, Hb, severity, agreement, model version. The user can attach the real lab result: `PUT /analysis/{scanId}/lab-hemoglobin` (g/dL, 3–25; date within ±14 days of the scan; ownership enforced in the Mongo filter). This is the only way to measure the models on real people. Scans live only in this collection: the copy that used to be embedded in the user document (`anemia_scans`) was removed on 12.10.2026, and `GET /profile/info` and course recommendation read scans from here. Known gap: `DeleteProfileAsync` deletes the user document but not the user's scans and GridFS images.
+`AnemiaScan` (collection `AnemiaScans`) stores verdict, probability, classifier version, Hb, severity, agreement, model version. The user can attach the real lab result: `PUT /analysis/{scanId}/lab-hemoglobin` (g/dL, 3–25; date within ±14 days of the scan; ownership enforced in the Mongo filter). This is the only way to measure the models on real people. Scans live only in this collection: the copy that used to be embedded in the user document (`anemia_scans`) was removed on 12.10.2026, and `GET /profile/info` reads scans from here; personalized course recommendations are disabled pending validation. Known gap: `DeleteProfileAsync` deletes the user document but not the user's scans and GridFS images.
 
 ## Namespace layout quirks
 
@@ -98,3 +98,18 @@ Match the surrounding files' pattern. `IAuthorizationService` / `IEmailSender` c
 - The app is not in production use yet, so API changes don't need backward-compat shims or deprecated fields — but tell the frontend via `docs/api-contract-changes.md`.
 - Never commit photos of people's eyes (`light-check/`) or server details.
 - Deferred on purpose by the user (don't push unprompted): SSH hardening, backups (receiver must be in Kazakhstan).
+
+## Dependency security and release builds (12.11.2026)
+
+ImageSharp 3.2.0, MailKit 4.16.0, Microsoft.OpenApi 2.7.5 and Pkcs 10.0.13
+resolve the reported advisories. MongoDB.Driver 3.13.0 supplies patched compression
+dependencies and includes GridFS; the old separate GridFS package is removed.
+`Infrastructure/MongoSerialization.Configure()` preserves CSharpLegacy UUID byte
+order from driver 2.x; do not switch to Standard UUIDs without a data migration.
+Compression round trips and UUID bytes/ownership filters have regression tests.
+
+ImageSharp now validates a license at build time. Release builds need a legitimate
+Six Labors license (eligible users may apply for a Community license). CI reads
+`SIXLABORS_LICENSE_KEY` from the `Master` environment secrets as the MSBuild
+`SixLaborsLicenseKey` environment variable. Never commit license keys. Check fresh
+advisories with `dotnet list AnemiaScanApi.sln package --vulnerable --include-transitive`.

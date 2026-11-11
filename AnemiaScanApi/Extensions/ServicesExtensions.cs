@@ -5,6 +5,7 @@ using MongoDB.Driver.GridFS;
 
 using AnemiaScanApi.Attributes;
 using AnemiaScanApi.Filters;
+using AnemiaScanApi.Infrastructure;
 using AnemiaScanApi.Infrastructure.Courses;
 using AnemiaScanApi.Infrastructure.Repositories;
 using AnemiaScanApi.Infrastructure.Services;
@@ -91,6 +92,7 @@ public static class ServicesExtensions
     /// <param name="configuration"></param>
     public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration configuration)
     {
+        MongoSerialization.Configure();
         services.Configure<MongoDbSettings>(configuration.GetSection("MongoDB"));
 
         services.AddSingleton<IMongoClient>(sp =>

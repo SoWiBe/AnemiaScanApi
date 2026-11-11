@@ -32,7 +32,7 @@ public class ProfileController(
             : new ConsentResponse(user.Consent.PolicyVersion, user.Consent.AcceptedAt, user.Consent.Accepted);
 
         return Ok(new GetProfileResponse(user.Email, user.FullName, user.BirthDate, user.Sex, user.Age,
-            scans, consent));
+            scans.Select(AnalysisHistoryItemResponse.FromScan).ToList(), consent));
     }
     
     [HttpPatch]

@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BCrypt" Version="1.0.0" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
@@ -30,12 +29,14 @@
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.2.0" />
+        <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
-        <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
-        <PackageReference Include="MongoDB.Driver.GridFS" Version="2.30.0" />
+        <!-- GridFS is included in Driver 3.x; compression dependencies are patched together. -->
+        <PackageReference Include="MongoDB.Driver" Version="3.13.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
-        <PackageReference Include="MailKit" Version="4.13.0" />
+        <PackageReference Include="MailKit" Version="4.16.0" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
         <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.16.0" />
     </ItemGroup>
 

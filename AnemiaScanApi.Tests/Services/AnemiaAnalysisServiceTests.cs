@@ -93,14 +93,27 @@ public class AnemiaAnalysisServiceTests
     }
 
     [Fact]
+    public async Task WriteAnalyseAsync_PreservesPredictionInternally_ButPublicJsonHasOnlyReceipt()
+    {
+        var (response, scan) = await WriteWithProfileAsync(10.5f, 40, Sex.Female, true);
+        scan.IsAnemic.Should().BeTrue();
+        scan.AnemiaProbability.Should().BeApproximately(0.9, 0.00001);
+        scan.HemoglobinLevel.Should().Be(10.5);
+        scan.ClassifierVersion.Should().Be("test-classifier");
+        using var json = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(
+            response, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)));
+        json.RootElement.EnumerateObject().Select(p => p.Name).Should().BeEquivalentTo(
+            "id", "imageSystemId", "analyseDate", "disclaimer", "predictionStatus");
+        response.PredictionStatus.Should().Be("Unavailable");
+    }
+    [Fact]
     public async Task WriteAnalyseAsync_UsesMaleScaleForAdultMan()
     {
         // 12.5 — норма по женской шкале и лёгкая анемия по мужской.
         var (response, scan) = await WriteWithProfileAsync(12.5f, ageYears: 40, sex: Sex.Male);
 
-        response.Severity.Should().Be("Mild");
-        response.SeverityReference.Should().Be(SeverityReference.AdultMale);
-        response.DemographicsComplete.Should().BeTrue();
+        scan.Severity.Should().Be("Mild");
+        scan.SeverityReference.Should().Be(SeverityReference.AdultMale.ToString());
         scan.SeverityReference.Should().Be(nameof(SeverityReference.AdultMale),
             "шкала фиксируется в скане, чтобы правка профиля не меняла старые результаты");
     }
@@ -108,20 +121,20 @@ public class AnemiaAnalysisServiceTests
     [Fact]
     public async Task WriteAnalyseAsync_UsesFemaleScaleForAdultWoman()
     {
-        var (response, _) = await WriteWithProfileAsync(12.5f, ageYears: 40, sex: Sex.Female);
+        var (response, scan) = await WriteWithProfileAsync(12.5f, ageYears: 40, sex: Sex.Female);
 
-        response.Severity.Should().Be("Non-Anemic");
-        response.SeverityReference.Should().Be(SeverityReference.AdultFemale);
+        scan.Severity.Should().Be("Non-Anemic");
+        scan.SeverityReference.Should().Be(SeverityReference.AdultFemale.ToString());
     }
 
     [Fact]
     public async Task WriteAnalyseAsync_UsesChildScaleForChild()
     {
         // 11.5 для ребёнка — норма, для любого взрослого — лёгкая анемия.
-        var (response, _) = await WriteWithProfileAsync(11.5f, ageYears: 3, sex: Sex.Female);
+        var (response, scan) = await WriteWithProfileAsync(11.5f, ageYears: 3, sex: Sex.Female);
 
-        response.Severity.Should().Be("Non-Anemic");
-        response.SeverityReference.Should().Be(SeverityReference.PreSchoolChild);
+        scan.Severity.Should().Be("Non-Anemic");
+        scan.SeverityReference.Should().Be(SeverityReference.PreSchoolChild.ToString());
     }
 
     [Fact]
@@ -129,11 +142,10 @@ public class AnemiaAnalysisServiceTests
     {
         // Профиль не настроен в моке — GetProfileAsync вернёт null, и сервис
         // должен не упасть, а отметить, что демография неполная.
-        var (response, _) = await WriteWithProfileAsync(12.5f, ageYears: null, sex: null);
+        var (response, scan) = await WriteWithProfileAsync(12.5f, ageYears: null, sex: null);
 
-        response.SeverityReference.Should().Be(SeverityReference.AssumedStrictest);
-        response.DemographicsComplete.Should().BeFalse();
-        response.Severity.Should().Be("Mild", "при неизвестной демографии берётся строгая шкала");
+        scan.SeverityReference.Should().Be(SeverityReference.AssumedStrictest.ToString());
+        scan.Severity.Should().Be("Mild", "при неизвестной демографии берётся строгая шкала");
     }
 
     [Fact]
@@ -142,8 +154,6 @@ public class AnemiaAnalysisServiceTests
         // Взрослая женщина, Hb 10.5 -> severity Moderate; классификатор тоже Low_Hb.
         var (response, scan) = await WriteWithProfileAsync(10.5f, ageYears: 40, sex: Sex.Female);
 
-        response.Verdict.Outcome.Should().Be(Sick.Anemia);
-        response.Verdict.Agreement.Should().Be(VerdictAgreement.Agree);
         scan.VerdictAgreement.Should().Be(nameof(VerdictAgreement.Agree));
     }
 
@@ -153,8 +163,6 @@ public class AnemiaAnalysisServiceTests
         // Классификатор говорит Low_Hb, а Hb 13.5 у женщины — это норма.
         var (response, scan) = await WriteWithProfileAsync(13.5f, ageYears: 40, sex: Sex.Female);
 
-        response.Verdict.Outcome.Should().Be(Sick.Anemia, "вердикт остаётся за классификатором");
-        response.Verdict.Agreement.Should().Be(VerdictAgreement.Disagree);
         scan.VerdictAgreement.Should().Be(nameof(VerdictAgreement.Disagree));
     }
 
@@ -171,11 +179,11 @@ public class AnemiaAnalysisServiceTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task WriteAnalyseAsync_TakesHemoglobinDomainFromPrediction(bool inDomain)
+    public async Task WriteAnalyseAsync_KeepsHemoglobinInternalRegardlessOfDomain(bool inDomain)
     {
-        var (response, _) = await WriteWithProfileAsync(10.5f, ageYears: 40, sex: Sex.Male, hemoglobinInDomain: inDomain);
+        var (response, scan) = await WriteWithProfileAsync(10.5f, ageYears: 40, sex: Sex.Male, hemoglobinInDomain: inDomain);
 
-        response.Verdict.HemoglobinInDomain.Should().Be(inDomain);
+        scan.HemoglobinLevel.Should().Be(10.5);
     }
 
     [Fact]
@@ -189,11 +197,15 @@ public class AnemiaAnalysisServiceTests
     [Fact]
     public async Task WriteAnalyseAsync_LeavesSeverityNullWhenHemoglobinNotComputed()
     {
-        var response = await WriteAsync(NewService());
+        var service = NewService();
+        AnemiaScan? scan = null;
+        _scans.Setup(r => r.CreateAnemiaScanAsync(It.IsAny<AnemiaScan>(), It.IsAny<CancellationToken>()))
+            .Callback((AnemiaScan stored, CancellationToken _) => scan = stored)
+            .ReturnsAsync((AnemiaScan stored, CancellationToken _) => stored);
+        var response = await WriteAsync(service);
 
-        response.Severity.Should().BeNull();
-        response.SeverityReference.Should().BeNull();
-        response.Verdict.Agreement.Should().Be(VerdictAgreement.Unavailable);
+        scan!.Severity.Should().BeNull();
+        scan.SeverityReference.Should().BeNull();
     }
 
     [Fact]
@@ -211,10 +223,15 @@ public class AnemiaAnalysisServiceTests
     [Fact]
     public async Task WriteAnalyseAsync_ReturnsDefaultDisclaimer()
     {
-        var response = await WriteAsync(NewService());
+        var service = NewService();
+        AnemiaScan? scan = null;
+        _scans.Setup(r => r.CreateAnemiaScanAsync(It.IsAny<AnemiaScan>(), It.IsAny<CancellationToken>()))
+            .Callback((AnemiaScan stored, CancellationToken _) => scan = stored)
+            .ReturnsAsync((AnemiaScan stored, CancellationToken _) => stored);
+        var response = await WriteAsync(service);
 
         response.Disclaimer.Should().Be(MedicalDisclaimer.Text);
-        response.Sick.Should().Be(Sick.Anemia, "Low_Hb — вердикт TF-классификатора об анемии");
+        response.PredictionStatus.Should().Be("Unavailable");
     }
 
     [Fact]

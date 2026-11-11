@@ -210,8 +210,8 @@ public class CourseEnrollmentService(
         foreach (var completion in enrollment.Days.Where(d => d.CheckpointScanId is not null))
         {
             var scan = await anemiaScansRepository.GetAnemiaScanAsync(completion.CheckpointScanId!.Value.ToString(), cancellationToken);
-            if (scan is null) continue;
-            timeline.Add(new HemoglobinPoint(completion.DayNumber, scan.ScanDate, scan.HemoglobinLevel, scan.IsAnemic));
+            if (scan is null || scan.UserId != userId.ToString() || scan.LabHemoglobin is null || scan.LabMeasuredAt is null) continue;
+            timeline.Add(new HemoglobinPoint(completion.DayNumber, DateOnly.FromDateTime(scan.LabMeasuredAt.Value), scan.LabHemoglobin.Value));
         }
 
         return new EnrollmentProgressResponse(

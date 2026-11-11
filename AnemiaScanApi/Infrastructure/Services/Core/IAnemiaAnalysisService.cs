@@ -22,8 +22,9 @@ public interface IAnemiaAnalysisService
 
     /// <summary>
     /// Сохраняет Hb из анализа крови, который пользователь сдал рядом со сканом.
-    /// 404 — если скана нет или он чужой; 400 — если дата анализа вне допустимого окна.
+    /// 404 — если скана нет или он чужой; 400 — если значение или дата вне допустимых границ.
+    /// Все отказы — SASException, то есть в ответе <c>{ statusCode, description }</c>.
     /// </summary>
-    Task<LabHemoglobinResponse> SetLabHemoglobinAsync(Guid userId, Guid scanId, double hemoglobin,
-        DateTime? measuredAt, CancellationToken cancellationToken = default);
+    Task<LabHemoglobinResponse> SetLabHemoglobinAsync(Guid userId, Guid scanId, double? hemoglobin,
+        DateOnly? measuredAt, CancellationToken cancellationToken = default);
 }

@@ -19,8 +19,6 @@ public class CourseCatalogServiceTests
     private CourseCatalogService NewService() => new(
         _coursesRepo.Object,
         _contentRepo.Object,
-        _usersRepo.Object,
-        _scansRepo.Object,
         NullLogger<CourseCatalogService>.Instance);
 
     /// <summary>
@@ -85,7 +83,7 @@ public class CourseCatalogServiceTests
     }
 
     [Fact]
-    public async Task GetRecommended_LastScanAnemic_ReturnsAdultCourse()
+    public async Task GetRecommended_LastScanAnemic_ReturnsNullWhileValidationPending()
     {
         var userId = Guid.NewGuid();
         GivenUserWithLastScan(userId, SasUserBuilder.AnemicScan(new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)));
@@ -98,13 +96,11 @@ public class CourseCatalogServiceTests
 
         var result = await NewService().GetRecommendedAsync(userId);
 
-        result.Should().NotBeNull();
-        result!.Course.Id.Should().Be(adultCourse.Id);
-        result.Reason.Should().NotBeNullOrWhiteSpace();
+        result.Should().BeNull();
     }
 
     [Fact]
-    public async Task GetRecommended_AsksRepositoryForTheSingleNewestScan()
+    public async Task GetRecommended_DoesNotReadHiddenPredictions()
     {
         var userId = Guid.NewGuid();
         // Новый скан здоровый, более старый был бы анемичным. Репозиторий отдаёт
@@ -114,7 +110,7 @@ public class CourseCatalogServiceTests
         var result = await NewService().GetRecommendedAsync(userId);
 
         result.Should().BeNull();
-        _scansRepo.Verify(r => r.GetByUserAsync(userId, 0, 1, It.IsAny<CancellationToken>()), Times.Once);
+        _scansRepo.Verify(r => r.GetByUserAsync(userId, 0, 1, It.IsAny<CancellationToken>()), Times.Never);
         _scansRepo.VerifyNoOtherCalls();
     }
 

@@ -8,5 +8,5 @@ public record GetProfileResponse(
     DateTime? Birthday,
     Sex? Sex,
     int? Age,
-    IReadOnlyList<AnemiaScan> AnemiaScans,
+    IReadOnlyList<AnalysisHistoryItemResponse> AnemiaScans,
     ConsentResponse? Consent);
