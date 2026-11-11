@@ -67,11 +67,12 @@ public class AnemiaAnalysisHistoryTests
         var item = result.Items[0];
         item.Id.Should().Be(scan.Id);
         item.ScanDate.Should().Be(scan.ScanDate);
-        item.Sick.Should().Be(Sick.Anemia);
-        item.AnemiaProbability.Should().Be(scan.AnemiaProbability);
-        item.HemoglobinLevel.Should().Be(scan.HemoglobinLevel);
-        item.Severity.Should().Be("Mild");
         item.ImageSystemId.Should().Be(imageId);
+        item.PredictionStatus.Should().Be("Unavailable");
+        using var json = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(
+            item, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)));
+        json.RootElement.EnumerateObject().Select(p => p.Name).Should().BeEquivalentTo(
+            "id", "scanDate", "imageSystemId", "labHemoglobin", "labMeasuredAt", "predictionStatus");
     }
 
     [Fact]

@@ -9,8 +9,6 @@ namespace AnemiaScanApi.Services;
 public class CourseCatalogService(
     ICoursesRepository coursesRepository,
     ICourseContentRepository courseContentRepository,
-    IUsersRepository usersRepository,
-    IAnemiaScansRepository anemiaScansRepository,
     ILogger<CourseCatalogService> logger)
     : BaseService<CourseCatalogService>(logger), ICourseCatalogService
 {
@@ -42,39 +40,10 @@ public class CourseCatalogService(
             previews);
     }
 
-    public async Task<RecommendedCourseResponse?> GetRecommendedAsync(Guid userId, CancellationToken cancellationToken = default)
-    {
-        var user = await usersRepository.GetByIdAsync(userId, cancellationToken);
-        if (user is null) return null;
-
-        // Последний скан — из коллекции сканов (новые сверху), а не из копии в
-        // документе пользователя: копии больше нет.
-        var lastScan = (await anemiaScansRepository.GetByUserAsync(userId, skip: 0, take: 1, cancellationToken))
-            .FirstOrDefault();
-
-        if (lastScan is null || !lastScan.IsAnemic)
-        {
-            return null;
-        }
-
-        var courses = (await coursesRepository.GetPublishedAsync(cancellationToken)).ToList();
-        if (courses.Count == 0) return null;
-
-        var (audience, reason) = PickAudience(user);
-        var pick = courses.FirstOrDefault(c => c.TargetAudience == audience)
-                   ?? courses.FirstOrDefault(c => c.TargetAudience == TargetAudience.Adult);
-
-        return pick is null ? null : new RecommendedCourseResponse(ToListItem(pick), reason);
-    }
-
-    private static (TargetAudience audience, string reason) PickAudience(SasUser user)
-    {
-        // Phase 1 heuristic: no pregnancy/children fields on SasUser yet, fall back to Adult.
-        // When SasUser gains those fields (see open questions in the plan doc), extend here.
-        _ = user;
-        return (TargetAudience.Adult, "По результатам последнего скана");
-    }
-
+    // Personalized recommendations would reveal the hidden classifier verdict.
+    // The general catalog remains available while phone-photo validation is pending.
+    public Task<RecommendedCourseResponse?> GetRecommendedAsync(Guid userId, CancellationToken cancellationToken = default)
+        => Task.FromResult<RecommendedCourseResponse?>(null);
     private static CourseListItemResponse ToListItem(Course c) => new(
         c.Id,
         c.Slug,

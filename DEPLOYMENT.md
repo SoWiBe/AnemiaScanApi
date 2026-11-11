@@ -603,3 +603,21 @@ sudo systemctl start anemiascan-api
 ```
 
 For a proper zero-downtime setup, use symlinked releases (`/var/www/anemiascan-api/current` → `releases/<timestamp>/`) — worth adding once you have real traffic.
+
+## ImageSharp: ключ для Release-сборки (12.11.2026)
+
+Исправленная ImageSharp 3.2.0 требует действующую лицензию на этапе сборки.
+Без неё `dotnet publish -c Release` останавливается. Условия и бесплатная
+Community-лицензия для подходящих проектов: https://sixlabors.com/pricing/.
+
+В GitHub откройте **Settings → Environments → Master → Environment secrets**
+и добавьте `SIXLABORS_LICENSE_KEY`. Шаг `Publish` передаёт секрет сборке через
+переменную `SixLaborsLicenseKey`; ключ не нужен в `.env` на VPS и в `appsettings.json`.
+Локально можно задать `SixLaborsLicenseKey` безопасным способом в окружении
+процесса сборки либо использовать внешний файл и `SixLaborsLicenseFile`.
+Не сохраняйте ключ в истории команд, логах или Git.
+
+MongoDB.Driver обновлён с 2.30.0 до 3.13.0 для совместимых исправлений сжатия.
+При старте API явно регистрирует **CSharpLegacy UUID**, сохраняя порядок байтов
+существующих идентификаторов. Миграция UUID не выполняется. Перед выкаткой
+проверьте чтение существующего профиля, сканов, записей на курсы и GridFS на стенде.

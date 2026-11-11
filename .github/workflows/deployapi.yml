@@ -35,6 +35,8 @@ jobs:
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
       - name: Publish
+        env:
+          SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE_KEY }}
         # Собираем сразу под Linux x64
         run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -r linux-x64 --self-contained false -o ./publish
 

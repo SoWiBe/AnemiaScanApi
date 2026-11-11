@@ -62,18 +62,7 @@ public class AnemiaAnalysisService(
         Logger.LogInformation("Returning {Count} of {Total} scans for user {UserId}", scans.Count, total, userId);
 
         var items = scans
-            .Select(scan => new AnalysisHistoryItemResponse(
-                scan.Id,
-                scan.ScanDate,
-                scan.IsAnemic ? Sick.Anemia : Sick.Healthy,
-                scan.AnemiaProbability,
-                scan.HemoglobinLevel,
-                scan.Severity,
-                Enum.TryParse<SeverityReference>(scan.SeverityReference, out var reference) ? reference : null,
-                Enum.TryParse<VerdictAgreement>(scan.VerdictAgreement, out var agreement) ? agreement : null,
-                Guid.TryParse(scan.ImageSystemId, out var imageId) ? imageId : null,
-                scan.LabHemoglobin,
-                scan.LabMeasuredAt))
+            .Select(AnalysisHistoryItemResponse.FromScan)
             .ToList();
 
         return new AnalysisHistoryResponse(items, total, page, pageSize, ResolveDisclaimer());
@@ -85,25 +74,48 @@ public class AnemiaAnalysisService(
     /// </summary>
     public const int LabMaxDaysFromScan = 14;
 
-    public async Task<LabHemoglobinResponse> SetLabHemoglobinAsync(Guid userId, Guid scanId, double hemoglobin,
-        DateTime? measuredAt, CancellationToken cancellationToken = default)
+    /// <summary>Границы правдоподобного Hb, г/дл. 130 (г/л вместо г/дл) сюда не проходит.</summary>
+    public const double LabMinHemoglobin = 3.0;
+    public const double LabMaxHemoglobin = 25.0;
+
+    /// <summary>
+    /// Запас на часовой пояс. Сервер считает дни по UTC, а пользователь присылает
+    /// дату по своему календарю, и она может отличаться от UTC на день: в Алматы
+    /// (UTC+5) с полуночи до пяти утра «сегодня» — это уже завтра по UTC. Без
+    /// запаса сегодняшний анализ в эти часы отклонялся бы как «дата в будущем».
+    /// </summary>
+    private const int TimeZoneSlackDays = 1;
+
+    public async Task<LabHemoglobinResponse> SetLabHemoglobinAsync(Guid userId, Guid scanId, double? hemoglobin,
+        DateOnly? measuredAt, CancellationToken cancellationToken = default)
     {
+        if (hemoglobin is not { } value)
+            throw new SASException("Укажите гемоглобин", StatusCodes.Status400BadRequest);
+
+        if (double.IsNaN(value) || value < LabMinHemoglobin || value > LabMaxHemoglobin)
+            throw new SASException(
+                $"Гемоглобин указывается в г/дл, от {LabMinHemoglobin:0} до {LabMaxHemoglobin:0} (в г/л разделите на 10: 130 г/л = 13.0 г/дл)",
+                StatusCodes.Status400BadRequest);
+
         var scan = await anemiaScansRepository.GetOwnedAsync(scanId, userId, cancellationToken)
                    ?? throw new SASException("Скан не найден", StatusCodes.Status404NotFound);
 
-        var today = DateTime.UtcNow.Date;
-        var date = (measuredAt ?? today).Date;
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var date = measuredAt ?? today;
 
-        if (date > today)
+        if (date.DayNumber > today.DayNumber + TimeZoneSlackDays)
             throw new SASException("Дата анализа не может быть в будущем", StatusCodes.Status400BadRequest);
 
-        if (Math.Abs((date - scan.ScanDate.Date).TotalDays) > LabMaxDaysFromScan)
+        var scanDay = DateOnly.FromDateTime(scan.ScanDate);
+        if (Math.Abs(date.DayNumber - scanDay.DayNumber) > LabMaxDaysFromScan + TimeZoneSlackDays)
             throw new SASException(
                 $"Анализ крови должен быть сдан не более чем за {LabMaxDaysFromScan} дней до или после скана: иначе гемоглобин мог измениться и сравнивать его со снимком нельзя",
                 StatusCodes.Status400BadRequest);
 
+        // В базе дата лежит полночью UTC. Kind задаётся явно: с Unspecified
+        // драйвер считал бы время местным и сдвигал дату на пояс сервера.
         var updated = await anemiaScansRepository.SetLabHemoglobinAsync(
-            scanId, userId, hemoglobin, date, cancellationToken);
+            scanId, userId, value, date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc), cancellationToken);
 
         // Скан могли удалить между чтением и записью.
         if (!updated)
@@ -112,7 +124,7 @@ public class AnemiaAnalysisService(
         Logger.LogInformation("Для скана {ScanId} внесён Hb из анализа крови (модель дала {Predicted})",
             scanId, scan.HemoglobinLevel);
 
-        return new LabHemoglobinResponse(scanId, hemoglobin, date);
+        return new LabHemoglobinResponse(scanId, value, date);
     }
 
     public async Task<AnalyseAnemiaResponse> WriteAnalyseAsync(
@@ -181,21 +193,7 @@ public class AnemiaAnalysisService(
         // сохраняем анализ в базе данных
         var createdAnemiaScan = await anemiaScansRepository.CreateAnemiaScanAsync(anemiaScan, cancellationToken);
 
-        return new AnalyseAnemiaResponse
-        (
-            createdAnemiaScan.Id,
-            createdAnemiaScan.AnemiaProbability,
-            createdAnemiaScan.IsAnemic ? Sick.Anemia : Sick.Healthy,
-            imageId,
-            scanDate,
-            createdAnemiaScan.HemoglobinLevel,
-            createdAnemiaScan.Severity,
-            severity?.Reference,
-            severity?.DemographicsComplete ?? true,
-            verdict,
-            // Дисклеймер в каждом ответе: вердикт без него на экран попасть не должен (P0 №12).
-            ResolveDisclaimer()
-        );
+        return new AnalyseAnemiaResponse(createdAnemiaScan.Id, imageId, scanDate, ResolveDisclaimer());
     }
 
     /// <summary>

@@ -8,6 +8,7 @@ using AnemiaScanApi.Common.Requests;
 using AnemiaScanApi.Common.Responses;
 using AnemiaScanApi.Controllers.Core;
 using AnemiaScanApi.Extensions;
+using AnemiaScanApi.Filters;
 using AnemiaScanApi.Infrastructure.Services.Core;
 
 namespace AnemiaScanApi.Controllers;
@@ -28,7 +29,12 @@ public class AnalysisController(
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost("anemia/prediction/")]
+    [ValidateImage]
+    [RequestSizeLimit(ValidateImageAttribute.MaxRequestBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = ValidateImageAttribute.MaxFileBytes)]
     [EnableRateLimiting(RateLimitPolicies.AnemiaPrediction)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PredictAnemia([FromForm, Required] PredictionRequest request, CancellationToken cancellationToken)
@@ -91,7 +97,12 @@ public class AnalysisController(
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost("anemia/prediction/schedule")]
+    [ValidateImage]
+    [RequestSizeLimit(ValidateImageAttribute.MaxRequestBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = ValidateImageAttribute.MaxFileBytes)]
     [EnableRateLimiting(RateLimitPolicies.AnemiaPrediction)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> SchedulePredictAnemia([FromForm, Required] PredictionRequest request, CancellationToken cancellationToken)

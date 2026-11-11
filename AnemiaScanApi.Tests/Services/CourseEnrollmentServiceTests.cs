@@ -26,6 +26,43 @@ public class CourseEnrollmentServiceTests
         new StreakService(NullLogger<StreakService>.Instance),
         NullLogger<CourseEnrollmentService>.Instance);
 
+    [Theory]
+    [InlineData(true, true, true)]
+    [InlineData(false, true, true)]
+    [InlineData(true, false, true)]
+    [InlineData(true, true, false)]
+    public async Task Progress_UsesOnlyOwnedLaboratoryResults(bool hasHb, bool hasDate, bool owned)
+    {
+        var userId = Guid.NewGuid();
+        var course = new CourseBuilder().Build();
+        var scanId = Guid.NewGuid();
+        var enrollment = new CourseEnrollment { UserId = userId, CourseId = course.Id };
+        enrollment.Days.Add(new DayCompletion { DayNumber = 1, CheckpointScanId = scanId });
+        _enrollmentsRepo.Setup(r => r.GetByIdAsync(enrollment.Id, It.IsAny<CancellationToken>())).ReturnsAsync(enrollment);
+        _coursesRepo.Setup(r => r.GetByIdAsync(course.Id, It.IsAny<CancellationToken>())).ReturnsAsync(course);
+        _contentRepo.Setup(r => r.GetByCourseIdAsync(course.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseContent { CourseId = course.Id });
+        _scansRepo.Setup(r => r.GetAnemiaScanAsync(scanId.ToString(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AnemiaScan {
+                UserId = (owned ? userId : Guid.NewGuid()).ToString(),
+                HemoglobinLevel = 7.2, IsAnemic = true,
+                LabHemoglobin = hasHb ? 12.4 : null,
+                LabMeasuredAt = hasDate ? new DateTime(2026, 10, 11, 0, 0, 0, DateTimeKind.Utc) : null
+            });
+
+        var response = await NewService().GetProgressAsync(userId, enrollment.Id);
+
+        if (hasHb && hasDate && owned)
+        {
+            var point = response.HemoglobinTimeline.Should().ContainSingle().Subject;
+            point.LabHemoglobin.Should().Be(12.4);
+            point.LabMeasuredAt.Should().Be(new DateOnly(2026, 10, 11));
+            using var json = System.Text.Json.JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(point));
+            json.RootElement.EnumerateObject().Select(p => p.Name).Should().BeEquivalentTo(
+                "DayNumber", "LabMeasuredAt", "LabHemoglobin");
+        }
+        else response.HemoglobinTimeline.Should().BeEmpty();
+    }
     [Fact]
     public async Task Enroll_UnknownSlug_Throws404()
     {

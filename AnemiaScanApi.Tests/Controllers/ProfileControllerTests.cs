@@ -31,6 +31,12 @@ public class ProfileControllerTests
 
     private readonly Mock<IProfileService> _profileService = new();
 
+    public ProfileControllerTests()
+    {
+        _profileService.Setup(s => s.GetScansAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<AnemiaScan>());
+    }
+
     private ProfileController NewController(Guid userId)
     {
         var controller = new ProfileController(NullLogger<ProfileController>.Instance, _profileService.Object);
@@ -103,7 +109,7 @@ public class ProfileControllerTests
         response.Sex.Should().Be(user.Sex);
         response.Age.Should().Be(user.Age);
         response.AnemiaScans.Should().ContainSingle()
-            .Which.AnalysisId.Should().Be(scan.AnalysisId);
+            .Which.Id.Should().Be(scan.Id);
     }
 
     /// <summary>
@@ -125,7 +131,7 @@ public class ProfileControllerTests
         var response = (GetProfileResponse)((OkObjectResult)result).Value!;
 
         response.AnemiaScans.Single().LabHemoglobin.Should().Be(11.8);
-        response.AnemiaScans.Single().LabMeasuredAt.Should().Be(scan.LabMeasuredAt);
+        response.AnemiaScans.Single().LabMeasuredAt.Should().Be(DateOnly.FromDateTime(scan.LabMeasuredAt!.Value));
         _profileService.Verify(s => s.GetScansAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -145,6 +151,10 @@ public class ProfileControllerTests
 
         json.Should().NotContain(PasswordHash);
         json.Should().NotContain(RefreshToken);
+        using var document = JsonDocument.Parse(json);
+        document.RootElement.GetProperty("AnemiaScans")[0].EnumerateObject()
+            .Select(p => p.Name).Should().BeEquivalentTo(
+                "Id", "ScanDate", "ImageSystemId", "LabHemoglobin", "LabMeasuredAt", "PredictionStatus");
     }
 
     /// <summary>
