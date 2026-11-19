@@ -1,5 +1,13 @@
 # Deployment
 
+> Migration update: the current workflow uses the `Master` environment and manual
+> dispatch. Runtime secrets live in `/etc/anemiascan/api.env` on the new server;
+> deployments no longer recreate that file from GitHub secrets. Follow
+> [deploy/GITHUB-ACTIONS.md](deploy/GITHUB-ACTIONS.md) for the current release
+> layout, required CI secrets and rollback limitations. Older examples below
+> describe the previous installation; do not apply their overwrite/deletion
+> commands to the symlinked release directory.
+
 Guide for deploying AnemiaScanApi to an Ubuntu 24.04 LTS VPS via GitHub Actions.
 
 ## Прод
@@ -605,6 +613,10 @@ sudo systemctl start anemiascan-api
 For a proper zero-downtime setup, use symlinked releases (`/var/www/anemiascan-api/current` → `releases/<timestamp>/`) — worth adding once you have real traffic.
 
 ## ImageSharp: ключ для Release-сборки (12.11.2026)
+
+Схема подготовки и приёмки выпуска: [backend-release-flow.md](AnemiaScanApi/docs/backend-release-flow.md).
+Черновик политики и порядок публикации: [docs/legal/README.md](AnemiaScanApi/docs/legal/README.md).
+Предзагрузка первого бесплатного курса: [course-editorial-notes.md](AnemiaScanApi/docs/course-editorial-notes.md).
 
 Исправленная ImageSharp 3.2.0 требует действующую лицензию на этапе сборки.
 Без неё `dotnet publish -c Release` останавливается. Условия и бесплатная
