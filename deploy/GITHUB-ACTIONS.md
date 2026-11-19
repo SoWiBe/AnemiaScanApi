@@ -44,6 +44,13 @@ AnemiaScanApi → Run workflow**, selecting `master`. Tests run in Debug, then p
 uses Release and the license key. Mongo-backed tests still require their separate
 test database configuration; production credentials are not supplied to tests.
 
+If direct GitHub-to-VPS transfer is slow, select `build_only` when dispatching.
+The job saves `api.tar.gz` and its SHA-256 checksum as a seven-day Actions artifact,
+without connecting to the server or deploying. Download that artifact through a
+trusted workstation and relay the unchanged archive over SSH. Verify its checksum
+on the server before extraction. A successful build-only job is not a deployment.
+Normal runs also save the artifact before transfer; upload has a ten-minute limit.
+
 Artifacts are extracted as the application user into separate release directories.
 The workflow switches the current symlink, restarts the service and checks
 `/health/ready`. If readiness times out, it restores the prior symlink when one

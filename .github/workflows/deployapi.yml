@@ -2,6 +2,11 @@ name: Deploy AnemiaScanApi
 
 on:
   workflow_dispatch:
+    inputs:
+      build_only:
+        description: 'Save Release artifact without SSH deployment (for relay transfer)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -39,7 +44,22 @@ jobs:
         env:
           SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE_KEY }}
         run: dotnet publish AnemiaScanApi/AnemiaScanApi.csproj -c Release -r linux-x64 --self-contained false -o publish
+      - name: Package
+        run: |
+          tar -czf api.tar.gz -C publish .
+          sha256sum api.tar.gz > api.tar.gz.sha256
+          ls -lh api.tar.gz
+      - name: Save release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anemiascan-linux-x64-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            api.tar.gz
+            api.tar.gz.sha256
+          compression-level: 0
+          retention-days: 7
       - name: Configure SSH
+        if: ${{ !inputs.build_only }}
         env:
           SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
@@ -51,10 +71,12 @@ jobs:
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
       - name: Upload
+        if: ${{ !inputs.build_only }}
+        timeout-minutes: 10
         run: |
-          tar -czf api.tar.gz -C publish .
-          scp -o BatchMode=yes -o StrictHostKeyChecking=yes -P "$DEPLOY_PORT" api.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/var/tmp/anemiascan-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          scp -v -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -P "$DEPLOY_PORT" api.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/var/tmp/anemiascan-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
       - name: Deploy and check readiness
+        if: ${{ !inputs.build_only }}
         run: |
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s -- "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" <<'REMOTE'
           set -euo pipefail
