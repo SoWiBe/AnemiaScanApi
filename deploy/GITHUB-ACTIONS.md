@@ -16,9 +16,19 @@ sudo bash ~/setup-actions.sh root1
 This requires completed database provisioning and an empty application directory.
 It creates release directories and grants the SSH user permission to run commands
 as the application user and restart only `anemiascan-api` as root. It does not
-grant general root sudo access. Keep `/etc/anemiascan/api.env` root-only; systemd
-reads it before dropping privileges. Complete SMTP and approved legal settings
-there before deployment. Never paste its contents into logs or issues.
+grant general root sudo access. It also installs the root-owned configuration
+helper from `sync-runtime-config.py` alongside the setup script. The helper accepts
+only approved runtime keys through stdin and atomically updates the root-only
+`/etc/anemiascan/api.env`; no credentials are printed or placed in the artifact.
+
+Before deployment, CI syncs `EMAIL_SENDER`, `EMAIL_PASSWORD`, `SMTP_SERVER`,
+`SMTP_PORT`, JWT issuer/audience/lifetimes, code-generator and legal settings from
+`Master`. All four SMTP secrets are required; empty optional secrets preserve the
+server value. MongoDB credentials and the JWT signing key remain server-managed
+to avoid restoring obsolete values from the previous VPS. `JWT_KEY` and collection
+name secrets are not used. A build-only run does not update server configuration.
+Never paste configuration contents into logs or issues. Config changes are not
+automatically reverted if application readiness later fails.
 
 ## GitHub environment
 

@@ -74,7 +74,27 @@ jobs:
         if: ${{ !inputs.build_only }}
         timeout-minutes: 10
         run: |
-          scp -v -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -P "$DEPLOY_PORT" api.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/var/tmp/anemiascan-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          scp -O -v -o IPQoS=none -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -P "$DEPLOY_PORT" api.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/var/tmp/anemiascan-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+      - name: Sync runtime configuration
+        if: ${{ !inputs.build_only }}
+        env:
+          EmailSender__Email: ${{ secrets.EMAIL_SENDER }}
+          EmailSender__Password: ${{ secrets.EMAIL_PASSWORD }}
+          Smtp__Server: ${{ secrets.SMTP_SERVER }}
+          Smtp__Port: ${{ secrets.SMTP_PORT }}
+          JwtSettings__Issuer: ${{ secrets.JWT_ISSUER }}
+          JwtSettings__Audience: ${{ secrets.JWT_AUDIENCE }}
+          JwtSettings__AccessTokenExpirationMinutes: ${{ secrets.JWT_ACCESS_MIN }}
+          JwtSettings__RefreshTokenExpirationDays: ${{ secrets.JWT_REFRESH_DAYS }}
+          CodeGenerator__Length: ${{ secrets.CODE_GEN_LENGTH }}
+          CodeGenerator__Chars: ${{ secrets.CODE_GEN_CHARS }}
+          CodeGenerator__CacheKey: ${{ secrets.CODE_GEN_CACHE_KEY }}
+          Legal__PolicyVersion: ${{ secrets.LEGAL_POLICY_VERSION }}
+          Legal__PolicyUrl: ${{ secrets.LEGAL_POLICY_URL }}
+        run: |
+          set -euo pipefail
+          python3 -c 'import json, os; prefixes=("EmailSender__", "Smtp__", "JwtSettings__", "CodeGenerator__", "Legal__"); print(json.dumps({k:v for k,v in os.environ.items() if k.startswith(prefixes)}))' |
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" sudo -n /usr/local/sbin/anemiascan-sync-config
       - name: Deploy and check readiness
         if: ${{ !inputs.build_only }}
         run: |
